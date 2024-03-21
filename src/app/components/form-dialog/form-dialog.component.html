@@ -14,8 +14,8 @@
         </div>
       </div>
       <div mat-dialog-actions>
-        <button mat-button (click)="onNoClick()">Cancel</button>
-        <button mat-button [mat-dialog-close]="form.value" cdkFocusInitial>Save</button>
+        <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
+        <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
       </div>
     </form>
 

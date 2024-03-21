@@ -1,16 +1,16 @@
-<div cdkDropList class="content-container" (cdkDropListDropped)="drop($event)">
+<div cdkDropList class="content-container " (cdkDropListDropped)="drop($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" >
     <div class="formly-form-container">
       <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form"></formly-form>
     </div>
     <div class="button-container">
       <div *ngFor="let field of fields" class="update-customization-button-container">
-        <button mat-icon-button color="primary" (click)="openCustomizationDialog(field.key)">
+        <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
       <div *ngFor="let field of fields" class="delete-button-container">
-        <button mat-icon-button color="warn" (click)="deleteField(field.key)">
+        <button mat-icon-button class="btn btn-sm btn-outline-danger" (click)="deleteField(field.key)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
