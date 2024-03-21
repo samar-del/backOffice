@@ -1,0 +1,28 @@
+<mat-sidenav-container class="example-container" autosize>
+  <mat-sidenav #sidenav class="example-sidenav" mode="side" opened="true" (mouseenter)="mouseenter()" (mouseleave)="mouseleave()" cdkDropListGroup>
+    <mat-nav-list>
+      <mat-list-item  class="parent">
+        <span class="full-width" >Drag elements to the right</span>
+        <mat-icon mat-list-icon>menu</mat-icon>
+      </mat-list-item>
+      <div class="submenu" [ngClass]="{'expanded' : showSubmenu}" cdkDropListGroup>
+        <div
+          cdkDropList
+          [cdkDropListData]="items"
+          class="example-list"
+          cdkDropListSortingDisabled
+          (cdkDropListDropped)="drag($event)">
+          <div *ngFor="let item of items"
+               class="example-box" cdkDrag>{{item}}</div>
+
+        </div>
+
+      </div>
+    </mat-nav-list>
+    <mat-nav-list>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <app-content></app-content>
+
+</mat-sidenav-container>
