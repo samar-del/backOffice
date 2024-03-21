@@ -1,8 +1,7 @@
-import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-// @ts-ignore
-import { MatSidenav } from '@angular/material';
-import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
-import {ContentComponent} from "../content/content.component";
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { MatSidenav } from '@angular/material/sidenav';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { ContentComponent } from '../content/content.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,16 +10,27 @@ import {ContentComponent} from "../content/content.component";
 })
 export class SidebarComponent implements OnInit {
   @ViewChild('sidenav') sidenav: MatSidenav;
-  @ViewChild(ContentComponent) contentComponent: ContentComponent; // Inject ContentComponent
+  @ViewChild(ContentComponent) contentComponent: ContentComponent;
   isExpanded = true;
-  showSubmenu: boolean = true;
   isShowing = true;
-  showSubSubMenu: boolean = false;
+  showSubSubMenu: boolean[] = []; // Array to store the state of each submenu
   @Output() itemDragged = new EventEmitter<string>();
-  items = ['input', 'radio', 'checkbox', 'button'];
-  constructor() { }
+  isSubmenuOpen: boolean[] = [];
+
+  // Define categories with their respective items
+  categories = [
+    { name: 'Basics', items: ['input', 'radio', 'checkbox', 'button'] },
+    { name: 'Advanced', items: ['slider', 'select', 'date picker', 'autocomplete'] }
+    // Add more categories as needed
+  ];
+
+  constructor() {
+    // Initialize showSubSubMenu array with false values for each category
+    this.categories.forEach(() => this.showSubSubMenu.push(false));
+  }
 
   ngOnInit(): void {
+    this.categories.forEach(() => this.isSubmenuOpen.push(false));
   }
 
   mouseenter() {
@@ -35,11 +45,13 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-
-  drag(event: CdkDragDrop<string[]>) {
-    const droppedItem = this.items[event.previousIndex];
-    this.contentComponent.onItemDropped(droppedItem); // Call method in ContentComponent
+  toggleSubMenu(index: number): void {
+    this.isSubmenuOpen[index] = !this.isSubmenuOpen[index];
   }
 
 
+  drag(event: CdkDragDrop<string[]>, categoryIndex: number) {
+    const droppedItem = this.categories[categoryIndex].items[event.previousIndex];
+    this.contentComponent.onItemDropped(droppedItem);
+  }
 }

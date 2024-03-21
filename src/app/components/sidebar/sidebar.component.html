@@ -1,28 +1,22 @@
 <mat-sidenav-container class="example-container" autosize>
   <mat-sidenav #sidenav class="example-sidenav" mode="side" opened="true" (mouseenter)="mouseenter()" (mouseleave)="mouseleave()" cdkDropListGroup>
     <mat-nav-list>
-      <mat-list-item  class="parent">
-        <span class="full-width" >Drag elements to the right</span>
+      <mat-list-item class="parent">
+        <span class="full-width">Drag elements to the right</span>
         <mat-icon mat-list-icon>menu</mat-icon>
       </mat-list-item>
-      <div class="submenu" [ngClass]="{'expanded' : showSubmenu}" cdkDropListGroup>
-        <div
-          cdkDropList
-          [cdkDropListData]="items"
-          class="example-list"
-          cdkDropListSortingDisabled
-          (cdkDropListDropped)="drag($event)">
-          <div *ngFor="let item of items"
-               class="example-box" cdkDrag>{{item}}</div>
-
+      <!-- Iterate over categories and display their items -->
+      <ng-container *ngFor="let category of categories; let i = index">
+        <mat-list-item (click)="toggleSubMenu(i)" class="parent">
+          <span class="full-width" *ngIf="isExpanded || isShowing">{{ category.name }}</span>
+          <mat-icon class="menu-button" [ngClass]="{'rotated': isSubmenuOpen[i]}">expand_more</mat-icon>
+        </mat-list-item>
+        <div cdkDropList [cdkDropListData]="category.items" class="submenu" [ngClass]="{'expanded': isSubmenuOpen[i]}"
+             *ngIf="isShowing || isExpanded" cdkDropListGroup cdkDropListSortingDisabled (cdkDropListDropped)="drag($event,i)">
+          <mat-list-item *ngFor="let item of category.items" cdkDrag>{{ item }}</mat-list-item>
         </div>
-
-      </div>
-    </mat-nav-list>
-    <mat-nav-list>
+      </ng-container>
     </mat-nav-list>
   </mat-sidenav>
-
   <app-content></app-content>
-
 </mat-sidenav-container>

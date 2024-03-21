@@ -36,7 +36,7 @@
 
 .submit-button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
 }
 
 .update-customization-button-container,
