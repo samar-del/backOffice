@@ -1,23 +1,28 @@
-<div cdkDropList class="content-container " (cdkDropListDropped)="drop($event)">
-  <form [formGroup]="form" (ngSubmit)="submit()" >
-    <div class="formly-form-container">
-      <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form"></formly-form>
-    </div>
-    <div class="button-container">
-      <div *ngFor="let field of fields" class="update-customization-button-container">
-        <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
-          <mat-icon>edit</mat-icon>
-        </button>
+<div cdkDropList class="content-container" (cdkDropListDropped)="drop($event)">
+  <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
+    <!-- Iterate over fields to render input fields with edit and delete buttons -->
+    <div *ngFor="let field of fields" class="row align-items-center">
+      <div class="col-10">
+        <!-- Render the input field here -->
+        <div class="formly-form-container">
+          <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"></formly-form>
+        </div>
       </div>
-      <div *ngFor="let field of fields" class="delete-button-container">
-        <button mat-icon-button class="btn btn-sm btn-outline-danger" (click)="deleteField(field.key)">
-          <mat-icon>delete</mat-icon>
-        </button>
+      <div class="col-2">
+        <!-- Edit and delete buttons -->
+        <div class="button-container">
+          <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button class="btn btn-sm btn-outline-danger" (click)="deleteField(field.key)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
     <div class="submit-button-container">
       <button type="submit" class="btn btn-primary submit-button">Submit</button>
-      <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
+      <button type="button" class="btn btn-outline-primary" (click)="options.resetModel()">Reset</button>
     </div>
   </form>
 </div>

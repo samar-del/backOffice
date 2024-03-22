@@ -20,6 +20,7 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FormlyModule} from "@ngx-formly/core";
 import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormDialogCheckboxComponent } from './components/form-dialog-checkbox/form-dialog-checkbox.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MenuItemComponent,
     ContentComponent,
     ToolbarComponent,
-    FormDialogComponent
+    FormDialogComponent,
+    FormDialogCheckboxComponent
   ],
   imports: [
     BrowserModule,
