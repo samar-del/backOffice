@@ -1,6 +1,13 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
+
+import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
+import {FormDialogComponent} from "../form-dialog/form-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
+import {Observable} from "rxjs";
+import {FormDialogCheckboxComponent} from "../form-dialog-checkbox/form-dialog-checkbox.component";
+
 import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
 import {FormDialogComponent} from '../form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -11,6 +18,7 @@ import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
 import {Observable} from 'rxjs';
+
 
 @Component({
   selector: 'app-content',
@@ -70,7 +78,7 @@ export class ContentComponent implements OnInit {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     // Customize other properties based on the type
     let newField: FormlyFieldConfig = {};
-    if (type === 'input') {
+    if (type === 'Text') {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
@@ -79,6 +87,7 @@ export class ContentComponent implements OnInit {
           key: uniqueKey,
           templateOptions: {
             label: customizationData.label,
+            type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
@@ -95,6 +104,29 @@ export class ContentComponent implements OnInit {
           // Customize other properties as needed
         };
       }
+    }
+    else if (type === 'Number') {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'number',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
     } else if (type === 'radio'){
       debugger;
       const customizationData = await this.openRadioDialog();
@@ -113,6 +145,29 @@ export class ContentComponent implements OnInit {
       }
     }
     else if (type === 'checkbox') {
+      const customizationData = await this.openCheckboxDialog().toPromise();
+      if (customizationData) {
+        newField = {
+          type: 'checkbox',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label || 'New Checkbox Label'
+          },
+          defaultValue: false, // Add a default value for the checkbox
+          // Customize other properties as needed
+        };
+
+        // Add the new field to the FormlyForm fields array
+        this.fields.push(newField);
+
+        // Update the form with the new fields
+        this.form = this.fb.group({});
+        this.formlyForm.resetForm({model: this.model});
+      }
+
+    }
+    else if (type === 'button') {
+
       newField = {
         key: 'selectedAnswer',
         type: 'multiCheckbox',
@@ -129,8 +184,52 @@ export class ContentComponent implements OnInit {
     //  this.openRadioDialog();
     }
 
-    // Add the new field to the FormlyForm fields array
-    this.fields.push(newField);
+    if (newField) {
+      // Add the new field to the FormlyForm fields array
+      this.fields.push(newField);
+
+      // Update the form with the new fields
+      this.form = this.fb.group({});
+      this.formlyForm.resetForm({ model: this.model });
+    }
+  }
+
+  openCheckboxDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label: '' // Default label value
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  // tslint:disable-next-line:typedef
+  openRadioDialog() {
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Create the radio field group based on customization
+        const newField: FormlyFieldConfig = {
+          type: 'radio',
+          key: 'newRadio',
+          templateOptions: {
+            label: result.radioLabel,
+            options: result.options.map(option => ({ value: option, label: option }))
+          }
+        };
+
+        // Add the new field to the FormlyForm fields array
+        this.fields.push(newField);
+
+        // Update the form with the new fields
+        this.form = this.fb.group({});
+        this.formlyForm.resetForm({ model: this.model });
+      }
 
     // Update the form with the new fields
     this.form = this.fb.group({});
