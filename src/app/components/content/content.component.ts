@@ -156,7 +156,7 @@ export class ContentComponent implements OnInit {
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: '', tableRows: []},
+      data: { placeholder: '', tableRows: []},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();

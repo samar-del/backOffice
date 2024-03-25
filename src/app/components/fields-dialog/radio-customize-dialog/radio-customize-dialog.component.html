@@ -28,7 +28,7 @@
       </div>
       <div mat-dialog-actions>
         <button mat-button class="btn btn-outline-dark" (click)="onNoClick()">Cancel</button>
-        <button mat-button class="btn btn-info" [mat-dialog-close]="form.value" cdkFocusInitial>Save</button>
+        <button mat-button class="btn btn-info" [mat-dialog-close]="form.value" cdkFocusInitial (click)="getValueOfRow()" >Save</button>
       </div>
     </form>
 
@@ -36,7 +36,7 @@
   </mat-tab>
   <mat-tab label="Data">
     <form [formGroup]="form">
-      <div class="form-group">
+      <div class="form-group" formControlName="tableRows">
         <table>
           <thead>
           <tr>
@@ -47,8 +47,8 @@
           </thead>
           <tbody>
           <tr *ngFor="let row of tableRows.controls; let i = index" [formGroupName]="i">
-            <td><input type="text" class="form-control" formControlName="labelOption"></td>
-            <td><input type="text" class="form-control" formControlName="valueOption"></td>
+            <td><input type="text" class="form-control" formControlName="labelOption" (focus)="markAsTouched(i)" (blur)="markAsUntouched(i)"></td>
+            <td><input type="text" class="form-control" formControlName="valueOption" (focus)="markAsTouched(i)" (blur)="markAsUntouched(i)"></td>
             <td><button type="button" class="btn btn-light" (click)="removeRow(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
           </tr>
           </tbody>
