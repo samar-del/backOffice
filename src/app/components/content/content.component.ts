@@ -1,11 +1,24 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
+
 import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
 import {FormDialogComponent} from "../form-dialog/form-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {Observable} from "rxjs";
 import {FormDialogCheckboxComponent} from "../form-dialog-checkbox/form-dialog-checkbox.component";
+
+import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
+import {FormDialogComponent} from '../form-dialog/form-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
+import {FormTemplate} from '../../models/FormTemplate';
+import {FormCreationService} from '../../services/form-creation.service';
+import {Field} from '../../models/Field';
+import {TemplateOptions} from '../../models/TemplateOptions';
+import {Options} from '../../models/Options';
+import {Observable} from 'rxjs';
+
 
 @Component({
   selector: 'app-content',
@@ -13,16 +26,20 @@ import {FormDialogCheckboxComponent} from "../form-dialog-checkbox/form-dialog-c
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
-  @Input() fields: FormlyFieldConfig[] = [];
+ fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
   model: any = {};
   options: FormlyFormOptions = {};
-
-  constructor(private fb: FormBuilder, private dialog: MatDialog) {
+  formTemplate = new FormTemplate();
+  lastFields: Field[] = [];
+  fieldsTemplateOptions: TemplateOptions[];
+  fieldsOptions: any[];
+  constructor(private fb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService) {
     this.form = this.fb.group({});
   }
 
+  // tslint:disable-next-line:typedef
   onItemDropped(item: string) {
     this.addField(item);
   }
@@ -110,6 +127,18 @@ export class ContentComponent implements OnInit {
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
             },
+    } else if (type === 'radio'){
+      debugger;
+      const customizationData = await this.openRadioDialog();
+   //   console.log(customizationData.fields.length());
+      if (customizationData) {
+        const options = customizationData.fields.options;
+        newField = {
+          type: 'radio',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            options,
           },
           // Customize other properties as needed
         };
@@ -138,15 +167,21 @@ export class ContentComponent implements OnInit {
 
     }
     else if (type === 'button') {
+
       newField = {
-        type: 'button',
-        templateOptions: {
-          text: 'Submit'
-        }
-        // Customize other properties as needed
+        key: 'selectedAnswer',
+        type: 'multiCheckbox',
+      };
+    } else if (type === 'button') {
+      // @ts-ignore
+      // @ts-ignore
+      // @ts-ignore
+      newField = {
+        key: 'marvel1',
+        type: 'select',
       };
     }else {
-      this.openRadioDialog();
+    //  this.openRadioDialog();
     }
 
     if (newField) {
@@ -195,9 +230,12 @@ export class ContentComponent implements OnInit {
         this.form = this.fb.group({});
         this.formlyForm.resetForm({ model: this.model });
       }
+
+    // Update the form with the new fields
+    this.form = this.fb.group({});
+    this.formlyForm.resetForm({ model: this.model
     });
   }
-
   // tslint:disable-next-line:typedef
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
@@ -213,6 +251,21 @@ export class ContentComponent implements OnInit {
     }
   }
 
+  // tslint:disable-next-line:typedef adjacent-overload-signatures
+  async openRadioDialog() {
+    const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
+      width: '1400px',
+      data: {label: '', placeholder: '', tableRows: []},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+  // tslint:disable-next-line:typedef
   submit() {
     if (this.form.valid) {
       const formValues = this.form.getRawValue(); // Extract raw form values
@@ -296,5 +349,52 @@ export class ContentComponent implements OnInit {
 
 
   ngOnInit(): void {
+  }
+
+  // tslint:disable-next-line:typedef
+  addFormTemplate(){
+    if (this.form.valid) {
+      debugger
+      const formValues = this.form.getRawValue();
+      this.fieldsOptions = this.fields.map(field => {
+          return field.templateOptions.options;
+      });
+      this.fieldsTemplateOptions = this.fields.map(field => {
+
+        const templateOptions: TemplateOptions = {
+          label : field.templateOptions.label,
+          disabled : field.templateOptions.disabled,
+          placeholder : field.templateOptions.placeholder,
+          maxlength : field.templateOptions.maxLength,
+          minlength : field.templateOptions.minLength,
+          pattern : field.templateOptions.pattern,
+          options: this.fieldsOptions,
+        };
+        return templateOptions;
+      });
+      const fields = this.fields.map(field => {
+        // Map FormlyFieldConfig to Field object
+        const mappedField: Field = {
+          type: field.type,
+          key: field.key.toString(),
+          templateOptions: this.fieldsTemplateOptions,
+          // Map other properties as needed
+        };
+        this.lastFields.push(mappedField);
+        return mappedField;
+      });
+      this.formTemplate.fieldIds = this.lastFields ;
+      this.formTemplate.title = 'first form';
+      this.formTemplate.version = 1;
+      this.formTemplate.createdAt = new Date();
+      this.formTemplate.description = 'description form 1 test';
+      this.formService.addFormTemplate(this.formTemplate).subscribe(res => {
+          console.log(res);
+        },
+        err => {
+          console.log('erreur');
+        }
+      );
+    }
   }
 }

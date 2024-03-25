@@ -7,6 +7,7 @@
         <div class="formly-form-container">
           <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"></formly-form>
         </div>
+
       </div>
       <div class="col-2">
         <!-- Edit and delete buttons -->
@@ -21,8 +22,10 @@
       </div>
     </div>
     <div class="submit-button-container">
-      <button type="submit" class="btn btn-primary submit-button">Submit</button>
-      <button type="button" class="btn btn-outline-primary" (click)="options.resetModel()">Reset</button>
+
+      <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
+      <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
+
     </div>
   </form>
 </div>

@@ -19,8 +19,11 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FormlyModule} from "@ngx-formly/core";
 import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormDialogCheckboxComponent } from './components/form-dialog-checkbox/form-dialog-checkbox.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
+import {HttpClientModule} from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -31,6 +34,7 @@ import { FormDialogCheckboxComponent } from './components/form-dialog-checkbox/f
     ToolbarComponent,
     FormDialogComponent,
     FormDialogCheckboxComponent
+    RadioCustomizeDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +50,8 @@ import { FormDialogCheckboxComponent } from './components/form-dialog-checkbox/f
     FormlyBootstrapModule,
     MatTabsModule,
     MatDialogModule,
-    NgbModule
+    NgbModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
