@@ -1,7 +1,8 @@
 <div cdkDropList class="content-container " (cdkDropListDropped)="drop($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" >
     <div class="formly-form-container">
-      <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form"></formly-form>
+      <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form">
+      </formly-form>
     </div>
     <div class="button-container">
       <div *ngFor="let field of fields" class="update-customization-button-container">
@@ -16,7 +17,7 @@
       </div>
     </div>
     <div class="submit-button-container">
-      <button type="submit" class="btn btn-primary submit-button">Submit</button>
+      <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
       <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
     </div>
   </form>
