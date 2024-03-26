@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {SidebarComponent} from "./components/sidebar/sidebar.component";
 import {MenuItemComponent} from "./components/menu-item/menu-item.component";
-import {FormDialogComponent} from "./components/form-dialog/form-dialog.component";
+import {FormDialogComponent} from "./components/fields-dialog/form-dialog/form-dialog.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
 import {ContentComponent} from "./components/content/content.component";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -22,6 +22,8 @@ import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {HttpClientModule} from '@angular/common/http';
+import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
+import { FormDialogSelectComponent } from './components/fields-dialog/form-dialog-select/form-dialog-select.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import {HttpClientModule} from '@angular/common/http';
     ContentComponent,
     ToolbarComponent,
     FormDialogComponent,
-    RadioCustomizeDialogComponent
+    RadioCustomizeDialogComponent,
+    FormDialogCheckboxComponent,
+    FormDialogSelectComponent
   ],
   imports: [
     BrowserModule,

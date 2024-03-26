@@ -1,8 +1,9 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormDialogCheckboxComponent} from "../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component";
 import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
-import {FormDialogComponent} from '../form-dialog/form-dialog.component';
+import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {FormTemplate} from '../../models/FormTemplate';
@@ -11,6 +12,8 @@ import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
 import {Observable} from 'rxjs';
+import {FormDialogSelectComponent} from "../fields-dialog/form-dialog-select/form-dialog-select.component";
+
 
 @Component({
   selector: 'app-content',
@@ -18,7 +21,7 @@ import {Observable} from 'rxjs';
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
- fields: FormlyFieldConfig[] = [];
+  fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
   model: any = {};
@@ -68,9 +71,11 @@ export class ContentComponent implements OnInit {
   // tslint:disable-next-line:typedef
   async addField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
+    const position = { x: this.fields.length * 50, y: this.fields.length * 50 };
+    console.log('Position:', position);
     // Customize other properties based on the type
     let newField: FormlyFieldConfig = {};
-    if (type === 'input') {
+    if (type === 'Text') {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
@@ -79,9 +84,11 @@ export class ContentComponent implements OnInit {
           key: uniqueKey,
           templateOptions: {
             label: customizationData.label,
+            type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
+            position : position,
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -95,64 +102,175 @@ export class ContentComponent implements OnInit {
           // Customize other properties as needed
         };
       }
-    } else if (type === 'radio'){
-      debugger;
-      const customizationData = await this.openRadioDialog();
-   //   console.log(customizationData.fields.length());
+    }
+    else if (type === 'Number') {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
       if (customizationData) {
-        const options = customizationData.fields.options;
         newField = {
-          type: 'radio',
+          type: 'input',
           key: uniqueKey,
           templateOptions: {
             label: customizationData.label,
-            options,
+            type: 'number',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          }
+        }
+      }
+    }
+    else if (type === 'TextArea') {
+      const customizationData = await this.openInputDialog();
+      if (customizationData) {
+        newField = {
+          type: 'textarea', // Define the type as 'textarea' for a Text Area field
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            placeholder: customizationData.placeholder,
+            rows: customizationData.rows, // Optionally, include the number of rows for the Text Area
           },
           // Customize other properties as needed
         };
       }
     }
-    else if (type === 'checkbox') {
-      newField = {
-        key: 'selectedAnswer',
-        type: 'multiCheckbox',
-      };
-    } else if (type === 'button') {
+    else if (type === 'Password') {
+      const customizationData = await this.openInputDialog();
       // @ts-ignore
-      // @ts-ignore
-      // @ts-ignore
-      newField = {
-        key: 'marvel1',
-        type: 'select',
-      };
-    }else {
-    //  this.openRadioDialog();
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'password',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          }
+        }
+      }
+    }
+    else if (type === 'Select') {
+      const customizationData = await this.openSelectDialog().toPromise();
+      if (customizationData) {
+        const options = customizationData.options;
+        newField = {
+          type: 'select', // Set the type to 'select' for a select option field
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            options: options.map(option => ({ label: option.label, value: option.value })), // Format options array appropriately
+          },
+          // Customize other properties as needed
+        };
+      }
     }
 
-    // Add the new field to the FormlyForm fields array
-    this.fields.push(newField);
+    else if(type === 'radio')
+        {
+          debugger;
+          const customizationData = await this.openRadioDialog();
+          //   console.log(customizationData.fields.length());
+          if (customizationData) {
+            const options = customizationData.fields.options;
+            newField = {
+              type: 'radio',
+              key: uniqueKey,
+              templateOptions: {
+                label: customizationData.label,
+                options,
+              },
+              // Customize other properties as needed
+            };
+          }
+        }
+      else if (type === 'checkbox') {
+          const customizationData = await this.openCheckboxDialog().toPromise();
+          if (customizationData) {
+            newField = {
+              type: 'checkbox',
+              key: uniqueKey,
+              templateOptions: {
+                label: customizationData.label || 'New Checkbox Label'
+              },
+              defaultValue: false, // Add a default value for the checkbox
+              // Customize other properties as needed
+            };
 
-    // Update the form with the new fields
-    this.form = this.fb.group({});
-    this.formlyForm.resetForm({ model: this.model
+            // Add the new field to the FormlyForm fields array
+           /* this.fields.push(newField);
+
+            // Update the form with the new fields
+            this.form = this.fb.group({});
+            this.formlyForm.resetForm({model: this.model});
+
+            */
+          }
+
+        }
+      else if (type === 'button') {
+
+          newField = {
+            key: 'selectedAnswer',
+            type: 'multiCheckbox',
+          };
+        }
+      else {
+          //  this.openRadioDialog();
+        }
+
+        if (newField) {
+          // Add the new field to the FormlyForm fields array
+          this.fields.push(newField);
+          // Update the form with the new fields
+          this.form = this.fb.group({});
+          this.formlyForm.resetForm({model: this.model});
+        }
+      }
+
+        openCheckboxDialog(): Observable<any> {
+          const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
+            width: '1400px', // Adjust the width as needed
+            data: {
+              label: '' // Default label value
+            }
+          });
+
+          return dialogRef.afterClosed();
+        }
+
+  openSelectDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(FormDialogSelectComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label: '' // Default label value
+      }
     });
-  }
-  // tslint:disable-next-line:typedef
-  async openInputDialog() {
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1400px',
-      data: {label: '', placeholder: ''},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
+
+    return dialogRef.afterClosed();
   }
 
-  // tslint:disable-next-line:typedef adjacent-overload-signatures
+        // tslint:disable-next-line:typedef
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
@@ -166,136 +284,152 @@ export class ContentComponent implements OnInit {
       return null;
     }
   }
-  // tslint:disable-next-line:typedef
-  submit() {
-    if (this.form.valid) {
-      const formValues = this.form.getRawValue(); // Extract raw form values
-      console.log('Form Values:', formValues);
-      // Handle form submission logic here (if needed)
-    }
-  }
 
-  private getFieldType(item: string): string {
-    // Define your logic to determine the type of Formly field based on the dropped item
-    // For example, you can map specific items to certain types
-    switch (item) {
-      case 'input':
-        return 'input';
-      case 'checkbox':
-        return 'checkbox';
-      case 'button':
-        return 'button';
-      default:
-        return 'input'; // Default to input type if not recognized
-    }
-  }
+          // tslint:disable-next-line:typedef
+          async openInputDialog() {
+            const dialogRef = this.dialog.open(FormDialogComponent, {
+              width: '1400px',
+              data: {label: '', placeholder: ''},
+            });
+            try {
+              const customizationData = await dialogRef.afterClosed().toPromise();
+              return customizationData;
+            } catch (error) {
+              console.error('Error in dialog:', error);
+              return null;
+            }
+          }
+
+          // tslint:disable-next-line:typedef
+          submit() {
+            if (this.form.valid) {
+              const formValues = this.form.getRawValue(); // Extract raw form values
+              console.log('Form Values:', formValues);
+              // Handle form submission logic here (if needed)
+            }
+          }
+
+        private getFieldType(item: string): string {
+            // Define your logic to determine the type of Formly field based on the dropped item
+            // For example, you can map specific items to certain types
+            switch (item) {
+              case 'input':
+                return 'input';
+              case 'checkbox':
+                return 'checkbox';
+              case 'button':
+                return 'button';
+              default:
+                return 'input'; // Default to input type if not recognized
+            }
+          }
 
 // tslint:disable-next-line:typedef
-  deleteField(uniqueKey: string) {
-    // Find the index of the field with the given unique key
-    const fieldIndex = this.fields.findIndex(field => field.key === uniqueKey);
+          deleteField(uniqueKey: string) {
+            // Find the index of the field with the given unique key
+            const fieldIndex = this.fields.findIndex(field => field.key === uniqueKey);
 
-    // If the field is found, remove it from the fields array
-    if (fieldIndex !== -1) {
-      this.fields.splice(fieldIndex, 1);
+            // If the field is found, remove it from the fields array
+            if (fieldIndex !== -1) {
+              this.fields.splice(fieldIndex, 1);
 
-      // Update the form with the new fields
-      this.form = this.fb.group({});
-      this.formlyForm.resetForm({ model: this.model, fields: this.fields });
-    }
-  }
+              // Update the form with the new fields
+              this.form = this.fb.group({});
+              this.formlyForm.resetForm({ model: this.model, fields: this.fields });
+            }
+          }
 
-  // tslint:disable-next-line:typedef
-  openCustomizationDialog(uniqueKey: string) {
-    const field = this.fields.find(f => f.key === uniqueKey);
+          // tslint:disable-next-line:typedef
+          openCustomizationDialog(uniqueKey: string) {
+            const field = this.fields.find(f => f.key === uniqueKey);
 
-    if (field) {
-      const dialogRef = this.dialog.open(FormDialogComponent, {
-        width: '1400px',
-        data: {
-          label: field.templateOptions.label,
-          placeholder: field.templateOptions.placeholder,
-          minLength: field.templateOptions.minLength,
-          maxLength: field.templateOptions.maxLength,
-          // Include other properties from the field's templateOptions as needed
-        },
-      });
+            if (field) {
+              const dialogRef = this.dialog.open(FormDialogComponent, {
+                width: '1400px',
+                data: {
+                  label: field.templateOptions.label,
+                  placeholder: field.templateOptions.placeholder,
+                  minLength: field.templateOptions.minLength,
+                  maxLength: field.templateOptions.maxLength,
+                  // Include other properties from the field's templateOptions as needed
+                },
+              });
 
-      dialogRef.afterClosed().subscribe((newCustomizationData) => {
-        if (newCustomizationData !== undefined) {
-          this.updateCustomizationData(uniqueKey, newCustomizationData);
+              dialogRef.afterClosed().subscribe((newCustomizationData) => {
+                if (newCustomizationData !== undefined) {
+                  this.updateCustomizationData(uniqueKey, newCustomizationData);
+                }
+              });
+            }
+          }
+
+
+          // tslint:disable-next-line:typedef
+          updateCustomizationData(uniqueKey: string, newCustomizationData: any) {
+            // Find the field with the given unique key
+            const field = this.fields.find(f => f.key === uniqueKey);
+
+            // If the field is found, update its customization data
+            if (field) {
+              field.templateOptions = {
+                ...field.templateOptions,
+                ...newCustomizationData,
+              };
+
+              // Update the form with the new fields
+              this.form = this.fb.group({});
+              this.formlyForm.resetForm({ model: this.model, fields: this.fields });
+            }
+          }
+
+
+          ngOnInit(): void {
+          }
+
+          // tslint:disable-next-line:typedef
+          addFormTemplate(){
+            if (this.form.valid) {
+              debugger
+              const formValues = this.form.getRawValue();
+              this.fieldsOptions = this.fields.map(field => {
+                return field.templateOptions.options;
+              });
+              this.fieldsTemplateOptions = this.fields.map(field => {
+
+                const templateOptions: TemplateOptions = {
+                  label : field.templateOptions.label,
+                  disabled : field.templateOptions.disabled,
+                  placeholder : field.templateOptions.placeholder,
+                  maxlength : field.templateOptions.maxLength,
+                  minlength : field.templateOptions.minLength,
+                  pattern : field.templateOptions.pattern,
+                  options: this.fieldsOptions,
+                };
+                return templateOptions;
+              });
+               this.fields.map(field => {
+                // Map FormlyFieldConfig to Field object
+                const mappedField: Field = {
+                  type: field.type,
+                  key: field.key.toString(),
+                  templateOptions: this.fieldsTemplateOptions,
+                  // Map other properties as needed
+                };
+                this.lastFields.push(mappedField);
+                return mappedField;
+              });
+              this.formTemplate.fieldIds = this.lastFields ;
+              this.formTemplate.title = 'first form';
+              this.formTemplate.version = 1;
+              this.formTemplate.createdAt = new Date();
+              this.formTemplate.description = 'description form 1 test';
+              this.formService.addFormTemplate(this.formTemplate).subscribe(res => {
+                  console.log(res);
+                },
+                err => {
+                  console.log('erreur');
+                }
+              );
+            }
+          }
         }
-      });
-    }
-  }
-
-
-  // tslint:disable-next-line:typedef
-  updateCustomizationData(uniqueKey: string, newCustomizationData: any) {
-    // Find the field with the given unique key
-    const field = this.fields.find(f => f.key === uniqueKey);
-
-    // If the field is found, update its customization data
-    if (field) {
-      field.templateOptions = {
-        ...field.templateOptions,
-        ...newCustomizationData,
-      };
-
-      // Update the form with the new fields
-      this.form = this.fb.group({});
-      this.formlyForm.resetForm({ model: this.model, fields: this.fields });
-    }
-  }
-
-
-  ngOnInit(): void {
-  }
-
-  // tslint:disable-next-line:typedef
-  addFormTemplate(){
-    if (this.form.valid) {
-      debugger
-      const formValues = this.form.getRawValue();
-      this.fieldsOptions = this.fields.map(field => {
-          return field.templateOptions.options;
-      });
-      this.fieldsTemplateOptions = this.fields.map(field => {
-
-        const templateOptions: TemplateOptions = {
-          label : field.templateOptions.label,
-          disabled : field.templateOptions.disabled,
-          placeholder : field.templateOptions.placeholder,
-          maxlength : field.templateOptions.maxLength,
-          minlength : field.templateOptions.minLength,
-          pattern : field.templateOptions.pattern,
-          options: this.fieldsOptions,
-        };
-        return templateOptions;
-      });
-      const fields = this.fields.map(field => {
-        // Map FormlyFieldConfig to Field object
-        const mappedField: Field = {
-          type: field.type,
-          key: field.key.toString(),
-          templateOptions: this.fieldsTemplateOptions,
-          // Map other properties as needed
-        };
-        this.lastFields.push(mappedField);
-        return mappedField;
-      });
-      this.formTemplate.fieldIds = this.lastFields ;
-      this.formTemplate.title = 'first form';
-      this.formTemplate.version = 1;
-      this.formTemplate.createdAt = new Date();
-      this.formTemplate.description = 'description form 1 test';
-      this.formService.addFormTemplate(this.formTemplate).subscribe(res => {
-          console.log(res);
-        },
-        err => {
-          console.log('erreur');
-        }
-      );
-    }
-  }
-}

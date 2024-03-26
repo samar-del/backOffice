@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   margin: 20px 20px 20px 40px;
+  padding: 30px;
   border-radius: 20px;
   background-color: #FAFBFF;
   border: dotted #ccc 2px;
@@ -27,6 +28,7 @@
 
 .formly-form-container {
   flex: 1;
+  width: 100%;
 }
 
 .button-container {
@@ -34,14 +36,26 @@
   justify-content: space-between;
 }
 
+.align-items-center {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  margin: 10px;
+}
+
 .submit-button-container {
   display: flex;
   justify-content: space-around;
+  position: absolute; /* Position absolutely */
+  top: 30px; /* Align to the top */
+  right: 30px; /* Align to the right */
+  margin: 10px; /* Add margin as needed */
+}
+
+.submit-button{
+  margin-right: 10px;
 }
 
 .update-customization-button-container,
 .delete-button-container {
   margin-left: 10px;
 }
-
-

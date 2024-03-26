@@ -1,0 +1,33 @@
+<mat-tab-group>
+  <mat-tab label="Display">
+    <form [formGroup]="form">
+      <h2 mat-dialog-title>Customize Select</h2>
+      <div mat-dialog-content>
+        <div class="form-group">
+          <label for="label">Label</label>
+          <input id="label" formControlName="label" class="form-control" />
+        </div>
+        <div formArrayName="options">
+          <div *ngFor="let optionCtrl of options.controls; let i = index">
+            <div class="form-group">
+              <label for="option{{i}}">Option {{ i + 1 }}</label>
+              <input id="option{{i}}" [formControlName]="i" class="form-control" />
+            </div>
+          </div>
+        </div>
+        <!-- Add option input fields -->
+        <div class="form-group">
+          <label>Add Option</label>
+          <input type="text" class="form-control" #optionInput />
+          <button type="button" class="btn btn-primary" (click)="addOption(optionInput.value)">Add</button>
+        </div>
+      </div>
+      <!-- Display select element -->
+      <div mat-dialog-actions>
+        <button mat-button (click)="onNoClick()" class="btn btn-outline-danger">Cancel</button>
+        <button mat-button [mat-dialog-close]="form.value" class="btn btn-outline-success" cdkFocusInitial>Save</button>
+      </div>
+    </form>
+  </mat-tab>
+  <!-- Other tabs -->
+</mat-tab-group>
