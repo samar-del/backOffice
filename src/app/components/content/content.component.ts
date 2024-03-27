@@ -18,6 +18,7 @@ import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
 import {Observable} from 'rxjs';
+import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
 
 
 @Component({
@@ -61,6 +62,8 @@ export class ContentComponent implements OnInit {
         this.addField('checkbox');
       } else if (droppedItem === 'button') {
         this.addField('button');
+      } else if (droppedItem === 'select') {
+        this.addField('select');
       }
 
       // Transfer the item to the new container
@@ -132,17 +135,29 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openRadioDialog();
    //   console.log(customizationData.fields.length());
       if (customizationData) {
-        const options = customizationData.fields.options;
         newField = {
           type: 'radio',
           key: uniqueKey,
           templateOptions: {
             label: customizationData.label,
-            options,
+            options : customizationData.tableRows ,
           },
           // Customize other properties as needed
         };
       }
+    }
+    else if (type === 'select'){
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = {
+          key: uniqueKey,
+          type: 'select',
+          templateOptions : {
+          label: customizationData.label,
+            options : customizationData.tableRows,
+        },
+      }; }
     }
     else if (type === 'checkbox') {
       const customizationData = await this.openCheckboxDialog().toPromise();
@@ -255,7 +270,21 @@ export class ContentComponent implements OnInit {
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
-      data: { placeholder: '', tableRows: []},
+      data: {label: '', placeholder: '', tableRows: [{label : '', value: ''}]},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+  // tslint:disable-next-line:typedef
+  async openSelectDialog() {
+    const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
+      width: '1400px',
+      data: {label: '', placeholder: '', tableRows: [{label : '', value: ''}]},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -273,22 +302,6 @@ export class ContentComponent implements OnInit {
       // Handle form submission logic here (if needed)
     }
   }
-
-  private getFieldType(item: string): string {
-    // Define your logic to determine the type of Formly field based on the dropped item
-    // For example, you can map specific items to certain types
-    switch (item) {
-      case 'input':
-        return 'input';
-      case 'checkbox':
-        return 'checkbox';
-      case 'button':
-        return 'button';
-      default:
-        return 'input'; // Default to input type if not recognized
-    }
-  }
-
 // tslint:disable-next-line:typedef
   deleteField(uniqueKey: string) {
     // Find the index of the field with the given unique key
@@ -354,13 +367,26 @@ export class ContentComponent implements OnInit {
   // tslint:disable-next-line:typedef
   addFormTemplate(){
     if (this.form.valid) {
-      debugger
-      const formValues = this.form.getRawValue();
-      this.fieldsOptions = this.fields.map(field => {
+      // tslint:disable-next-line:no-shadowed-variable
+       const Options: Options[] = [];
+       debugger;
+       const formValues = this.form.getRawValue();
+       this.fieldsOptions = this.fields.map(field => {
           return field.templateOptions.options;
       });
-      this.fieldsTemplateOptions = this.fields.map(field => {
+       this.fieldsOptions.map(el => {
+        el.map(elm => {
+          const option: Options = {
+            label : elm.label,
+            value : elm.value
+          };
+          Options.push(elm);
+          return option;
+        });
+      });
+       this.fieldsTemplateOptions = this.fields.map(field => {
 
+        // @ts-ignore
         const templateOptions: TemplateOptions = {
           label : field.templateOptions.label,
           disabled : field.templateOptions.disabled,
@@ -368,11 +394,11 @@ export class ContentComponent implements OnInit {
           maxlength : field.templateOptions.maxLength,
           minlength : field.templateOptions.minLength,
           pattern : field.templateOptions.pattern,
-          options: this.fieldsOptions,
+          options: Options,
         };
         return templateOptions;
       });
-      const fields = this.fields.map(field => {
+       const fields = this.fields.map(field => {
         // Map FormlyFieldConfig to Field object
         const mappedField: Field = {
           type: field.type,
@@ -383,12 +409,12 @@ export class ContentComponent implements OnInit {
         this.lastFields.push(mappedField);
         return mappedField;
       });
-      this.formTemplate.fieldIds = this.lastFields ;
-      this.formTemplate.title = 'first form';
-      this.formTemplate.version = 1;
-      this.formTemplate.createdAt = new Date();
-      this.formTemplate.description = 'description form 1 test';
-      this.formService.addFormTemplate(this.formTemplate).subscribe(res => {
+       this.formTemplate.fieldIds = this.lastFields ;
+       this.formTemplate.title = 'first form';
+       this.formTemplate.version = 1;
+       this.formTemplate.createdAt = new Date();
+       this.formTemplate.description = 'description form 1 test';
+       this.formService.addFormTemplate(this.formTemplate).subscribe(res => {
           console.log(res);
         },
         err => {
