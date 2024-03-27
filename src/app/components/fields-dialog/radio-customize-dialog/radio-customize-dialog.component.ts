@@ -20,20 +20,12 @@ export class RadioCustomizeDialogComponent implements OnInit {
   // tslint:disable-next-line:typedef
   ngOnInit() {
     debugger
-    this.createRow();
+
     this.form = this.fb.group({
       label: [this.data.label, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
       tableRows: this.fb.array([])
-    });
-    this.addRow();
-
-    this.tableRows.controls.forEach((control: FormGroup) => {
-      control.valueChanges.subscribe((value) => {
-        console.log('Row value changed: ', value);
-        // Perform any actions based on the changes here
-      });
     });
   }
 
@@ -46,17 +38,42 @@ export class RadioCustomizeDialogComponent implements OnInit {
   }
 
   createRow(): FormGroup {
-    return this.fb.group({
+    const row = this.fb.group({
       label: [this.data.labelOption || ''],
       value: [this.data.valueOption || ''],
     });
-  }
+    row.valueChanges.subscribe((value) => {
+      console.log('Row value changed:', value);
+      // Perform any actions based on the changes here
+    });
 
+    return row;
+  }
+  getValueOfRow(): void {
+    const formData = [];
+    this.tableRows.controls.forEach((control: FormGroup) => {
+      formData.push({
+        labelOption: control.value.label,
+        valueOption: control.value.value
+      });
+    });
+    console.log('Form data:', formData);
+    // You can further process or send this data as needed
+  }
   addRow(): void {
     this.tableRows.push(this.createRow());
   }
 
   removeRow(index: number): void {
     this.tableRows.removeAt(index);
+  }
+  markAsTouched(index: number): void {
+    const row = this.tableRows.at(index);
+    row.markAsTouched();
+  }
+
+  markAsUntouched(index: number): void {
+    const row = this.tableRows.at(index);
+    row.markAsUntouched();
   }
 }
