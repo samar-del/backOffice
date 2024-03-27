@@ -1,20 +1,18 @@
-import {Component, Inject, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-radio-customize-dialog',
-  templateUrl: './radio-customize-dialog.component.html',
-  styleUrls: ['./radio-customize-dialog.component.css']
+  selector: 'app-select-customize-dialog',
+  templateUrl: './select-customize-dialog.component.html',
+  styleUrls: ['./select-customize-dialog.component.css']
 })
-export class RadioCustomizeDialogComponent implements OnInit {
-
-
+export class SelectCustomizeDialogComponent implements OnInit {
   form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<RadioCustomizeDialogComponent>,
+    public dialogRef: MatDialogRef<SelectCustomizeDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
   // tslint:disable-next-line:typedef
