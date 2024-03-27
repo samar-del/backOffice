@@ -22,6 +22,7 @@ import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {HttpClientModule} from '@angular/common/http';
+import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {HttpClientModule} from '@angular/common/http';
     ContentComponent,
     ToolbarComponent,
     FormDialogComponent,
-    RadioCustomizeDialogComponent
+    RadioCustomizeDialogComponent,
+    SelectCustomizeDialogComponent
   ],
   imports: [
     BrowserModule,
