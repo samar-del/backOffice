@@ -1,0 +1,26 @@
+<mat-tab-group>
+  <mat-tab label="Display">
+    <!-- customize-dialog.component.html -->
+    <form [formGroup]="form">
+      <h2 mat-dialog-title>Customize Input</h2>
+      <div mat-dialog-content>
+        <div class="form-group">
+          <label for="label" >Label</label>
+          <input id="label" formControlName="label" class="form-control" />
+        </div>
+
+      </div>
+      <div mat-dialog-actions>
+        <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
+        <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+      </div>
+    </form>
+
+
+  </mat-tab>
+  <mat-tab label="Validation">
+
+  </mat-tab>
+  <mat-tab label="API"> API </mat-tab>
+  <mat-tab label="Layout"> Layout </mat-tab>
+</mat-tab-group>
