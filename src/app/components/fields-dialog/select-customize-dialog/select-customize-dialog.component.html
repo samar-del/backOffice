@@ -17,10 +17,10 @@
             <option value="bottom">Bottom</option>
           </select>
         </div>
-<!--        <div class="form-group">-->
-<!--          <label for="tooltip" >Tooltip</label>-->
-<!--          <input id="tooltip" formControlName="tooltip" class="form-control" />-->
-<!--        </div>-->
+        <!--        <div class="form-group">-->
+        <!--          <label for="tooltip" >Tooltip</label>-->
+        <!--          <input id="tooltip" formControlName="tooltip" class="form-control" />-->
+        <!--        </div>-->
         <div class="form-group">
           <label for="classCss" >Custom CSS class</label>
           <input id="classCss" type="text"  class="form-control" />
@@ -46,9 +46,9 @@
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let row of form.get('tableRows')['controls']; let i = index" [formGroupName]="i">
-            <td><input type="text" class="form-control" formControlName="label" (blur)="updateFormGroup(i, 'label', $event.target.value)"></td>
-            <td><input type="text" class="form-control" formControlName="value" (blur)="updateFormGroup(i, 'value', $event.target.value)"></td>
+          <tr *ngFor="let row of tableRows.controls; let i = index" [formGroupName]="i">
+            <td><input type="text" class="form-control" formControlName="label"></td>
+            <td><input type="text" class="form-control" formControlName="value" ></td>
             <td><button type="button" class="btn btn-light" (click)="removeRow(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
           </tr>
           </tbody>
@@ -78,25 +78,25 @@
   </mat-tab>
   <mat-tab label="Conditional">
     <form [formGroup]="form">
-    <div class="form-group">
+      <div class="form-group">
         <label for="shouldDisplay">This component should Display</label>
-      <select name="shouldDisplay" id="shouldDisplay" formControlName="disabled" class="form-control">
-        <option value="True">True</option>
-        <option value="False">False</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="condition">when the form component</label>
-      <select id="condition"  class="form-control">
-        <option value="Submit">Submit</option>
-        <option value="Radio">Radio button</option>
-        <option value="checkbox">checkbox</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="valueCondition">Has the value</label>
-      <input type="text" id="valueCondition" class="form-control">
-    </div>
+        <select name="shouldDisplay" id="shouldDisplay" formControlName="disabled" class="form-control">
+          <option value="True">True</option>
+          <option value="False">False</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="condition">when the form component</label>
+        <select id="condition"  class="form-control">
+          <option value="Submit">Submit</option>
+          <option value="Radio">Radio button</option>
+          <option value="checkbox">checkbox</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="valueCondition">Has the value</label>
+        <input type="text" id="valueCondition" class="form-control">
+      </div>
     </form>
   </mat-tab>
   <mat-tab label="Layout"> Layout </mat-tab>
