@@ -25,6 +25,7 @@ import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-cu
 import {HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
+import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dial
     SelectCustomizeDialogComponent,
     FormDialogCheckboxComponent,
     RadioCustomizeDialogComponent,
-    TelFormDialogComponent
+    TelFormDialogComponent,
+    DateFormDialogComponent
   ],
   imports: [
     BrowserModule,

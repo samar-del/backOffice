@@ -8,5 +8,7 @@ export class TemplateOptions {
   minlength ?: number;
   placeholder ?: string ;
   pattern ?: RegExp | string;
+  multiple ?: boolean;
+  type ?: string;
   options?: string[];
 }
