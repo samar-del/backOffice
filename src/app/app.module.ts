@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {SidebarComponent} from "./components/sidebar/sidebar.component";
 import {MenuItemComponent} from "./components/menu-item/menu-item.component";
-import {FormDialogComponent} from "./components/form-dialog/form-dialog.component";
+import {FormDialogComponent} from "./components/fields-dialog/form-dialog/form-dialog.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
 import {ContentComponent} from "./components/content/content.component";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -19,11 +19,12 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FormlyModule} from "@ngx-formly/core";
 import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
-import { FormDialogCheckboxComponent } from './components/form-dialog-checkbox/form-dialog-checkbox.component';
+import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
+import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 
 
 @NgModule({
@@ -35,9 +36,10 @@ import { SelectCustomizeDialogComponent } from './components/fields-dialog/selec
     ToolbarComponent,
     FormDialogComponent,
     RadioCustomizeDialogComponent,
-    SelectCustomizeDialogComponent
-    FormDialogCheckboxComponent
-    RadioCustomizeDialogComponent
+    SelectCustomizeDialogComponent,
+    FormDialogCheckboxComponent,
+    RadioCustomizeDialogComponent,
+    TelFormDialogComponent
   ],
   imports: [
     BrowserModule,
