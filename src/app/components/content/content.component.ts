@@ -321,16 +321,20 @@ export class ContentComponent implements OnInit {
     }
   }
   async saveFieldOptions(field: FormlyFieldConfig): Promise<TemplateOptions> {
-    const options = await Promise.all((field.templateOptions.options as any[]).map(async option => {
-      const newOption: Options = {
-        label: option.label,
-        value: option.value,
-        id: this.generateRandomId()
-      };
-      await this.optionService.addOption(newOption).toPromise();
-      return newOption;
-    }));
-
+    let options;
+    if (field.templateOptions.options) {
+      options = await Promise.all((field.templateOptions.options as any[]).map(async option => {
+        const newOption: Options = {
+          label: option.label,
+          value: option.value,
+          id: this.generateRandomId()
+        };
+        await this.optionService.addOption(newOption).toPromise();
+        return newOption;
+      }));
+    } else {
+      options = [];
+    }
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
       label: field.templateOptions.label,
