@@ -5,7 +5,7 @@ export class FormTemplate {
   title ?: string;
   description?: string;
   version?: number;
-  fieldIds?: Field[];
+  fieldIds?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }
