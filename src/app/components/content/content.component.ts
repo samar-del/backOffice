@@ -1,9 +1,8 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {FormDialogCheckboxComponent} from '../form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
-import {FormDialogComponent} from '../form-dialog/form-dialog.component';
+import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {FormTemplate} from '../../models/FormTemplate';
@@ -13,9 +12,11 @@ import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
 import {Observable} from 'rxjs';
 import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
+import {TelFormDialogComponent} from "../fields-dialog/tel-form-dialog/tel-form-dialog.component";
 import {FieldService} from '../../services/field.service';
 import {OptionsService} from '../../services/options.service';
 import {TemplateOptionsService} from '../../services/template-options.service';
+import {FormDialogCheckboxComponent} from "../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component";
 
 
 @Component({
@@ -100,6 +101,116 @@ export class ContentComponent implements OnInit {
         };
       }
     }
+    if (type === 'Email') {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'email',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+          // Customize other properties as needed
+        };
+      }
+    }
+    if (type === 'Url') {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'url',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+          // Customize other properties as needed
+        };
+      }
+    }
+    if (type === 'Phone Number') {
+      const customizationData = await this.openPhoneDialog();
+      // @ts-ignore
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'tel',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
+              return value.length < minLength || value.length > maxLength || !isValidPhoneNumber;
+            },
+          },
+          // Customize other properties as needed
+        };
+      }
+    }
+    if (type === 'Date / Time') {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'datetime-local',
+            placeholder: customizationData.placeholder,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+          // Customize other properties as needed
+        };
+      }
+    }
     else if (type === 'Number') {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
@@ -132,6 +243,7 @@ export class ContentComponent implements OnInit {
             label: customizationData.label,
             options : customizationData.tableRows ,
           },
+          // Customize other properties as needed
         };
       }
     }
@@ -210,6 +322,21 @@ export class ContentComponent implements OnInit {
     }
   }
 
+  async openPhoneDialog() {
+    const dialogRef = this.dialog.open(TelFormDialogComponent, {
+      width: '1400px',
+      data: {label: '', placeholder: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+ // tslint:disable-next-line:typedef adjacent-overload-signatures
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
