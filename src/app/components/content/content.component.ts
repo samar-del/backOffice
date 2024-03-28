@@ -17,6 +17,7 @@ import {TelFormDialogComponent} from "../fields-dialog/tel-form-dialog/tel-form-
 import {FieldService} from '../../services/field.service';
 import {OptionsService} from '../../services/options.service';
 import {TemplateOptionsService} from '../../services/template-options.service';
+import {DateFormDialogComponent} from "../fields-dialog/date-form-dialog/date-form-dialog.component";
 
 
 @Component({
@@ -186,7 +187,7 @@ export class ContentComponent implements OnInit {
       }
     }
     if (type === 'Date / Time') {
-      const customizationData = await this.openInputDialog();
+      const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
         newField = {
@@ -195,9 +196,30 @@ export class ContentComponent implements OnInit {
           templateOptions: {
             label: customizationData.label,
             type: 'datetime-local',
-            placeholder: customizationData.placeholder,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+          // Customize other properties as needed
+        };
+      }
+    }
+    if (type === 'Day') {
+      const customizationData = await this.openDateDialog();
+      // @ts-ignore
+      if (customizationData) {
+        newField = {
+          type: 'input',
+          key: uniqueKey,
+          templateOptions: {
+            label: customizationData.label,
+            type: 'date',
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -260,6 +282,20 @@ export class ContentComponent implements OnInit {
         },
       }; }
     }
+    else if (type === 'Select Multiple'){
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = {
+          key: uniqueKey,
+          type: 'select',
+          templateOptions : {
+            label: customizationData.label,
+            multiple : true,
+            options : customizationData.tableRows,
+          },
+        }; }
+    }
     else if (type === 'checkbox') {
       const customizationData = await this.openCheckboxDialog().toPromise();
       if (customizationData) {
@@ -310,6 +346,20 @@ export class ContentComponent implements OnInit {
   }
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1400px',
+      data: {label: '', placeholder: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openDateDialog() {
+    const dialogRef = this.dialog.open(DateFormDialogComponent, {
       width: '1400px',
       data: {label: '', placeholder: ''},
     });
@@ -466,6 +516,8 @@ export class ContentComponent implements OnInit {
       maxlength: field.templateOptions.maxLength,
       minlength: field.templateOptions.minLength,
       pattern: field.templateOptions.pattern,
+      multiple: field.templateOptions.multiple,
+      type: field.templateOptions.type,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };
