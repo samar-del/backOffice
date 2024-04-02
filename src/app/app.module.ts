@@ -26,11 +26,15 @@ import {HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
+import { SignupComponent } from './Modules/user/component/signup/signup.component';
+import { LoginComponent } from './Modules/user/component/login/login.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    SignupComponent,
+    LoginComponent,
     SidebarComponent,
     MenuItemComponent,
     ContentComponent,
