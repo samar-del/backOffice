@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/cor
 import { MatSidenav } from '@angular/material/sidenav';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ContentComponent } from '../content/content.component';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,26 +10,36 @@ import { ContentComponent } from '../content/content.component';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  @ViewChild('sidenav') sidenav: MatSidenav;
-  @ViewChild(ContentComponent) contentComponent: ContentComponent;
-  isExpanded = true;
-  isShowing = true;
-  showSubSubMenu: boolean[] = []; // Array to store the state of each submenu
-  @Output() itemDragged = new EventEmitter<string>();
-  isSubmenuOpen: boolean[] = [];
-
-  // Define categories with their respective items
-  categories = [
-    { name: 'Basics', items: ['Text','Number', 'radio', 'checkbox',  'select', 'button'] },
-    { name: 'Advanced', items: ['Email', 'Phone Number','Url', 'Date / Time','Day','Select Multiple', 'autocomplete'] },
-    { name: 'Layout', items: ['Columns'] }
-    // Add more categories as needed
-  ];
 
   constructor() {
     // Initialize showSubSubMenu array with false values for each category
     this.categories.forEach(() => this.showSubSubMenu.push(false));
   }
+  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild(ContentComponent) contentComponent: ContentComponent;
+  isExpanded = true;
+  isShowing = true;
+  showSubSubMenu: boolean[] = []; // Array to store the state of each submenu
+  @Output() itemDragged = new EventEmitter<{ item: string, position: DOMRect }>();
+  isSubmenuOpen: boolean[] = [];
+
+  // Define categories with their respective items
+  categories = [
+    { name: 'Basics', items: ['Text', 'Number', 'radio', 'checkbox',  'select', 'button'] },
+    { name: 'Advanced', items: ['Email', 'Phone Number', 'Address', 'Url', 'Date / Time', 'Day', 'Select Multiple', 'autocomplete'] },
+    { name: 'Layout', items: ['Columns'] }
+     // Add more categories as needed
+  ];
+  // @ts-ignore
+  dragAnimation = trigger('dragAnimation', [
+    transition(':enter', [
+      style({ opacity: 0 }),
+      animate('300ms', style({ opacity: 1 })),
+    ]),
+    transition(':leave', [
+      animate('300ms', style({ opacity: 0 })),
+    ]),
+  ]);
 
   ngOnInit(): void {
     this.categories.forEach(() => this.isSubmenuOpen.push(false));
@@ -53,6 +64,9 @@ export class SidebarComponent implements OnInit {
 
   drag(event: CdkDragDrop<string[]>, categoryIndex: number) {
     const droppedItem = this.categories[categoryIndex].items[event.previousIndex];
+    const currentPosition = event.item.element.nativeElement.getBoundingClientRect();
+    this.itemDragged.emit({ item: droppedItem, position: currentPosition });
+    console.log(currentPosition);
     this.contentComponent.onItemDropped(droppedItem);
   }
 }

@@ -8,7 +8,7 @@ import {MenuItemComponent} from "./components/menu-item/menu-item.component";
 import {FormDialogComponent} from "./components/fields-dialog/form-dialog/form-dialog.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
 import {ContentComponent} from "./components/content/content.component";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
@@ -26,6 +26,8 @@ import {HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
+import { AddressCustomizeDialogComponent } from './components/fields-dialog/address-customize-dialog/address-customize-dialog.component';
+
 import { FormPreviewComponent } from './components/form-preview/form-preview.component';
 import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
@@ -46,6 +48,7 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
     RadioCustomizeDialogComponent,
     TelFormDialogComponent,
     DateFormDialogComponent,
+    AddressCustomizeDialogComponent,
     FormPreviewComponent,
     FormColumnLayoutDialogComponent,
     ColumnWrapperComponent,
@@ -64,20 +67,21 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent }],
       types: [
-        { name: 'column', extends: 'formly-group',wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } }
+        { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } }
       ],
     }),
     FormlyModule.forChild({
       wrappers: [{ name: 'row', component: RowWrapperComponent }],
       types: [
-        { name: 'row', extends: 'formly-group',wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } }
+        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } }
       ],
     }),
     FormlyBootstrapModule,
     MatTabsModule,
     MatDialogModule,
     NgbModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
