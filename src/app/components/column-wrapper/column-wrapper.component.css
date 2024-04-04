@@ -1,0 +1,5 @@
+.column-wrapper {
+  border: 2px dotted #ccc; /* Define border properties */
+  padding: 10px; /* Optional: Add padding for better appearance */
+  border-radius: 10px;
+}

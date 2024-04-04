@@ -21,11 +21,15 @@
 .submenu {
   overflow-y: hidden;
   transition: transform 300ms ease;
-  transform: scaleY(0);
+  transform: scaleY(1);
   transform-origin: top;
   padding-left: 15px;
   padding-right: 15px;
+  display: none; /* Hide the submenu by default */
 }
+
 .submenu.expanded {
   transform: scaleY(1);
+  display: block; /* Show the submenu when expanded */
 }
+

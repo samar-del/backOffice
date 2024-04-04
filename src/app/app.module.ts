@@ -26,6 +26,10 @@ import {HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
+import { FormPreviewComponent } from './components/form-preview/form-preview.component';
+import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
+import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
+import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 
 
 @NgModule({
@@ -41,7 +45,11 @@ import { DateFormDialogComponent } from './components/fields-dialog/date-form-di
     FormDialogCheckboxComponent,
     RadioCustomizeDialogComponent,
     TelFormDialogComponent,
-    DateFormDialogComponent
+    DateFormDialogComponent,
+    FormPreviewComponent,
+    FormColumnLayoutDialogComponent,
+    ColumnWrapperComponent,
+    RowWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +61,18 @@ import { DateFormDialogComponent } from './components/fields-dialog/date-form-di
     MatToolbarModule,
     DragDropModule,
     ReactiveFormsModule,
-    FormlyModule.forRoot(),
+    FormlyModule.forRoot({
+      wrappers: [{ name: 'column', component: ColumnWrapperComponent }],
+      types: [
+        { name: 'column', extends: 'formly-group',wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } }
+      ],
+    }),
+    FormlyModule.forChild({
+      wrappers: [{ name: 'row', component: RowWrapperComponent }],
+      types: [
+        { name: 'row', extends: 'formly-group',wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } }
+      ],
+    }),
     FormlyBootstrapModule,
     MatTabsModule,
     MatDialogModule,

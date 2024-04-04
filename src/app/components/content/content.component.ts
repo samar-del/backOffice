@@ -18,6 +18,9 @@ import {FieldService} from '../../services/field.service';
 import {OptionsService} from '../../services/options.service';
 import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from "../fields-dialog/date-form-dialog/date-form-dialog.component";
+import {
+  FormColumnLayoutDialogComponent
+} from "../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component";
 
 
 @Component({
@@ -103,7 +106,7 @@ export class ContentComponent implements OnInit {
         };
       }
     }
-    if (type === 'Email') {
+    else if (type === 'Email') {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
@@ -130,7 +133,7 @@ export class ContentComponent implements OnInit {
         };
       }
     }
-    if (type === 'Url') {
+    else if (type === 'Url') {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
@@ -157,7 +160,7 @@ export class ContentComponent implements OnInit {
         };
       }
     }
-    if (type === 'Phone Number') {
+    else if (type === 'Phone Number') {
       const customizationData = await this.openPhoneDialog();
       // @ts-ignore
       if (customizationData) {
@@ -186,7 +189,7 @@ export class ContentComponent implements OnInit {
         };
       }
     }
-    if (type === 'Date / Time') {
+    else if (type === 'Date / Time') {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
@@ -210,7 +213,7 @@ export class ContentComponent implements OnInit {
         };
       }
     }
-    if (type === 'Day') {
+    else if (type === 'Day') {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
@@ -316,6 +319,40 @@ export class ContentComponent implements OnInit {
       }
 
     }
+    else if (type === 'Columns') {
+      const customizationData = await this.openColumnDialog();
+      if (customizationData) {
+        const { label, tableRows } = customizationData;
+        const uniqueKey = `newDiv_${this.fields.length + 1}`;
+
+        // Create the div with the appropriate class for each table row
+        const columnFields = tableRows.map(row => ({
+          ...row,
+          type: 'column',
+          key: `${uniqueKey}_${row.size}_${row.width}`,
+          wrappers: ['column'], // Specify the wrapper here
+          templateOptions: {
+            label: customizationData.label || 'New Column Label',
+            size: row.size, // Pass the size value from the row
+            width: row.width // Pass the width value from the row
+          },
+        }));
+
+        // Wrap the column fields with a row div
+        const rowDiv = {
+          type: 'row',
+          fieldGroup: columnFields
+        };
+
+
+        this.fields.push(rowDiv);
+
+        // Update the form with the new fields
+        this.form = this.fb.group({});
+        this.formlyForm.resetForm({ model: this.model });
+      }
+    }
+
     else if (type === 'button') {
 
       newField = {
@@ -385,6 +422,21 @@ export class ContentComponent implements OnInit {
       return null;
     }
   }
+
+  async openColumnDialog() {
+    const dialogRef = this.dialog.open(FormColumnLayoutDialogComponent, {
+      width: '1400px',
+      data: { label: '', width_col: '',tableRows: [] },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData; // Return the entire customization data object
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
 
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
@@ -546,4 +598,18 @@ export class ContentComponent implements OnInit {
     }
     return randomId;
   }
+
+
+  isLastColumn(index: number): boolean {
+    return index === this.fields.length - 1;
+  }
+
+  isNextColumnSizeDifferent(index: number): boolean {
+    if (index < this.fields.length - 1) {
+      return this.fields[index].templateOptions.size !== this.fields[index + 1].templateOptions.size;
+    }
+    return false;
+  }
+
+
 }
