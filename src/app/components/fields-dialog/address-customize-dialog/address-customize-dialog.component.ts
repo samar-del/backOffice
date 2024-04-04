@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 
 @Component({
   selector: 'app-address-customize-dialog',
@@ -18,6 +21,8 @@ export class AddressCustomizeDialogComponent implements OnInit {
 
   showTable = false; // Variable to store the state of the checkbox
   NumberOptions = 0 ;
+  // @ts-ignore
+  // @ts-ignore
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<AddressCustomizeDialogComponent>,
