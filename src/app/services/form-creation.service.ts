@@ -13,4 +13,8 @@ export class FormCreationService {
   public addFormTemplate(form: FormTemplate): Observable<any> {
     return this.httpClient.post('http://localhost:8090/addFormTemplate', form);
   }
+  public getFormTemplateById(formId: string): Observable<FormTemplate> {
+    const url = `http://localhost:8090/getFormTemplate/{formId}`;
+    return this.httpClient.get<FormTemplate>(url);
+  }
 }
