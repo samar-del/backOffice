@@ -1,13 +1,16 @@
-<div cdkDropList class="content-container" (cdkDropListDropped)="drop($event)">
+<div cdkDropList class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (cdkDropListDropped)="drop($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
     <!-- Iterate over fields to render input fields with edit and delete buttons -->
-    <div class="row align-items-center">
+    <div class="container">
+
       <ng-container *ngFor="let field of fields; let i = index">
-        <div class="col-10" >
-          <!-- Render the input field here -->
-          <div class="formly-form-container">
-            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"></formly-form>
-          </div>
+        <div  class="row">
+            <formly-form  [fields]="[field]" [form]="form">
+              <div class="{{field.templateOptions?.columnSize}}" style="background-color:yellow;">
+              <formly-field  [options]="options"></formly-field>
+              </div>
+            </formly-form>
+
         </div>
         <div class="col-2" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
           <!-- Edit and delete buttons -->
@@ -21,10 +24,12 @@
           </div>
         </div>
       </ng-container>
+
     </div>
     <div class="submit-button-container">
       <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
       <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
     </div>
   </form>
+  <button (click)="getForm()">get form structure</button>
 </div>

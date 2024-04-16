@@ -22,6 +22,7 @@ export class SidebarComponent implements OnInit {
   showSubSubMenu: boolean[] = []; // Array to store the state of each submenu
   @Output() itemDragged = new EventEmitter<{ item: string, position: DOMRect }>();
   isSubmenuOpen: boolean[] = [];
+  containerDraggedOver = false;
 
   // Define categories with their respective items
   categories = [
@@ -68,5 +69,18 @@ export class SidebarComponent implements OnInit {
     this.itemDragged.emit({ item: droppedItem, position: currentPosition });
     console.log(currentPosition);
     this.contentComponent.onItemDropped(droppedItem);
+  }
+  onDragEntered() {
+    // Add a CSS class when an element is dragged over the container
+    this.containerDraggedOver = true; // Assuming you have a boolean property to track the drag state
+  }
+
+  // tslint:disable-next-line:typedef
+  onDragExited() {
+    // Remove the CSS class when the element is dragged out of the container
+    this.containerDraggedOver = false; // Assuming you have a boolean property to track the drag state
+  }
+  onDragStart(event: DragEvent) {
+    event.dataTransfer.setData('text/plain', 'Some data to drop'); // Set data to be dropped
   }
 }

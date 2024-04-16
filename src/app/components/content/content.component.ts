@@ -36,6 +36,7 @@ export class ContentComponent implements OnInit {
   form: FormGroup;
   model: any = {};
   options: FormlyFormOptions = {};
+  containerDraggedOver: boolean = false;
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService) {
@@ -65,6 +66,18 @@ export class ContentComponent implements OnInit {
         this.addField('button');
       } else if (droppedItem === 'select') {
         this.addField('select');
+      } else {
+        this.containerDraggedOver = true;
+        // @ts-ignore
+        const droppedField: FormlyFieldConfig = { ...droppedItem }; // Create a copy of the dropped field
+        // tslint:disable-next-line:max-line-length
+        const columnIndex = this.fields.findIndex(field => field.key === event.container.id); // Find the index of the column layout container
+        if (columnIndex !== -1) {
+          this.fields[columnIndex].fieldGroup.push(droppedField); // Add the dropped field to the container's fieldGroup
+          // Update the form with the new fields
+          this.form = this.fb.group({});
+          this.formlyForm.resetForm({ model: this.model });
+        }
       }
 
       transferArrayItem(
@@ -74,8 +87,10 @@ export class ContentComponent implements OnInit {
         event.currentIndex
       );
     }
+    this.containerDraggedOver = false;
   }
 
+  // tslint:disable-next-line:typedef
   async addField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     // Customize other properties based on the type
@@ -360,30 +375,33 @@ export class ContentComponent implements OnInit {
     }
     else if (type === 'Columns') {
       const customizationData = await this.openColumnDialog();
+      let containerField: FormlyFieldConfig;
+      // tslint:disable-next-line:prefer-const
+      let fieldGroups: FormlyFieldConfig[] = [];
       if (customizationData) {
-        const { label, tableRows } = customizationData;
-        // Create the div with the appropriate class for each table row
-        const columnFields = tableRows.map(row => ({
-          ...row,
-          type: 'column',
-          key: `${uniqueKey}_${row.size}_${row.width}`,
-          wrappers: ['column'], // Specify the wrapper here
-          templateOptions: {
-            label: customizationData.label || 'New Column Label',
-            size: row.size, // Pass the size value from the row
-            width: row.width // Pass the width value from the row
-          },
-        }));
-
-        // Wrap the column fields with a row div
-        const rowDiv = {
-          type: 'row',
-          fieldGroup: columnFields
-        };
-
-
-        this.fields.push(rowDiv);
-
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0 ; i < customizationData.tableRows.length; i++ ){
+           containerField = {
+         //   fieldGroupClassName: 'row',
+            fieldGroup: [
+            {type: 'column',
+            key: `${uniqueKey}_${i}`,
+            className: 'columnClass' ,
+            wrappers: ['column'], // Specify the wrapper here
+            templateOptions: {
+              columnSize: 'col-' + customizationData.tableRows[i].size + '-' + customizationData.tableRows[i].width ,
+              label: customizationData.tableRows[i].label || 'New Column Label',
+            }, }]
+          };
+           // @ts-ignore
+           fieldGroups.push(containerField.fieldGroup);
+           console.log(i);
+        }
+        const columnField: FormlyFieldConfig = {
+            fieldGroupClassName: 'row',
+            fieldGroup: fieldGroups
+          };
+        this.fields.push(columnField);
         // Update the form with the new fields
         this.form = this.fb.group({});
         this.formlyForm.resetForm({ model: this.model });
@@ -655,6 +673,24 @@ export class ContentComponent implements OnInit {
     }
     return false;
   }
+  // tslint:disable-next-line:typedef
 
+  // tslint:disable-next-line:typedef
+  onDragOver(event: DragEvent) {
+    event.preventDefault(); // Allow drop by preventing default behavior
+  }
 
+  // tslint:disable-next-line:typedef
+  onDragLeave(event: DragEvent) {
+    event.preventDefault(); // Prevent default behavior to maintain drop zone
+  }
+  getForm(){
+    const formid = '6603e0968cbee52c45a56a14';
+    this.formService.getFormTemplateById(formid).subscribe(res => {
+    console.log(res);
+  },
+    error => {
+    console.log(error);
+    });
+  }
 }

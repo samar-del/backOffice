@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FieldWrapper} from "@ngx-formly/core";
+import {FieldWrapper} from '@ngx-formly/core';
 
 @Component({
   selector: 'app-column-wrapper',
