@@ -29,6 +29,8 @@ import { DateFormDialogComponent } from './components/fields-dialog/date-form-di
 import { SignupComponent } from './Modules/user/component/signup/signup.component';
 import { LoginComponent } from './Modules/user/component/login/login.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
+//import { GoogleLoginProvider } from 'angularx-social-login';
 
 
 @NgModule({
@@ -36,8 +38,8 @@ import { ForgotPasswordComponent } from './Modules/user/component/forgot-passwor
     AppComponent,
     SignupComponent,
     LoginComponent,
+    ResetPasswordComponent,
     ForgotPasswordComponent,
-
     SidebarComponent,
     MenuItemComponent,
     ContentComponent,

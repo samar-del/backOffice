@@ -6,7 +6,6 @@ import { Observable, throwError } from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import { loginRequest } from 'src/app/models/loginRequest';
 
-
 @Injectable({
   providedIn: 'root'
 })

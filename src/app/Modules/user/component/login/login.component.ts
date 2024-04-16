@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { LoginService } from './../../services/login.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { loginRequest } from 'src/app/models/loginRequest';
+//import {SocialAuthService, GoogleLoginProvider,SocialUser} from 'angularx-social-login';
+import { from } from 'rxjs';
 
 
 @Component({
@@ -18,10 +20,13 @@ export class LoginComponent implements OnInit {
   invalidLogin = false;
   loginSuccess = false;
   form: FormGroup;
+ // user: SocialUser;
 
   constructor(private fb: FormBuilder,
               private loginService: LoginService,
-              private router: Router) { }
+              private router: Router
+           // private authService:SocialAuthService
+          ) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -29,6 +34,15 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required]
     });
   }
+
+ /* signInWithGoogle(): void {
+    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
+      this.user = user;
+      // Vous pouvez maintenant utiliser les informations de l'utilisateur, telles que user.id, user.name, user.email, etc.
+    }).catch(error => {
+      console.log('Erreur de connexion Google : ', error);
+    });
+  }*/
 
   handleLogin() {
     if (this.form.valid) {
