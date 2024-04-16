@@ -8,7 +8,7 @@ import {MenuItemComponent} from "./components/menu-item/menu-item.component";
 import {FormDialogComponent} from "./components/fields-dialog/form-dialog/form-dialog.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
 import {ContentComponent} from "./components/content/content.component";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
@@ -28,6 +28,7 @@ import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dial
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
 import { SignupComponent } from './Modules/user/component/signup/signup.component';
 import { LoginComponent } from './Modules/user/component/login/login.component';
+import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 
 
 @NgModule({
@@ -35,6 +36,8 @@ import { LoginComponent } from './Modules/user/component/login/login.component';
     AppComponent,
     SignupComponent,
     LoginComponent,
+    ForgotPasswordComponent,
+
     SidebarComponent,
     MenuItemComponent,
     ContentComponent,
@@ -62,9 +65,11 @@ import { LoginComponent } from './Modules/user/component/login/login.component';
     MatTabsModule,
     MatDialogModule,
     NgbModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

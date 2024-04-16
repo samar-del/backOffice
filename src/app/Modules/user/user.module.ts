@@ -7,11 +7,13 @@ import { LoginComponent } from './component/login/login.component';
 import { SignupComponent } from './component/signup/signup.component';
 import { LayoutComponent } from './component/layout/layout.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
+import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
+import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
 
 
 
 @NgModule({
-  declarations: [GPermissionComponent, GUserComponent, GRoleComponent, LoginComponent, SignupComponent, LayoutComponent, DashboardComponent],
+  declarations: [GPermissionComponent, GUserComponent, GRoleComponent, LoginComponent, SignupComponent, LayoutComponent, DashboardComponent, ResetPasswordComponent, ForgotPasswordComponent],
   imports: [
     CommonModule
   ]

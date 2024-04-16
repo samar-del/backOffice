@@ -18,6 +18,8 @@ import {FieldService} from '../../services/field.service';
 import {OptionsService} from '../../services/options.service';
 import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from "../fields-dialog/date-form-dialog/date-form-dialog.component";
+import { LoginService } from 'src/app/Modules/user/services/login.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -35,7 +37,9 @@ export class ContentComponent implements OnInit {
   fieldsOptions: any;
   templateOption: string [];
   constructor(private fb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
-              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService) {
+              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
+              private loginService : LoginService,
+              private router : Router) {
     this.form = this.fb.group({});
   }
   ngOnInit(): void {
@@ -45,6 +49,12 @@ export class ContentComponent implements OnInit {
     this.addField(item);
   }
 
+
+  handleLogout() {
+    this.loginService.logout();
+        this.router.navigate(['/login']); // Redirection vers la page de connexion après déconnexion
+
+  }
   // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
