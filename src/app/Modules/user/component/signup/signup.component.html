@@ -21,7 +21,7 @@
               <form [formGroup]="signupForm" (ngSubmit)="handleSignup()">
                 <div div class="row gy-3 overflow-hidden">
                   <h3>Sign up here</h3>
-                  <p>Account exists already?<a routerLink="/login">Login</a></p>
+                  <p>Account exists already? <a routerLink="/login">Login</a></p>
                   <div class="col-12">
                     <div class="form-floating mb-3">
                       <input type="text" class="form-control" formControlName="userName" placeholder="UserName">
@@ -59,6 +59,7 @@
                       <button class="btn btn-lg" type="submit">Sign up</button>
                     </div>
                   </div>
+
                 </div>
               </form>
             </div>
