@@ -27,6 +27,10 @@ export class SelectCustomizeDialogComponent implements OnInit {
       label: [this.data.label, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
+      custom_css: [this.data.custom_css],
+      hidden: [this.data.hidden],
+      hide_label: [this.data.hide_label],
+      required: [this.data.required],
       tableRows: this.fb.array([])
     });
     this.form.valueChanges.subscribe(() => {
@@ -57,19 +61,32 @@ export class SelectCustomizeDialogComponent implements OnInit {
     const tableRowsArray = this.form.get('tableRows') as FormArray;
     tableRowsArray.push(this.createRow());
   }
-
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+  }
   removeRow(index: number): void {
     this.tableRows.removeAt(index);
   }
 
   updateFields(): void {
+    const labelHidden = this.form.get('hide_label').value;
+    const inputHidden = this.form.get('hidden').value;
+    const inputDisabled = this.form.get('disabled').value;
+
     this.newField = {
       key: 'key',
         type: 'select',
       templateOptions : {
-      label: this.form.get('label').value,
+        label: this.form.get('label').value,
         options : this.form.get('tableRows').value,
+        custom_css: this.form.get('custom_css').value,
+        disabled: inputDisabled,
     },
+      hide: inputHidden,
+      expressionProperties: {
+        'templateOptions.hideLabel': () => labelHidden
+      },
     };
   }
 

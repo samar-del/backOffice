@@ -29,7 +29,8 @@ export class RadioCustomizeDialogComponent implements OnInit {
       label: [this.data.label, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
-      tableRows: this.fb.array([])
+      tableRows: this.fb.array([]),
+      custom_css: this.data.custom_css
     });
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -72,10 +73,16 @@ export class RadioCustomizeDialogComponent implements OnInit {
         templateOptions: {
           label: this.form.get('label').value,
           options : this.form.get('tableRows').value ,
+          custom_css: this.form.get('custom_css').value,
+
         },
       };
   }
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;
+  }
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
   }
 }

@@ -82,17 +82,22 @@ export class ContentComponent implements OnInit {
     let newField: FormlyFieldConfig[] = [{}];
     if (type === 'Text') {
       const customizationData = await this.openInputDialog();
-      // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            custom_css: customizationData.custom_css,
+            hide_label: customizationData.hide_label
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -106,6 +111,7 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
+
     if (type === 'Address'){
       const customizationData = await this.openAddressDialog();
       let field: FormlyFieldConfig = {};
@@ -153,15 +159,21 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'email',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -180,15 +192,21 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'url',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -216,6 +234,7 @@ export class ContentComponent implements OnInit {
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
           },
           expressionProperties: {
@@ -242,6 +261,7 @@ export class ContentComponent implements OnInit {
           templateOptions: {
             label: customizationData.label,
             type: 'datetime-local',
+            custom_css: customizationData.custom_css
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -266,6 +286,7 @@ export class ContentComponent implements OnInit {
           templateOptions: {
             label: customizationData.label,
             type: 'date',
+            custom_css: customizationData.custom_css
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -284,15 +305,20 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'number',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -311,6 +337,7 @@ export class ContentComponent implements OnInit {
           templateOptions: {
             label: customizationData.label,
             options : customizationData.tableRows ,
+            custom_css: customizationData.custom_css
           },
         }];
       }
@@ -323,8 +350,13 @@ export class ContentComponent implements OnInit {
           key: uniqueKey,
           type: 'select',
           templateOptions : {
-          label: customizationData.label,
+            label: customizationData.label,
             options : customizationData.tableRows,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label
         },
       }]; }
     }
@@ -337,6 +369,7 @@ export class ContentComponent implements OnInit {
           type: 'select',
           templateOptions : {
             label: customizationData.label,
+            custom_css: customizationData.custom_css,
             multiple : true,
             options : customizationData.tableRows,
           },
@@ -349,12 +382,14 @@ export class ContentComponent implements OnInit {
           type: 'checkbox',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label || 'New Checkbox Label'
+            label: customizationData.label || 'New Checkbox Label',
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css
           },
           defaultValue: false,
         }];
-        this.form = this.fb.group({});
-        this.formlyForm.resetForm({model: this.model});
       }
 
     }
@@ -615,6 +650,10 @@ export class ContentComponent implements OnInit {
       pattern: field.templateOptions.pattern,
       multiple: field.templateOptions.multiple,
       type: field.templateOptions.type,
+      required: field.templateOptions.required,
+      hidden: field.templateOptions.hidden,
+      hide_label:field.templateOptions.hide_label,
+      custom_css:field.templateOptions.custom_css,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };

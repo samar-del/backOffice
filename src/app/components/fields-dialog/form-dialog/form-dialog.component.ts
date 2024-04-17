@@ -55,27 +55,48 @@ export class FormDialogComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+  }
   updateFields(): void {
+    const labelHidden = this.form.get('hide_label').value;
+    const inputHidden = this.form.get('hidden').value;
+    const inputDisabled = this.form.get('disabled').value;
+
     this.newField = {
       type: 'input',
       key: 'key1',
       templateOptions: {
-        label: this.form.get('label').value,
+        label: labelHidden ? null : this.form.get('label').value,
         type: 'text',
         placeholder: this.form.get('placeholder').value,
-        minLength: this.form.get('minLength').value,
-        maxLength: this.form.get('maxLength').value,
+        disabled: inputDisabled,
+        custom_css: this.form.get('custom_css').value,
       },
+      hide: inputHidden,
       expressionProperties: {
-        'templateOptions.errorState': (model: any, formState: any) => {
-          // Check the length constraints and set error state accordingly
-          const value = model.key;
-          const minLength = this.form.get('minLength').value || 0;
-          const maxLength = this.form.get('maxLength').value || Infinity;
-          return value.length < minLength || value.length > maxLength;
-        },
+        'templateOptions.hideLabel': () => labelHidden
       },
+      validators: {
+        minLength: {
+          expression: (control: any) => {
+            const value = control.value;
+            const minLength = this.form.get('minLength').value || 0;
+            return !value || value.length >= minLength;
+          }
+        },
+        maxLength: {
+          expression: (control: any) => {
+            const value = control.value;
+            const maxLength = this.form.get('maxLength').value || Infinity;
+            return !value || value.length <= maxLength;
+          }
+        }
+      }
     };
   }
+
+
 
 }

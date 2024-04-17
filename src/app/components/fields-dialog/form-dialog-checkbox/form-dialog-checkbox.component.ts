@@ -29,7 +29,6 @@ export class FormDialogCheckboxComponent implements OnInit {
       label: [this.data.label, Validators.required],
       custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
-      hide_label: [this.data.hide_label],
       disabled: [this.data.disabled],
       required: [this.data.required],
       error_label: [this.data.error_label],
@@ -47,17 +46,27 @@ export class FormDialogCheckboxComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+  }
   updateFields(): void {
-    this.newField =
-    {
+    const inputHidden = this.form.get('hidden').value;
+    const inputDisabled = this.form.get('disabled').value;
+
+    this.newField = {
       type: 'checkbox',
-        key: 'key',
+      key: 'key',
       templateOptions: {
-      label: this.form.get('label').value || 'New Checkbox Label'
-    },
+        label: this.form.get('label').value || 'New Checkbox Label',
+        disabled: inputDisabled,
+        custom_css: this.form.get('custom_css').value,
+      },
+      hide: inputHidden,
       defaultValue: false,
     };
   }
+
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;
   }

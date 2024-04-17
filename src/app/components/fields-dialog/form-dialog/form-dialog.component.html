@@ -8,16 +8,16 @@
       <form [formGroup]="form">
 
         <div mat-dialog-content>
-          <div class="form-group">
+          <div class="form-group" [hidden]="form.get('hide_label').value">
             <label for="label">Label</label>
             <input id="label" formControlName="label" class="form-control" />
           </div>
-          <div class="form-group">
+          <div class="form-group" [hidden]="form.get('hidden').value">
             <label for="placeholder">Placeholder</label>
             <input id="placeholder" formControlName="placeholder" class="form-control" />
           </div>
           <label for="label_position">Label Position</label>
-          <select id="label_position" class="form-control" aria-label="Default select position">
+          <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
             <option selected>Top</option>
             <option value="1">Left</option>
             <option value="2">Right</option>
@@ -25,7 +25,7 @@
           </select>
           <div class="form-group">
             <label for="custom_css">Custom CSS</label>
-            <input id="custom_css" formControlName="placeholder" class="form-control" />
+            <input id="custom_css" formControlName="custom_css" class="form-control" />
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
@@ -79,6 +79,7 @@
       </form>
     </mat-tab>
     <mat-tab label="API"  [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+      <form [formGroup]="form">
       <div class="form-group">
         <label for="property_name">Property Name</label>
         <input id="property_name" formControlName="property_name" type="text" class="form-control" />
@@ -87,6 +88,7 @@
         <label for="field_tags">Field Tags</label>
         <input id="field_tags" formControlName="field_tags" type="text" class="form-control" />
       </div>
+      </form>
     </mat-tab>
     <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
   </mat-tab-group>
@@ -96,7 +98,7 @@
   <h4>Preview input</h4>
   <hr>
   <div class="formly-form-container">
-  <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options"></formly-form>
+  <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
   </div>
 </div>
 </div>

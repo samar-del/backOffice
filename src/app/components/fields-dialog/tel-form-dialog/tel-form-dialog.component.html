@@ -23,7 +23,7 @@
         </select>
         <div class="form-group">
           <label for="custom_css">Custom CSS</label>
-          <input id="custom_css" formControlName="placeholder" class="form-control" />
+          <input id="custom_css" formControlName="custom_css" class="form-control" />
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
@@ -85,7 +85,7 @@
   <h4>Preview Radio</h4>
   <hr>
   <div class="formly-form-container">
-    <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options"></formly-form>
+    <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
   </div>
 </div>
 </div>
