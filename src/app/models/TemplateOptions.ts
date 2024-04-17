@@ -11,4 +11,8 @@ export class TemplateOptions {
   multiple ?: boolean;
   type ?: string;
   options?: string[];
+  required?: boolean;
+  hidden?: boolean;
+  hide_label?: boolean;
+  custom_css?: string;
 }

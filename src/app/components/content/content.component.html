@@ -6,7 +6,7 @@
         <div class="col-10" >
           <!-- Render the input field here -->
           <div class="formly-form-container">
-            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"></formly-form>
+            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form" [ngStyle]="{ 'cssText': field.templateOptions.custom_css }"></formly-form>
           </div>
         </div>
         <div class="col-2" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">

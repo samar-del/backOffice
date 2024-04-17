@@ -52,30 +52,47 @@ export class TelFormDialogComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+  }
   updateFields(): void {
+    const labelHidden = this.form.get('hide_label').value;
+    const inputHidden = this.form.get('hidden').value;
+    const inputDisabled = this.form.get('disabled').value;
+
     this.newField = {
       type: 'input',
-      key: 'key',
+      key: 'key1',
       templateOptions: {
-        label: this.form.get('label').value,
-        type: 'tel',
+        label: labelHidden ? null : this.form.get('label').value,
+        type: 'text',
         placeholder: this.form.get('placeholder').value,
-        minLength: this.form.get('minLength').value,
-        maxLength: this.form.get('maxLength').value,
-        // pattern: this.form.get('pattern').value || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+        disabled: inputDisabled,
+        custom_css: this.form.get('custom_css').value,
       },
+      hide: inputHidden,
       expressionProperties: {
-        'templateOptions.errorState': (model: any, formState: any) => {
-          const value = model.key;
-          const minLength = this.form.get('minLength').value || 0;
-          const maxLength = this.form.get('maxLength').value || Infinity;
-          // tslint:disable-next-line:max-line-length
-          // const isValidPhoneNumber = new RegExp( this.form.get('pattern').value || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
-          // return value.length < minLength || value.length > maxLength || !isValidPhoneNumber;
-        },
+        'templateOptions.hideLabel': () => labelHidden
       },
-      // Customize other properties as needed
+      validators: {
+        minLength: {
+          expression: (control: any) => {
+            const value = control.value;
+            const minLength = this.form.get('minLength').value || 0;
+            return !value || value.length >= minLength;
+          }
+        },
+        maxLength: {
+          expression: (control: any) => {
+            const value = control.value;
+            const maxLength = this.form.get('maxLength').value || Infinity;
+            return !value || value.length <= maxLength;
+          }
+        }
+      }
     };
   }
+
 
 }

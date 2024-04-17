@@ -20,13 +20,27 @@
             <option value="bottom">Bottom</option>
           </select>
         </div>
-        <!--        <div class="form-group">-->
-        <!--          <label for="tooltip" >Tooltip</label>-->
-        <!--          <input id="tooltip" formControlName="tooltip" class="form-control" />-->
-        <!--        </div>-->
         <div class="form-group">
-          <label for="classCss" >Custom CSS class</label>
-          <input id="classCss" type="text"  class="form-control" />
+          <label for="custom_css" >Custom CSS</label>
+          <input id="custom_css" formControlName="custom_css" type="text"  class="form-control" />
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+          <label class="form-check-label" for="hidden">
+            Hidden
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="hide_label" formControlName="hide_label">
+          <label class="form-check-label" for="hide_label">
+            Hide label
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
+          <label class="form-check-label" for="disabled">
+            Disabled
+          </label>
         </div>
       </div>
       <div mat-dialog-actions>
@@ -61,6 +75,7 @@
     </form>
   </mat-tab>
   <mat-tab label="Validation" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">
+    <form [formGroup]="form">
     <div class="form-check">
       <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
       <label class="form-check-label" for="flexCheckDefault">
@@ -71,13 +86,16 @@
       <label for="customError">Custom Error message</label>
       <input type="text" name="shouldDisplay" id="customError"  class="form-control">
     </div>
+    </form>
   </mat-tab>
 
   <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
+    <form [formGroup]="form">
     <div class="form-group">
       <label for="propertyName">Property Name</label>
       <input type="text" id="propertyName" placeholder="Property Name" class="form-control">
     </div>
+    </form>
   </mat-tab>
   <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 5 }">
     <form [formGroup]="form">
@@ -109,7 +127,7 @@
   <h4>Preview Select</h4>
   <hr>
   <div class="formly-form-container">
-    <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options"></formly-form>
+    <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
   </div>
 </div>
 </div>

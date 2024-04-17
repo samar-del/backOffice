@@ -1,5 +1,9 @@
-<mat-tab-group>
-  <mat-tab label="Display">
+<div class="dialog-field">
+  <div class="form-tab">
+    <h3 mat-dialog-title>Customize Date</h3>
+    <hr>
+<mat-tab-group (selectedTabChange)="onTabChange($event)">
+  <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
     <!-- customize-dialog.component.html -->
     <form [formGroup]="form">
       <h2 mat-dialog-title>Customize Input</h2>
@@ -17,7 +21,7 @@
         </select>
         <div class="form-group">
           <label for="custom_css">Custom CSS</label>
-          <input id="custom_css" formControlName="placeholder" class="form-control" />
+          <input id="custom_css" formControlName="custom_css" class="form-control" />
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
@@ -46,7 +50,7 @@
 
 
   </mat-tab>
-  <mat-tab label="Validation">
+  <mat-tab label="Validation" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
     <form [formGroup]="form">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" value="" id="required" formControlName="required">
@@ -64,7 +68,7 @@
       </div>
     </form>
   </mat-tab>
-  <mat-tab label="API">
+  <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
     <div class="form-group">
       <label for="property_name">Property Name</label>
       <input id="property_name" formControlName="property_name" type="text" class="form-control" />
@@ -74,5 +78,15 @@
       <input id="field_tags" formControlName="field_tags" type="text" class="form-control" />
     </div>
   </mat-tab>
-  <mat-tab label="Layout"> Layout </mat-tab>
+  <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
 </mat-tab-group>
+  </div>
+
+  <div class="preview-tab">
+    <h4>Preview input</h4>
+    <hr>
+    <div class="formly-form-container">
+      <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
+    </div>
+  </div>
+</div>

@@ -54,35 +54,46 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
     ColumnWrapperComponent,
     RowWrapperComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    MatSidenavModule,
-    BrowserAnimationsModule,
-    MatListModule,
-    MatIconModule,
-    MatToolbarModule,
-    DragDropModule,
-    ReactiveFormsModule,
-    FormlyModule.forRoot({
-      wrappers: [{ name: 'column', component: ColumnWrapperComponent }],
-      types: [
-        { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } }
-      ],
-    }),
-    FormlyModule.forChild({
-      wrappers: [{ name: 'row', component: RowWrapperComponent }],
-      types: [
-        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } }
-      ],
-    }),
-    FormlyBootstrapModule,
-    MatTabsModule,
-    MatDialogModule,
-    NgbModule,
-    HttpClientModule,
-    FormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        MatSidenavModule,
+        BrowserAnimationsModule,
+        MatListModule,
+        MatIconModule,
+        MatToolbarModule,
+        DragDropModule,
+        ReactiveFormsModule,
+        FormlyModule.forRoot({
+            wrappers: [{name: 'column', component: ColumnWrapperComponent}],
+            types: [
+                {
+                    name: 'column',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                }
+            ],
+        }),
+        FormlyModule.forChild({
+            wrappers: [{name: 'row', component: RowWrapperComponent}],
+            types: [
+                {
+                    name: 'row',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {row: true}}
+                }
+            ],
+        }),
+        FormlyBootstrapModule,
+        MatTabsModule,
+        MatDialogModule,
+        NgbModule,
+        HttpClientModule,
+        FormsModule,
+
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
