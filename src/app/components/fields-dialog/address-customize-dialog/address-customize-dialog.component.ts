@@ -35,6 +35,8 @@ export class AddressCustomizeDialogComponent implements OnInit {
       label: [this.data.label, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
+      custom_css: [this.data.custom_css],
+      required: [this.data.required],
       tableRows: this.fb.array([])
     });
     this. toggleTableVisibility();
@@ -47,6 +49,10 @@ export class AddressCustomizeDialogComponent implements OnInit {
   toggleTableVisibility(): void {
     this.showTable = !this.showTable;
     this.cdr.detectChanges();
+  }
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
   }
   updateFormGroup(index: number, controlName: string, value: any): void {
     const tableRowsArray = this.form.get('tableRows') as FormArray;
@@ -89,6 +95,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
         templateOptions: {
           label: this.form.get('label').value,
           options: this.form.get('tableRows').value,
+          custom_css: this.form.get('custom_css').value,
         },
       };
       this.fields.push(this.newField);
@@ -102,7 +109,8 @@ export class AddressCustomizeDialogComponent implements OnInit {
           type: 'input',
           templateOptions: {
             label: this.form.get('label').value,
-            placeholder: this.form.get('placeholder').value
+            placeholder: this.form.get('placeholder').value,
+            custom_css: this.form.get('custom_css').value,
           },
         };
         this.fields.push(this.newField);

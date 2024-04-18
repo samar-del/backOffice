@@ -78,7 +78,7 @@ export class SelectCustomizeDialogComponent implements OnInit {
       key: 'key',
         type: 'select',
       templateOptions : {
-        label: this.form.get('label').value,
+        label: labelHidden ? null : this.form.get('label').value,
         options : this.form.get('tableRows').value,
         custom_css: this.form.get('custom_css').value,
         disabled: inputDisabled,

@@ -23,6 +23,24 @@
           <label for="custom_css" >Custom CSS</label>
           <input id="custom_css" formControlName="custom_css" type="text"  class="form-control" />
         </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+          <label class="form-check-label" for="hidden">
+            Hidden
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="hide_label" formControlName="hide_label">
+          <label class="form-check-label" for="hide_label">
+            Hide label
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
+          <label class="form-check-label" for="disabled">
+            Disabled
+          </label>
+        </div>
       </div>
       <div mat-dialog-actions>
         <button mat-button class="btn btn-outline-dark" (click)="onNoClick()">Cancel</button>

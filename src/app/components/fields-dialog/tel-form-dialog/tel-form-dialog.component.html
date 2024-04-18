@@ -69,6 +69,7 @@
     </form>
   </mat-tab>
   <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+    <form [formGroup]="form">
     <div class="form-group">
       <label for="property_name">Property Name</label>
       <input id="property_name" formControlName="property_name" type="text" class="form-control" />
@@ -77,12 +78,13 @@
       <label for="field_tags">Field Tags</label>
       <input id="field_tags" formControlName="field_tags" type="text" class="form-control" />
     </div>
+    </form>
   </mat-tab>
   <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
 </mat-tab-group>
 </div>
 <div class="preview-tab">
-  <h4>Preview Radio</h4>
+  <h4>Preview Phone number</h4>
   <hr>
   <div class="formly-form-container">
     <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
