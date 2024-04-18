@@ -225,16 +225,21 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openPhoneDialog();
       // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'tel',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
           },
           expressionProperties: {
@@ -255,13 +260,18 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'datetime-local',
-            custom_css: customizationData.custom_css
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -280,13 +290,18 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             type: 'date',
-            custom_css: customizationData.custom_css
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -331,12 +346,16 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openRadioDialog();
    //   console.log(customizationData.fields.length());
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'radio',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label,
+            label: label,
             options : customizationData.tableRows ,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
             custom_css: customizationData.custom_css
           },
         }];
@@ -346,11 +365,12 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           key: uniqueKey,
           type: 'select',
           templateOptions : {
-            label: customizationData.label,
+            label: label,
             options : customizationData.tableRows,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -364,14 +384,19 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           key: uniqueKey,
           type: 'select',
           templateOptions : {
-            label: customizationData.label,
+            label: label,
             custom_css: customizationData.custom_css,
             multiple : true,
             options : customizationData.tableRows,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label
           },
         }]; }
     }
@@ -386,7 +411,8 @@ export class ContentComponent implements OnInit {
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
-            custom_css: customizationData.custom_css
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
           },
           defaultValue: false,
         }];

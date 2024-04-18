@@ -30,7 +30,9 @@ export class RadioCustomizeDialogComponent implements OnInit {
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
       tableRows: this.fb.array([]),
-      custom_css: this.data.custom_css
+      custom_css: this.data.custom_css,
+      hidden: [this.data.hidden],
+      hide_label: [this.data.hide_label],
     });
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -67,15 +69,23 @@ export class RadioCustomizeDialogComponent implements OnInit {
     this.tableRows.removeAt(index);
   }
   updateFields(): void {
+    const labelHidden = this.form.get('hide_label').value;
+    const inputHidden = this.form.get('hidden').value;
+    const inputDisabled = this.form.get('disabled').value;
+
     this.newField = {
         type: 'radio',
         key: 'key',
         templateOptions: {
-          label: this.form.get('label').value,
+          label: labelHidden ? null : this.form.get('label').value,
           options : this.form.get('tableRows').value ,
           custom_css: this.form.get('custom_css').value,
-
+          disabled: inputDisabled,
         },
+      hide: inputHidden,
+      expressionProperties: {
+        'templateOptions.hideLabel': () => labelHidden
+      },
       };
   }
   onTabChange(event: any): void {
