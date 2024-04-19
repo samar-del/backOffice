@@ -16,7 +16,7 @@ export class OptionsService {
     return this.httpClient.post('http://localhost:8090/options/add', option);
   }
   public getOptionById(id: string): Observable<Options> {
-    const url = `http://localhost:8090/getOptions/{id}`;
+    const url = `http://localhost:8090/getOptions/${id}`;
     return this.httpClient.get<Options>(url);
   }
 }

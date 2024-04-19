@@ -5,13 +5,10 @@
 
       <ng-container *ngFor="let field of fields; let i = index">
         <div  class="row">
-            <formly-form  [fields]="[field]" [form]="form">
-              <div class="{{field.templateOptions?.columnSize}}" style="background-color:yellow;">
-              <formly-field  [options]="options"></formly-field>
-              </div>
+            <formly-form  [fields]="[field]" [form]="form" [options]="options">
             </formly-form>
-
         </div>
+
         <div class="col-2" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
           <!-- Edit and delete buttons -->
           <div class="button-container">
@@ -24,6 +21,10 @@
           </div>
         </div>
       </ng-container>
+      <app-column-wrapper *ngIf="columnSize.length != 0" [columns] ="columnSize">
+        <formly-field  [options]="options">
+        </formly-field>
+      </app-column-wrapper>
 
     </div>
     <div class="submit-button-container">
@@ -32,4 +33,7 @@
     </div>
   </form>
   <button (click)="getForm()">get form structure</button>
+  <form [formGroup]="newForm"  (ngSubmit)="submit()">
+  <formly-form  [fields]="newFields" [options]="newOptions" [form]="newForm" [model]="newModel" ></formly-form>
+  </form>
 </div>

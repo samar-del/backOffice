@@ -11,7 +11,7 @@ import {FormCreationService} from '../../services/form-creation.service';
 import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import {TelFormDialogComponent} from '../fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import {FieldService} from '../../services/field.service';
@@ -20,6 +20,7 @@ import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-form-dialog.component';
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
+import {error} from 'protractor';
 
 
 
@@ -31,16 +32,22 @@ import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customiz
   encapsulation: ViewEncapsulation.None,
 })
 export class ContentComponent implements OnInit {
+  newForm: FormGroup ;
+  newFields: FormlyFieldConfig[] = [];
+  newOptions: FormlyFormOptions = {};
+  newModel: any = {};
  fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
   model: any = {};
   options: FormlyFormOptions = {};
   containerDraggedOver: boolean = false;
+  columnSize: any [ ] = [];
   // tslint:disable-next-line:max-line-length
-  constructor(private fb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
+  constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService) {
     this.form = this.fb.group({});
+    this.newForm = this.newfb.group({});
   }
   ngOnInit(): void {
   }
@@ -53,7 +60,8 @@ export class ContentComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
+    }
+    else {
       const droppedItem = event.previousContainer.data[event.previousIndex];
 
       if (droppedItem === 'input') {
@@ -70,10 +78,11 @@ export class ContentComponent implements OnInit {
         this.containerDraggedOver = true;
         // @ts-ignore
         const droppedField: FormlyFieldConfig = { ...droppedItem }; // Create a copy of the dropped field
-        // tslint:disable-next-line:max-line-length
-        const columnIndex = this.fields.findIndex(field => field.key === event.container.id); // Find the index of the column layout container
+        // Find the index of the column layout container
+        const columnIndex = this.fields.findIndex(field => field.key === event.container.id);
         if (columnIndex !== -1) {
-          this.fields[columnIndex].fieldGroup.push(droppedField); // Add the dropped field to the container's fieldGroup
+          // Add the dropped field to the container's fieldGroup
+          this.fields[columnIndex].fieldGroup.push(droppedField);
           // Update the form with the new fields
           this.form = this.fb.group({});
           this.formlyForm.resetForm({ model: this.model });
@@ -375,38 +384,53 @@ export class ContentComponent implements OnInit {
     }
     else if (type === 'Columns') {
       const customizationData = await this.openColumnDialog();
-      let containerField: FormlyFieldConfig;
-      // tslint:disable-next-line:prefer-const
-      let fieldGroups: FormlyFieldConfig[] = [];
+      // let containerField: FormlyFieldConfig;
+      // // tslint:disable-next-line:prefer-const
+      // let fieldGroups: FormlyFieldConfig[] = [];
+      // if (customizationData) {
+      //   // tslint:disable-next-line:prefer-for-of
+      //   for (let i = 0 ; i < customizationData.tableRows.length; i++ ){
+      //      containerField = {
+      //    //   fieldGroupClassName: 'row',
+      //       fieldGroup: [
+      //       {type: 'column',
+      //       key: `${uniqueKey}_${i}`,
+      //       className: 'columnClass' ,
+      //       wrappers: ['column'], // Specify the wrapper here
+      //       templateOptions: {
+      //         columnSize: 'col-' + customizationData.tableRows[i].size + '-' + customizationData.tableRows[i].width ,
+      //         label: customizationData.tableRows[i].label || 'New Column Label',
+      //       }, }]
+      //     };
+      //      // @ts-ignore
+      //      fieldGroups.push(containerField.fieldGroup);
+      //      console.log(i);
+      //   }
+      //   const columnField: FormlyFieldConfig = {
+      //       fieldGroupClassName: 'row',
+      //       fieldGroup: fieldGroups
+      //     };
+      //   this.fields.push(columnField);
       if (customizationData) {
-        // tslint:disable-next-line:prefer-for-of
-        for (let i = 0 ; i < customizationData.tableRows.length; i++ ){
-           containerField = {
-         //   fieldGroupClassName: 'row',
+        const columnSizess  = [] ;
+        customizationData.tableRows.map(el => {
+          columnSizess.push(el.width);
+        });
+        console.log(columnSizess);
+        newField = [
+          {
+            key: 'columnWrapper', // Key of the wrapper component for columns
+            type: 'column', // Type of the wrapper component
             fieldGroup: [
-            {type: 'column',
-            key: `${uniqueKey}_${i}`,
-            className: 'columnClass' ,
-            wrappers: ['column'], // Specify the wrapper here
-            templateOptions: {
-              columnSize: 'col-' + customizationData.tableRows[i].size + '-' + customizationData.tableRows[i].width ,
-              label: customizationData.tableRows[i].label || 'New Column Label',
-            }, }]
-          };
-           // @ts-ignore
-           fieldGroups.push(containerField.fieldGroup);
-           console.log(i);
-        }
-        const columnField: FormlyFieldConfig = {
-            fieldGroupClassName: 'row',
-            fieldGroup: fieldGroups
-          };
-        this.fields.push(columnField);
-        // Update the form with the new fields
-        this.form = this.fb.group({});
-        this.formlyForm.resetForm({ model: this.model });
+            ],
+          },
+        ];
+        this.columnSize = customizationData.tableRows;
       }
-    }
+      console.log(newField);
+      this.form = this.fb.group({});
+    //  this.formlyForm.resetForm({ model: this.model });
+      }
     else {
     //  this.openRadioDialog();
     }
@@ -684,13 +708,53 @@ export class ContentComponent implements OnInit {
   onDragLeave(event: DragEvent) {
     event.preventDefault(); // Prevent default behavior to maintain drop zone
   }
+  // tslint:disable-next-line:typedef
   getForm(){
-    const formid = '6603e0968cbee52c45a56a14';
+    const formid = '66052eee48dd413c8e1d8c91';
+    let fieldIds = [];
     this.formService.getFormTemplateById(formid).subscribe(res => {
-    console.log(res);
-  },
-    error => {
-    console.log(error);
+      fieldIds = res.fieldIds;
+      if (fieldIds.length === 0) {
+        return; // No fields to process
+      }
+
+      const fieldObservables = fieldIds.map(el => this.formService.getFieldById(el));
+
+      forkJoin(fieldObservables).subscribe(fields => {
+        fields.forEach(field => {
+          const optionsObservables = field.templateOptions.options.map(op => this.formService.getOptionsById(op));
+
+          forkJoin(optionsObservables).subscribe(options => {
+            const newFieldOptions = [];
+
+            // Match fetched options with field's options
+            field.templateOptions.options.forEach((op) => {
+              // @ts-ignore
+              const matchedOption = options.find(opt => opt.id === op);
+              if (matchedOption) {
+                newFieldOptions.push(matchedOption);
+              }
+            });
+            field.templateOptions.disabled = false ;
+            // Assign the matched options to the field
+            field.templateOptions.options = newFieldOptions;
+            this.newOptions = field.templateOptions.options;
+            console.log(field);
+            this.newFields.push(field);
+            this.newForm = this.newfb.group({});
+            this.formlyForm.resetForm({ model: this.newModel });
+            // tslint:disable-next-line:no-shadowed-variable
+          }, error => {
+            console.log(error);
+          });
+        });
+        // tslint:disable-next-line:no-shadowed-variable
+      }, error => {
+        console.log(error);
+      });
+      // tslint:disable-next-line:no-shadowed-variable
+    }, error => {
+      console.log(error);
     });
   }
 }

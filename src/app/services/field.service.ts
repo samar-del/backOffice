@@ -14,7 +14,7 @@ export class FieldService {
     return this.httpClient.post('http://localhost:8090/field/add', field);
   }
   public getFieldById(fieldId: string): Observable<Field> {
-    const url = `http://localhost:8090/getField/{fieldId}`;
+    const url = `http://localhost:8090/getField/${fieldId}`;
     return this.httpClient.get<Field>(url);
   }
 
