@@ -31,6 +31,7 @@ export class SidebarComponent implements OnInit {
     { name: 'Layout', items: ['Columns'] }
      // Add more categories as needed
   ];
+  containers: [] = [];
   // @ts-ignore
   dragAnimation = trigger('dragAnimation', [
     transition(':enter', [
@@ -68,7 +69,7 @@ export class SidebarComponent implements OnInit {
     const currentPosition = event.item.element.nativeElement.getBoundingClientRect();
     this.itemDragged.emit({ item: droppedItem, position: currentPosition });
     console.log(currentPosition);
-    this.contentComponent.onItemDropped(droppedItem);
+    this.contentComponent.drop(event, droppedItem , currentPosition );
   }
   onDragEntered() {
     // Add a CSS class when an element is dragged over the container

@@ -21,11 +21,6 @@
           </div>
         </div>
       </ng-container>
-      <app-column-wrapper *ngIf="columnSize.length != 0" [columns] ="columnSize">
-        <formly-field  [options]="options">
-        </formly-field>
-      </app-column-wrapper>
-
     </div>
     <div class="submit-button-container">
       <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>

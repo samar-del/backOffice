@@ -21,6 +21,7 @@ import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-fo
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error} from 'protractor';
+import {ShareService} from '../../services/share.service';
 
 
 
@@ -45,7 +46,8 @@ export class ContentComponent implements OnInit {
   columnSize: any [ ] = [];
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
-              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService) {
+              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
+              private shareService: ShareService) {
     this.form = this.fb.group({});
     this.newForm = this.newfb.group({});
   }
@@ -57,38 +59,11 @@ export class ContentComponent implements OnInit {
   }
 
   // tslint:disable-next-line:typedef
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>, droppedItem: string , position: DOMRect) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.addField(droppedItem);
     }
     else {
-      const droppedItem = event.previousContainer.data[event.previousIndex];
-
-      if (droppedItem === 'input') {
-        this.addField('input');
-      } else if (droppedItem === 'radio') {
-        this.addField('radio');
-      } else if (droppedItem === 'checkbox') {
-        this.addField('checkbox');
-      } else if (droppedItem === 'button') {
-        this.addField('button');
-      } else if (droppedItem === 'select') {
-        this.addField('select');
-      } else {
-        this.containerDraggedOver = true;
-        // @ts-ignore
-        const droppedField: FormlyFieldConfig = { ...droppedItem }; // Create a copy of the dropped field
-        // Find the index of the column layout container
-        const columnIndex = this.fields.findIndex(field => field.key === event.container.id);
-        if (columnIndex !== -1) {
-          // Add the dropped field to the container's fieldGroup
-          this.fields[columnIndex].fieldGroup.push(droppedField);
-          // Update the form with the new fields
-          this.form = this.fb.group({});
-          this.formlyForm.resetForm({ model: this.model });
-        }
-      }
-
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -118,6 +93,7 @@ export class ContentComponent implements OnInit {
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
           },
+          wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -140,6 +116,7 @@ export class ContentComponent implements OnInit {
             const Key = this.generateRandomId();
             field = {
               fieldGroupClassName: 'display-flex',
+              wrappers: ['column'],
               fieldGroup: [
                 {
                   className: 'flex-1',
@@ -157,6 +134,7 @@ export class ContentComponent implements OnInit {
         }else {
           field = {
             fieldGroupClassName: 'display-flex',
+            wrappers: ['column'],
             fieldGroup: [
               {
                 className: 'flex-2',
@@ -180,6 +158,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             type: 'email',
@@ -207,6 +186,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             type: 'url',
@@ -234,6 +214,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             type: 'tel',
@@ -263,6 +244,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             type: 'datetime-local',
@@ -287,6 +269,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             type: 'date',
@@ -311,6 +294,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             type: 'number',
@@ -332,6 +316,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'radio',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
             options : customizationData.tableRows ,
@@ -346,6 +331,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           key: uniqueKey,
           type: 'select',
+          wrappers: ['column'],
           templateOptions : {
           label: customizationData.label,
             options : customizationData.tableRows,
@@ -358,6 +344,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           key: uniqueKey,
+          wrappers: ['column'],
           type: 'select',
           templateOptions : {
             label: customizationData.label,
@@ -372,6 +359,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'checkbox',
           key: uniqueKey,
+          wrappers: ['column'],
           templateOptions: {
             label: customizationData.label || 'New Checkbox Label'
           },
@@ -412,17 +400,20 @@ export class ContentComponent implements OnInit {
       //     };
       //   this.fields.push(columnField);
       if (customizationData) {
-        const columnSizess  = [] ;
-        customizationData.tableRows.map(el => {
-          columnSizess.push(el.width);
-        });
+        let columnSizess  = [{size: '', width: ''}] ;
+        // customizationData.tableRows.map(el => {
+        //   columnSizess.push(el.size , el.width);
+        // });
+        columnSizess = customizationData.tableRows ;
+        this.shareService.emitNumberColumn(columnSizess);
         console.log(columnSizess);
         newField = [
           {
             key: 'columnWrapper', // Key of the wrapper component for columns
             type: 'column', // Type of the wrapper component
             fieldGroup: [
-            ],
+            ], // hetha li yelzem yekhou les element baed drag and drop :)
+            wrappers: ['column'],
           },
         ];
         this.columnSize = customizationData.tableRows;
@@ -440,7 +431,7 @@ export class ContentComponent implements OnInit {
         this.fields.push(el);
       });
       this.form = this.fb.group({});
-      this.formlyForm.resetForm({ model: this.model });
+    //  this.formlyForm.resetForm({ model: this.model });
     }
   }
 
