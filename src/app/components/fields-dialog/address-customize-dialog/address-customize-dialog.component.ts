@@ -37,8 +37,19 @@ export class AddressCustomizeDialogComponent implements OnInit {
       disabled : [this.data.disabled],
       custom_css: [this.data.custom_css],
       required: [this.data.required],
+      error_label: [this.data.error_label],
+      custom_error_message: [this.data.custom_error_message],
+      property_name: [this.generatePropertyName(this.data.label)],
+      field_tags: [this.data.field_tags],
       tableRows: this.fb.array([])
     });
+
+    // Subscribe to label changes to update property name
+    this.form.get('label').valueChanges.subscribe((label: string) => {
+      const propertyNameControl = this.form.get('property_name');
+      propertyNameControl.setValue(this.generatePropertyName(label));
+    });
+
     this. toggleTableVisibility();
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -58,6 +69,28 @@ export class AddressCustomizeDialogComponent implements OnInit {
     const tableRowsArray = this.form.get('tableRows') as FormArray;
     const rowFormGroup = tableRowsArray.at(index) as FormGroup;
     rowFormGroup.controls[controlName].setValue(value);
+  }
+  generatePropertyName(label: string): string {
+    const words = label.split(/\s+/); // Split label into words
+    let propertyName = '';
+
+    // Iterate over each word to construct property name
+    words.forEach((word, index) => {
+      // Skip whitespace or empty words
+      if (word.trim() === '') {
+        return;
+      }
+
+      // Make the first word lowercase
+      if (index === 0) {
+        propertyName += word.toLowerCase();
+      } else {
+        // Make the first letter of subsequent words uppercase
+        propertyName += word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }
+    });
+
+    return propertyName;
   }
   onNoClick(): void {
     this.dialogRef.close();
@@ -87,16 +120,32 @@ export class AddressCustomizeDialogComponent implements OnInit {
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;
   }
+  updateTags(inputValue: string): void {
+    const tagsArray = inputValue.split(',').map(tag => tag.trim());
+    this.form.get('field_tags').setValue(tagsArray);
+  }
   updateFields(): void {
+    const labelHidden = this.form.get('hide_label').value;
+    const inputHidden = this.form.get('hidden').value;
+    const inputDisabled = this.form.get('disabled').value;
+
     if ( this.NumberOptions === 0) {
       this.newField = {
         key: 'key',
         type: 'input',
         templateOptions: {
-          label: this.form.get('label').value,
+          label: labelHidden ? null : this.form.get('label').value,
           options: this.form.get('tableRows').value,
           custom_css: this.form.get('custom_css').value,
+          disabled: inputDisabled,
+          error_label: this.form.get('error_label').value,
+          custom_error_message: this.form.get('custom_error_message').value,
+          labelPosition: this.form.get('label_position').value
         },
+        hide: inputHidden,
+        expressionProperties: {
+        'templateOptions.hideLabel': () => labelHidden
+      },
       };
       this.fields.push(this.newField);
     }else {
@@ -111,6 +160,14 @@ export class AddressCustomizeDialogComponent implements OnInit {
             label: this.form.get('label').value,
             placeholder: this.form.get('placeholder').value,
             custom_css: this.form.get('custom_css').value,
+            disabled: inputDisabled,
+            error_label: this.form.get('error_label').value,
+            custom_error_message: this.form.get('custom_error_message').value,
+            labelPosition: this.form.get('label_position').value
+          },
+          hide: inputHidden,
+          expressionProperties: {
+            'templateOptions.hideLabel': () => labelHidden
           },
         };
         this.fields.push(this.newField);

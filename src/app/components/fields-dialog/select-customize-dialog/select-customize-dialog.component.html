@@ -82,19 +82,28 @@
         required
       </label>
     </div>
-    <div class="form-group">
-      <label for="customError">Custom Error message</label>
-      <input type="text" name="shouldDisplay" id="customError"  class="form-control">
-    </div>
+      <div class="form-group">
+        <label for="error_label">Error Label</label>
+        <input id="error_label" formControlName="error_label" type="text" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="custom_error_message">Custom Error Message</label>
+        <input id="custom_error_message" formControlName="custom_error_message" type="text" class="form-control" />
+      </div>
     </form>
   </mat-tab>
 
   <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
     <form [formGroup]="form">
     <div class="form-group">
-      <label for="propertyName">Property Name</label>
-      <input type="text" id="propertyName" placeholder="Property Name" class="form-control">
+      <label for="property_name">Property Name</label>
+      <input type="text" id="property_name" formControlName="property_name" placeholder="Property Name" class="form-control">
     </div>
+      <div class="form-group">
+        <label for="field_tags">Field Tags</label>
+        <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+        <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+      </div>
     </form>
   </mat-tab>
   <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 5 }">

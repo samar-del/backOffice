@@ -15,4 +15,8 @@ export class TemplateOptions {
   hidden?: boolean;
   hide_label?: boolean;
   custom_css?: string;
+  field_tags ?: string[];
+  property_name ?:string;
+  error_label ?: string;
+  custom_error_message ?: string;
 }
