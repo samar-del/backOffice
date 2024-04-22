@@ -18,10 +18,10 @@
           </div>
           <label for="label_position">Label Position</label>
           <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
-            <option selected>Top</option>
-            <option value="1">Left</option>
-            <option value="2">Right</option>
-            <option value="3">Bottom</option>
+            <option [value]="'top'">Top</option>
+            <option [value]="'left'">Left</option>
+            <option [value]="'right'">Right</option>
+            <option [value]="'bottom'">Bottom</option>
           </select>
           <div class="form-group">
             <label for="custom_css">Custom CSS</label>
@@ -84,10 +84,11 @@
         <label for="property_name">Property Name</label>
         <input id="property_name" formControlName="property_name" type="text" class="form-control" />
       </div>
-      <div class="form-group">
-        <label for="field_tags">Field Tags</label>
-        <input id="field_tags" formControlName="field_tags" type="text" class="form-control" />
-      </div>
+        <div class="form-group">
+          <label for="field_tags">Field Tags</label>
+          <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+          <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+        </div>
       </form>
     </mat-tab>
     <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
@@ -98,7 +99,7 @@
   <h4>Preview input</h4>
   <hr>
   <div class="formly-form-container">
-  <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
+  <formly-form #formlyForm [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()" ></formly-form>
   </div>
 </div>
 </div>
