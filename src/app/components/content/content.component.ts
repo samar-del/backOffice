@@ -337,7 +337,9 @@ export class ContentComponent implements OnInit {
           templateOptions: {
             label: customizationData.label,
             options : customizationData.tableRows ,
-            custom_css: customizationData.custom_css
+            custom_css: customizationData.custom_css,
+            allowOnlyAvailableValues: customizationData.allowOnlyAvailableValues
+
           },
         }];
       }
@@ -356,7 +358,10 @@ export class ContentComponent implements OnInit {
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label
+            hide_label: customizationData.hide_label,
+            storageType: customizationData.storageType,
+            allowOnlyAvailableValues: customizationData.allowOnlyAvailableValues
+           // dataSourceType: customizationData.dataSourceType
         },
       }]; }
     }
@@ -534,7 +539,10 @@ export class ContentComponent implements OnInit {
   async openSelectDialog() {
     const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: '', tableRows: [{label : '', value: ''}]},
+      data: {
+        label: '',
+         placeholder: '',
+         tableRows: [{label : '', value: ''}]        },
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -654,6 +662,9 @@ export class ContentComponent implements OnInit {
       hidden: field.templateOptions.hidden,
       hide_label:field.templateOptions.hide_label,
       custom_css:field.templateOptions.custom_css,
+      storageType:field.templateOptions.storageType,
+      allowOnlyAvailableValues:field.templateOptions.allowOnlyAvailableValues,
+     // dataSourceType:field.templateOptions.dataSourceType,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };

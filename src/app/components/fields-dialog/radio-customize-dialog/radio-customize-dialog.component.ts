@@ -30,7 +30,9 @@ export class RadioCustomizeDialogComponent implements OnInit {
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
       tableRows: this.fb.array([]),
-      custom_css: this.data.custom_css
+      custom_css: this.data.custom_css,
+      allowOnlyAvailableValues:[this.data.allowOnlyAvailableValues],
+
     });
     this.form.valueChanges.subscribe(() => {
       this.updateFields();

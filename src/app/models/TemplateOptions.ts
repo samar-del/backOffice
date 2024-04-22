@@ -15,4 +15,7 @@ export class TemplateOptions {
   hidden?: boolean;
   hide_label?: boolean;
   custom_css?: string;
+  storageType?: string;
+  dataSourceType?: 'values' | 'url' | 'resources' | 'json';
+  allowOnlyAvailableValues?:boolean;
 }

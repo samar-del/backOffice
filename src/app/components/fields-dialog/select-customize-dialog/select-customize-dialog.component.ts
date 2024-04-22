@@ -31,7 +31,11 @@ export class SelectCustomizeDialogComponent implements OnInit {
       hidden: [this.data.hidden],
       hide_label: [this.data.hide_label],
       required: [this.data.required],
-      tableRows: this.fb.array([])
+      allowOnlyAvailableValues:[this.data.allowOnlyAvailableValues],
+      tableRows: this.fb.array([]),
+      storageType: [this.data.storageType] ,// Ajoutez le champ storageType
+      //dataSourceType: [this.data.dataSourceType],
+
     });
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -82,6 +86,8 @@ export class SelectCustomizeDialogComponent implements OnInit {
         options : this.form.get('tableRows').value,
         custom_css: this.form.get('custom_css').value,
         disabled: inputDisabled,
+        storageType: this.form.get('storageType').value,
+       // dataSourceType: this.form.get('datasourceType').value
     },
       hide: inputHidden,
       expressionProperties: {
