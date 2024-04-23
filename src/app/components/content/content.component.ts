@@ -44,6 +44,11 @@ export class ContentComponent implements OnInit {
   options: FormlyFormOptions = {};
   containerDraggedOver: boolean = false;
   columnSize: any [ ] = [];
+  categories: { name: string, fields: FormlyFieldConfig[] }[] = [
+    { name: 'Category 1', fields: [] },
+    { name: 'Category 2', fields: [] },
+    // Add more categories if needed
+  ];
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
@@ -53,15 +58,12 @@ export class ContentComponent implements OnInit {
   }
   ngOnInit(): void {
   }
-  // tslint:disable-next-line:typedef
-  onItemDropped(item: string) {
-    this.addField(item);
-  }
 
   // tslint:disable-next-line:typedef
-  drop(event: CdkDragDrop<string[]>, droppedItem: string , position: DOMRect) {
+  drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
     if (event.previousContainer === event.container) {
       this.addField(droppedItem);
+      moveItemInArray(this.fields, event.previousIndex, position);
     }
     else {
       transferArrayItem(
@@ -372,51 +374,24 @@ export class ContentComponent implements OnInit {
     }
     else if (type === 'Columns') {
       const customizationData = await this.openColumnDialog();
-      // let containerField: FormlyFieldConfig;
-      // // tslint:disable-next-line:prefer-const
-      // let fieldGroups: FormlyFieldConfig[] = [];
-      // if (customizationData) {
-      //   // tslint:disable-next-line:prefer-for-of
-      //   for (let i = 0 ; i < customizationData.tableRows.length; i++ ){
-      //      containerField = {
-      //    //   fieldGroupClassName: 'row',
-      //       fieldGroup: [
-      //       {type: 'column',
-      //       key: `${uniqueKey}_${i}`,
-      //       className: 'columnClass' ,
-      //       wrappers: ['column'], // Specify the wrapper here
-      //       templateOptions: {
-      //         columnSize: 'col-' + customizationData.tableRows[i].size + '-' + customizationData.tableRows[i].width ,
-      //         label: customizationData.tableRows[i].label || 'New Column Label',
-      //       }, }]
-      //     };
-      //      // @ts-ignore
-      //      fieldGroups.push(containerField.fieldGroup);
-      //      console.log(i);
-      //   }
-      //   const columnField: FormlyFieldConfig = {
-      //       fieldGroupClassName: 'row',
-      //       fieldGroup: fieldGroups
-      //     };
-      //   this.fields.push(columnField);
       if (customizationData) {
         let columnSizess  = [{size: '', width: ''}] ;
-        // customizationData.tableRows.map(el => {
-        //   columnSizess.push(el.size , el.width);
-        // });
         columnSizess = customizationData.tableRows ;
         this.shareService.emitNumberColumn(columnSizess);
         console.log(columnSizess);
         newField = [
           {
             key: 'columnWrapper', // Key of the wrapper component for columns
-            type: 'column', // Type of the wrapper component
-            fieldGroup: [
-            ], // hetha li yelzem yekhou les element baed drag and drop :)
-            wrappers: ['column'],
+            type: 'row',
+            fieldArray: {
+              type: 'columnSize',
+              fieldGroup: [],
+            },
+            wrappers: ['columnSize'],
           },
         ];
         this.columnSize = customizationData.tableRows;
+        this.shareService.emitNumberColumn(this.columnSize);
       }
       console.log(newField);
       this.form = this.fb.group({});

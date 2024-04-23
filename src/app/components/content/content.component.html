@@ -1,9 +1,9 @@
-<div cdkDropList class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (cdkDropListDropped)="drop($event)">
+<div cdkDropList class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
     <!-- Iterate over fields to render input fields with edit and delete buttons -->
     <div class="container">
 
-      <ng-container *ngFor="let field of fields; let i = index">
+      <ng-container *ngFor="let field of fields; let i = index"  (cdkDropListDropped)="drop($event,$event.name, i)">
         <div  class="row">
             <formly-form  [fields]="[field]" [form]="form" [options]="options">
             </formly-form>
