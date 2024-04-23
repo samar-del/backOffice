@@ -356,7 +356,6 @@ export class ContentComponent implements OnInit {
               return value.length < minLength || value.length > maxLength;
             },
           },
-          // Customize other properties as needed
         }];
       }
     }
@@ -392,7 +391,6 @@ export class ContentComponent implements OnInit {
             }, }}]; }
     } else if (type === 'radio'){
       const customizationData = await this.openRadioDialog();
-   //   console.log(customizationData.fields.length());
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
@@ -467,7 +465,7 @@ export class ContentComponent implements OnInit {
           type: 'checkbox',
           key: uniqueKey,
           templateOptions: {
-            label: customizationData.label || 'New Checkbox Label',
+            label: customizationData.label ,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -494,7 +492,7 @@ export class ContentComponent implements OnInit {
           key: `${uniqueKey}_${row.size}_${row.width}`,
           wrappers: ['column'], // Specify the wrapper here
           templateOptions: {
-            label: customizationData.label || 'New Column Label',
+            label: customizationData.label,
             size: row.size, // Pass the size value from the row
             width: row.width // Pass the width value from the row
           },
@@ -518,10 +516,11 @@ export class ContentComponent implements OnInit {
     //  this.openRadioDialog();
     }
 
-    if (newField) {
+    if (newField.length > 0) {
+      console.log(newField);
       newField.forEach(el => {
-        this.fields.push(el);
-      });
+        this.fields.push(el); });
+
       // Check if formlyForm is defined before calling resetForm
       if (this.formlyForm) {
         this.formlyForm.resetForm({ model: this.model });
