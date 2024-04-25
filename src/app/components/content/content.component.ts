@@ -491,6 +491,11 @@ export class ContentComponent implements OnInit {
         }];
       }
 
+    } else if (type === 'File'){
+      newField = [{
+        key: 'file',
+        type: 'file',
+      }];
     }
     else if (type === 'Columns') {
       const customizationData = await this.openColumnDialog();
