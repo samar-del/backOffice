@@ -23,15 +23,15 @@ export class FormPreviewComponent implements OnInit {
   ngOnInit(): void {
     // Assuming you have a method to fetch the form template based on its ID
     const formId = '6605716148ba450318128544'; // Example form ID
-    this.formService.getFormTemplateById(formId).subscribe(
-      (formTemplate: FormTemplate) => {
-        this.formTemplate = formTemplate;
-        this.fetchFields();
-      },
-      error => {
-        console.error('Error fetching form template:', error);
-      }
-    );
+    // this.formService.getFormTemplateById(formId).subscribe(
+    //   (formTemplate: FormTemplate) => {
+    //     this.formTemplate = formTemplate;
+    //     this.fetchFields();
+    //   },
+    //   error => {
+    //     console.error('Error fetching form template:', error);
+    //   }
+    // );
   }
 
   fetchFields() {

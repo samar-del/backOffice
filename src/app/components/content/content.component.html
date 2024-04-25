@@ -1,6 +1,7 @@
-<div cdkDropList class="content-container" (cdkDropListDropped)="drop($event)">
+<div cdkDropList class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
     <!-- Iterate over fields to render input fields with edit and delete buttons -->
+
     <div class="row align-items-center">
       <ng-container *ngFor="let field of fields; let i = index">
         <div class="col-10" >
@@ -9,6 +10,7 @@
             <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form" [ngStyle]="{ 'cssText': field.templateOptions.custom_css }"></formly-form>
           </div>
         </div>
+
         <div class="col-2" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
           <!-- Edit and delete buttons -->
           <div class="button-container">
@@ -27,4 +29,7 @@
       <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
     </div>
   </form>
+
+
 </div>
+<app-list-forms></app-list-forms>
