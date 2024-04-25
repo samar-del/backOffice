@@ -13,10 +13,10 @@ export class OptionsService {
   constructor(private httpClient: HttpClient) { }
 
   public addOption(option: Options): Observable<any> {
-    return this.httpClient.post('http://localhost:8090/options/add', option);
+    return this.httpClient.post('http://localhost:8078/options/add', option);
   }
   public getOptionById(id: string): Observable<Options> {
-    const url = `http://localhost:8090/getOptions/${id}`;
+    const url = `http://localhost:8078/getOptions/${id}`;
     return this.httpClient.get<Options>(url);
   }
 }

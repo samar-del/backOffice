@@ -33,10 +33,7 @@ import {ShareService} from '../../services/share.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class ContentComponent implements OnInit {
-  newForm: FormGroup ;
-  newFields: FormlyFieldConfig[] = [];
-  newOptions: FormlyFormOptions = {};
-  newModel: any = {};
+
  fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
@@ -54,7 +51,7 @@ export class ContentComponent implements OnInit {
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
               private shareService: ShareService) {
     this.form = this.fb.group({});
-    this.newForm = this.newfb.group({});
+
   }
   ngOnInit(): void {
   }
@@ -63,7 +60,7 @@ export class ContentComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
     if (event.previousContainer === event.container) {
       this.addField(droppedItem);
-      moveItemInArray(this.fields, event.previousIndex, position);
+    //  moveItemInArray(this.fields, event.previousIndex, position);
     }
     else {
       transferArrayItem(
@@ -87,19 +84,19 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           templateOptions: {
             label: customizationData.label,
             type: 'text',
             placeholder: customizationData.placeholder,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
+            minlength: customizationData.minLength,
+            maxlength: customizationData.maxLength,
           },
           wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -123,7 +120,7 @@ export class ContentComponent implements OnInit {
                 {
                   className: 'flex-1',
                   type: 'input',
-                  key: Key,
+                  key: customizationData.propertyName,
                   templateOptions: {
                     label: el.label,
                     placeholder: el.placeholder
@@ -141,7 +138,7 @@ export class ContentComponent implements OnInit {
               {
                 className: 'flex-2',
                 type: 'input',
-                key: uniqueKey,
+                key: customizationData.propertyName,
                 templateOptions: {
                   label: customizationData.label,
                   placeholder: customizationData.placeholder
@@ -159,7 +156,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -171,7 +168,7 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -187,7 +184,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -199,7 +196,7 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -215,7 +212,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -228,7 +225,7 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
@@ -245,7 +242,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -254,7 +251,7 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -270,7 +267,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -279,7 +276,7 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -295,7 +292,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'input',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -306,7 +303,7 @@ export class ContentComponent implements OnInit {
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
-              const value = model[uniqueKey];
+              const value = model[customizationData.propertyName];
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -317,7 +314,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'radio',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label,
@@ -331,7 +328,7 @@ export class ContentComponent implements OnInit {
       console.log(customizationData);
       if (customizationData) {
         newField = [{
-          key: uniqueKey,
+          key: customizationData.propertyName,
           type: 'select',
           wrappers: ['column'],
           templateOptions : {
@@ -345,7 +342,7 @@ export class ContentComponent implements OnInit {
       console.log(customizationData);
       if (customizationData) {
         newField = [{
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           type: 'select',
           templateOptions : {
@@ -360,7 +357,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'checkbox',
-          key: uniqueKey,
+          key: customizationData.propertyName,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label || 'New Checkbox Label'
@@ -381,7 +378,7 @@ export class ContentComponent implements OnInit {
         console.log(columnSizess);
         newField = [
           {
-            key: 'columnWrapper', // Key of the wrapper component for columns
+            key: customizationData.propertyName, // Key of the wrapper component for columns
             type: 'row',
             fieldArray: {
               type: 'columnSize',
@@ -674,53 +671,5 @@ export class ContentComponent implements OnInit {
   onDragLeave(event: DragEvent) {
     event.preventDefault(); // Prevent default behavior to maintain drop zone
   }
-  // tslint:disable-next-line:typedef
-  getForm(){
-    const formid = '66052eee48dd413c8e1d8c91';
-    let fieldIds = [];
-    this.formService.getFormTemplateById(formid).subscribe(res => {
-      fieldIds = res.fieldIds;
-      if (fieldIds.length === 0) {
-        return; // No fields to process
-      }
 
-      const fieldObservables = fieldIds.map(el => this.formService.getFieldById(el));
-
-      forkJoin(fieldObservables).subscribe(fields => {
-        fields.forEach(field => {
-          const optionsObservables = field.templateOptions.options.map(op => this.formService.getOptionsById(op));
-
-          forkJoin(optionsObservables).subscribe(options => {
-            const newFieldOptions = [];
-
-            // Match fetched options with field's options
-            field.templateOptions.options.forEach((op) => {
-              // @ts-ignore
-              const matchedOption = options.find(opt => opt.id === op);
-              if (matchedOption) {
-                newFieldOptions.push(matchedOption);
-              }
-            });
-            field.templateOptions.disabled = false ;
-            // Assign the matched options to the field
-            field.templateOptions.options = newFieldOptions;
-            this.newOptions = field.templateOptions.options;
-            console.log(field);
-            this.newFields.push(field);
-            this.newForm = this.newfb.group({});
-            this.formlyForm.resetForm({ model: this.newModel });
-            // tslint:disable-next-line:no-shadowed-variable
-          }, error => {
-            console.log(error);
-          });
-        });
-        // tslint:disable-next-line:no-shadowed-variable
-      }, error => {
-        console.log(error);
-      });
-      // tslint:disable-next-line:no-shadowed-variable
-    }, error => {
-      console.log(error);
-    });
-  }
 }

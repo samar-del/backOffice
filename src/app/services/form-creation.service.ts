@@ -13,17 +13,7 @@ export class FormCreationService {
   constructor(private httpClient: HttpClient) { }
 
   public addFormTemplate(form: FormTemplate): Observable<any> {
-    return this.httpClient.post('http://localhost:8090/addFormTemplate', form);
+    return this.httpClient.post('http://localhost:8078/addFormTemplate', form);
   }
-  public getFormTemplateById(formId: string): Observable<any> {
-    return this.httpClient.get<any>( `http://localhost:8090/getFormTemplate/${formId}`);
-  }
-  public getFieldById(fielId: string): Observable<any> {
-    const url = `http://localhost:8090/field/getField/${fielId}`;
-    return this.httpClient.get<any>(url);
-  }
-  public getOptionsById(optionId: string): Observable<any> {
-    const url = `http://localhost:8090/options/getOption/${optionId}`;
-    return this.httpClient.get<any>(url);
-  }
+
 }

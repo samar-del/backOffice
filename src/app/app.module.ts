@@ -33,6 +33,8 @@ import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 import { ColumnSizeComponent } from './components/column-size/column-size.component';
+import { ListFormsComponent } from './components/list-forms/list-forms.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 @NgModule({
@@ -54,7 +56,9 @@ import { ColumnSizeComponent } from './components/column-size/column-size.compon
     FormColumnLayoutDialogComponent,
     ColumnWrapperComponent,
     RowWrapperComponent,
-    ColumnSizeComponent
+    ColumnSizeComponent,
+    ListFormsComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,13 +74,13 @@ import { ColumnSizeComponent } from './components/column-size/column-size.compon
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent }],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
-        { name: 'columnSize', component: ColumnSizeComponent }
+        { name: 'columnSize', component: ColumnSizeComponent },
       ],
     }),
     FormlyModule.forChild({
       wrappers: [{ name: 'row', component: RowWrapperComponent }],
       types: [
-        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } }
+        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } },
       ],
     }),
     FormlyBootstrapModule,
