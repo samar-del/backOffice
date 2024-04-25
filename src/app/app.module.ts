@@ -35,6 +35,8 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
 import { ColumnSizeComponent } from './components/column-size/column-size.component';
 import { ListFormsComponent } from './components/list-forms/list-forms.component';
 import { HomeComponent } from './components/home/home.component';
+import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
+import {FileValueAccessorDirective} from './file-value-accessor.directive';
 
 
 @NgModule({
@@ -59,6 +61,8 @@ import { HomeComponent } from './components/home/home.component';
     ColumnSizeComponent,
     ListFormsComponent,
     HomeComponent,
+    FormlyFieldFileComponent,
+    FileValueAccessorDirective
   ],
   imports: [
     BrowserModule,
@@ -75,6 +79,7 @@ import { HomeComponent } from './components/home/home.component';
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
+        { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] }
       ],
     }),
     FormlyModule.forChild({
