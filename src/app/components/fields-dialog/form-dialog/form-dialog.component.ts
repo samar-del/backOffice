@@ -37,7 +37,7 @@ export class FormDialogComponent implements OnInit {
       hidden: [this.data.hidden],
       hide_label: [this.data.hide_label],
       disabled: [this.data.disabled],
-      required: [this.data.required],
+      required: [this.data.required, Validators.required],
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label)],
@@ -64,7 +64,7 @@ export class FormDialogComponent implements OnInit {
   }
   getLabelStyles(): any {
     const customCss = this.form.get('custom_css').value;
-    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+    return customCss ? { cssText: customCss } : {}; // Return inline styles object
   }
   generatePropertyName(label: string): string {
     const words = label.split(/\s+/); // Split label into words
@@ -104,6 +104,7 @@ export class FormDialogComponent implements OnInit {
       templateOptions: {
         label: labelHidden ? null : this.form.get('label').value,
         type: 'text',
+        required: true,
         placeholder: this.form.get('placeholder').value,
         disabled: inputDisabled,
         custom_css: this.form.get('custom_css').value,

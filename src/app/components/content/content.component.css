@@ -69,3 +69,21 @@
 [class*='flex-']:first-child {  padding-left: 0;}
 [class*='flex-']:nth-last-child(2) {  padding-right: 0;}
 
+
+.custom-container-class {
+  border: 1px solid #000; /* Add border styling */
+  padding: 10px; /* Add padding for spacing */
+  /* Add any other custom styling as needed */
+}
+
+.drag-over {
+  border: 2px dashed blue; /* Adjust border color and style as needed */
+  width: 100%;
+}
+.columnClass {
+  border: 1px solid #000;
+  height: 1rem;
+}
+::ng-deep  formly-field{
+  border:1px solid red ;
+}

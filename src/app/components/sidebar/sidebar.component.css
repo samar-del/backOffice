@@ -40,3 +40,13 @@
 .cdk-drag-placeholder {
   opacity: 0.5;
 }
+.content-container {
+  /* Original container styles */
+  border: 1px solid #ccc;
+  padding: 20px;
+  transition: background-color 0.3s; /* Add transition for smooth color change */
+}
+
+.content-container.drag-over {
+  background-color: #f0f0f0; /* Darker background color when dragged over */
+}
