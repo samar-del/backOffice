@@ -32,6 +32,7 @@ import { FormPreviewComponent } from './components/form-preview/form-preview.com
 import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
+import { FormTabsLayoutDialogComponent } from './components/fields-dialog/form-tabs-layout-dialog/form-tabs-layout-dialog.component';
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
     FormPreviewComponent,
     FormColumnLayoutDialogComponent,
     ColumnWrapperComponent,
-    RowWrapperComponent
+    RowWrapperComponent,
+    FormTabsLayoutDialogComponent
   ],
     imports: [
         BrowserModule,
@@ -64,6 +66,8 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
         MatToolbarModule,
         DragDropModule,
         ReactiveFormsModule,
+        MatTabsModule,
+        FormlyBootstrapModule,
         FormlyModule.forRoot({
             wrappers: [{name: 'column', component: ColumnWrapperComponent}],
             types: [
@@ -72,9 +76,16 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
                     extends: 'formly-group',
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
-                }
+                },
+                { name: 'tabs',
+                  defaultOptions: {templateOptions: {tabs: true}}
+                 }
+
             ],
-        }),
+            validationMessages: [{ name: 'required', message: 'This field is required' }],
+
+        }
+      ),
         FormlyModule.forChild({
             wrappers: [{name: 'row', component: RowWrapperComponent}],
             types: [

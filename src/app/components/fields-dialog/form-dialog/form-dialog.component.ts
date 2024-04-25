@@ -41,7 +41,8 @@ export class FormDialogComponent implements OnInit {
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
+      suffix: [this.data.suffix]
     });
 
     // Subscribe to label changes to update property name

@@ -79,6 +79,7 @@
         <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
         <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
       </div>
+      
     </form>
   </mat-tab>
   <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>

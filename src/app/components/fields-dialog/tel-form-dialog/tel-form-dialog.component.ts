@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 
@@ -17,6 +17,8 @@ export class TelFormDialogComponent implements OnInit {
   options: FormlyFormOptions = {};
   model: any = {};
   selectedTabIndex = 0;
+  customProperties: { key: string, value: any }[] = [];
+
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<TelFormDialogComponent>,
@@ -38,9 +40,11 @@ export class TelFormDialogComponent implements OnInit {
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.data.property_name],
-      field_tags: [this.data.field_tags]
-    });
+      field_tags: [this.data.field_tags],
 
+
+    });
+   
     // Subscribe to label changes to update property name
     this.form.get('label').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
@@ -59,6 +63,12 @@ export class TelFormDialogComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+
+
+
+
+
   getLabelStyles(): any {
     const customCss = this.form.get('custom_css').value;
     return customCss ? { 'cssText': customCss } : {}; // Return inline styles object

@@ -1,3 +1,4 @@
+import { RadioCustomizeDialogComponent } from './../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
@@ -5,8 +6,6 @@ import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox
 import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {FormTemplate} from '../../models/FormTemplate';
 import {FormCreationService} from '../../services/form-creation.service';
 import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
@@ -20,6 +19,7 @@ import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-form-dialog.component';
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
+import { FormTabsLayoutDialogComponent } from '../fields-dialog/form-tabs-layout-dialog/form-tabs-layout-dialog.component';
 
 
 
@@ -65,6 +65,8 @@ export class ContentComponent implements OnInit {
         this.addField('button');
       } else if (droppedItem === 'select') {
         this.addField('select');
+      } else if (droppedItem === 'Tabs') {
+        this.addField('Tabs');
       }
 
       transferArrayItem(
@@ -201,7 +203,8 @@ export class ContentComponent implements OnInit {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            suffix: customizationData.suffix
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -505,15 +508,36 @@ export class ContentComponent implements OnInit {
           type: 'row',
           fieldGroup: columnFields
         };
-
-
         this.fields.push(rowDiv);
-
-        // Update the form with the new fields
+         // Update the form with the new fields
         this.form = this.fb.group({});
         this.formlyForm.resetForm({ model: this.model });
       }
     }
+    else if (type === 'Tabs') {
+      const customizationData = await this.openTabsDialog();
+      if (customizationData && customizationData.tableRows) { // Assurez-vous que customizationData et tableRows sont définis
+        const { label, tableRows } = customizationData;
+        const tabsFields = customizationData.tableRows.map(row => ({
+          ...row,
+          type: 'Tabs',
+          key: `${uniqueKey}_${row.size}_${row.width}`,
+          wrappers: ['Tabs'], // Specify the wrapper here
+          templateOptions: {
+            label: row.label || 'New Tab Label', // Utilisez le libellé de chaque ligne pour les onglets
+          },
+        }));
+
+        tabsFields.forEach(tabField => {
+          this.fields.push(tabField); // Ajoutez chaque onglet à votre liste de champs
+        });
+
+        // Mettez à jour le formulaire avec les nouveaux champs
+        this.form = this.fb.group({});
+        this.formlyForm.resetForm({ model: this.model });
+      }
+    }
+
     else {
     //  this.openRadioDialog();
     }
@@ -601,6 +625,20 @@ export class ContentComponent implements OnInit {
     const dialogRef = this.dialog.open(FormColumnLayoutDialogComponent, {
       width: '1400px',
       data: { label: '', width_col: '', tableRows: [] },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData; // Return the entire customization data object
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openTabsDialog() {
+    const dialogRef = this.dialog.open(FormTabsLayoutDialogComponent, {
+      width: '1400px',
+      data: { label: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -752,6 +790,7 @@ export class ContentComponent implements OnInit {
       field_tags:field.templateOptions.field_tags,
       error_label:field.templateOptions.error_label,
       custom_error_message:field.templateOptions.custom_error_message,
+      suffix:field.templateOptions.suffix,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };
