@@ -11,4 +11,12 @@ export class TemplateOptions {
   multiple ?: boolean;
   type ?: string;
   options?: string[];
+  required?: boolean;
+  hidden?: boolean;
+  hide_label?: boolean;
+  custom_css?: string;
+  field_tags ?: string[];
+  property_name ?:string;
+  error_label ?: string;
+  custom_error_message ?: string;
 }
