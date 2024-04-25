@@ -32,6 +32,9 @@ import { FormPreviewComponent } from './components/form-preview/form-preview.com
 import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
+import { ColumnSizeComponent } from './components/column-size/column-size.component';
+import { ListFormsComponent } from './components/list-forms/list-forms.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 @NgModule({
@@ -52,48 +55,41 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
     FormPreviewComponent,
     FormColumnLayoutDialogComponent,
     ColumnWrapperComponent,
-    RowWrapperComponent
+    RowWrapperComponent,
+    ColumnSizeComponent,
+    ListFormsComponent,
+    HomeComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        MatSidenavModule,
-        BrowserAnimationsModule,
-        MatListModule,
-        MatIconModule,
-        MatToolbarModule,
-        DragDropModule,
-        ReactiveFormsModule,
-        FormlyModule.forRoot({
-            wrappers: [{name: 'column', component: ColumnWrapperComponent}],
-            types: [
-                {
-                    name: 'column',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {column: true}}
-                }
-            ],
-        }),
-        FormlyModule.forChild({
-            wrappers: [{name: 'row', component: RowWrapperComponent}],
-            types: [
-                {
-                    name: 'row',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {row: true}}
-                }
-            ],
-        }),
-        FormlyBootstrapModule,
-        MatTabsModule,
-        MatDialogModule,
-        NgbModule,
-        HttpClientModule,
-        FormsModule,
-
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    MatSidenavModule,
+    BrowserAnimationsModule,
+    MatListModule,
+    MatIconModule,
+    MatToolbarModule,
+    DragDropModule,
+    ReactiveFormsModule,
+    FormlyModule.forRoot({
+      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent }],
+      types: [
+        { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
+        { name: 'columnSize', component: ColumnSizeComponent },
+      ],
+    }),
+    FormlyModule.forChild({
+      wrappers: [{ name: 'row', component: RowWrapperComponent }],
+      types: [
+        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } },
+      ],
+    }),
+    FormlyBootstrapModule,
+    MatTabsModule,
+    MatDialogModule,
+    NgbModule,
+    HttpClientModule,
+    FormsModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

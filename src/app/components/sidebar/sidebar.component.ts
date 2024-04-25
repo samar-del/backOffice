@@ -22,14 +22,17 @@ export class SidebarComponent implements OnInit {
   showSubSubMenu: boolean[] = []; // Array to store the state of each submenu
   @Output() itemDragged = new EventEmitter<{ item: string, position: DOMRect }>();
   isSubmenuOpen: boolean[] = [];
+  containerDraggedOver = false;
 
   // Define categories with their respective items
   categories = [
     { name: 'Basics', items: ['Text', 'Number', 'radio', 'checkbox',  'select', 'button'] },
-    { name: 'Advanced', items: ['Email', 'Phone Number', 'Address', 'Url', 'Date / Time', 'Day', 'Select Multiple', 'autocomplete'] },
+    // tslint:disable-next-line:max-line-length
+    { name: 'Advanced', items: ['Email', 'Phone Number', 'Address', 'Url', 'Date / Time', 'Day', 'File', 'Select Multiple', 'autocomplete'] },
     { name: 'Layout', items: ['Columns'] }
      // Add more categories as needed
   ];
+  containers: [] = [];
   // @ts-ignore
   dragAnimation = trigger('dragAnimation', [
     transition(':enter', [
@@ -67,6 +70,21 @@ export class SidebarComponent implements OnInit {
     const currentPosition = event.item.element.nativeElement.getBoundingClientRect();
     this.itemDragged.emit({ item: droppedItem, position: currentPosition });
     console.log(currentPosition);
-    this.contentComponent.onItemDropped(droppedItem);
+    // tslint:disable-next-line:prefer-const
+    let position: number;
+    this.contentComponent.drop(event, droppedItem , position );
+  }
+  onDragEntered() {
+    // Add a CSS class when an element is dragged over the container
+    this.containerDraggedOver = true; // Assuming you have a boolean property to track the drag state
+  }
+
+  // tslint:disable-next-line:typedef
+  onDragExited() {
+    // Remove the CSS class when the element is dragged out of the container
+    this.containerDraggedOver = false; // Assuming you have a boolean property to track the drag state
+  }
+  onDragStart(event: DragEvent) {
+    event.dataTransfer.setData('text/plain', 'Some data to drop'); // Set data to be dropped
   }
 }
