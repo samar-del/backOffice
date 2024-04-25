@@ -12,8 +12,7 @@
             </formly-form>
           </div>
         </div>
-        <div class="col-2" *ngIf="field.key" >
-
+        <div class="col-2" *ngIf="field.type" >
           <!-- Edit and delete buttons -->
           <div class="button-container" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
             <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
