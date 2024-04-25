@@ -7,13 +7,15 @@
         <div class="col-10" >
           <!-- Render the input field here -->
           <div class="formly-form-container">
-            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form" [ngStyle]="{ 'cssText': field.templateOptions.custom_css }"></formly-form>
+            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form" >
+              <formly-field *ngIf="field.templateOptions.custom_css"[ngStyle]="{ 'cssText': field.templateOptions.custom_css }" ></formly-field>
+            </formly-form>
           </div>
         </div>
+        <div class="col-2" *ngIf="field.key" >
 
-        <div class="col-2" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
           <!-- Edit and delete buttons -->
-          <div class="button-container">
+          <div class="button-container" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
             <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
               <mat-icon>edit</mat-icon>
             </button>

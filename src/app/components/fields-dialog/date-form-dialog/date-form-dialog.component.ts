@@ -55,6 +55,7 @@ export class DateFormDialogComponent implements OnInit {
   }
 
   onNoClick(): void {
+    this.data = 0 ;
     this.dialogRef.close();
   }
   getLabelStyles(): any {
