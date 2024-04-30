@@ -14,8 +14,10 @@
     }
   ],
   "translations": {
-    "this_label": "تسمية",
-    "this_placeholder": "نص بديل"
+    "label": "تسمية",
+    "placeholder": "نص بديل",
+    "cancel": "إلغاء",
+    "save": "حفظ"
   }
 
 }

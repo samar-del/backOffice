@@ -51,12 +51,12 @@ export class FormDialogComponent implements OnInit {
       const propertyNameControl = this.form.get('property_name');
       propertyNameControl.setValue(this.generatePropertyName(label));
     });
-    this.loadTranslations();
 
-    // Subscribe to language changes
     this.translationService.getCurrentLanguage().subscribe((language: string) => {
       this.loadTranslations();
     });
+
+    this.loadTranslations();
 
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -100,23 +100,11 @@ export class FormDialogComponent implements OnInit {
   loadTranslations() {
     this.translationService.getCurrentLanguage().subscribe((language: string) => {
       this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
         this.translations = translations;
-
-        // Use translation keys directly to access the translations
-        const labelTranslationKey = 'this_label';
-        const placeholderTranslationKey = 'this_placeholder';
-
-        // Check if the translations exist before setting the form values
-        if (this.translations && this.translations[labelTranslationKey]) {
-          this.form.get('label').setValue(this.translations[labelTranslationKey]);
-        }
-        if (this.translations && this.translations[placeholderTranslationKey]) {
-          this.form.get('placeholder').setValue(this.translations[placeholderTranslationKey]);
-        }
       });
     });
   }
-
 
 
   updateTags(inputValue: string): void {

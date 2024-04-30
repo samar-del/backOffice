@@ -12,5 +12,11 @@
       "name": "Layout",
       "items": ["Colonnes"]
     }
-  ]
+  ],
+  "translations": {
+    "label": "Label",
+    "placeholder": "Placeholder",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  }
 }
