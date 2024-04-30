@@ -2,6 +2,7 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {TranslationService} from "../../../services/translation.service";
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.component.html',
@@ -17,11 +18,12 @@ export class FormDialogComponent implements OnInit {
   options: FormlyFormOptions = {};
   model: any = {};
   selectedTabIndex = 0; // Default tab index
-
+  translations: any = {};
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormDialogComponent>,
+    private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
@@ -48,6 +50,12 @@ export class FormDialogComponent implements OnInit {
     this.form.get('label').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
       propertyNameControl.setValue(this.generatePropertyName(label));
+    });
+    this.loadTranslations();
+
+    // Subscribe to language changes
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
     });
 
     this.form.valueChanges.subscribe(() => {
@@ -88,6 +96,29 @@ export class FormDialogComponent implements OnInit {
 
     return propertyName;
   }
+
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        this.translations = translations;
+
+        // Use translation keys directly to access the translations
+        const labelTranslationKey = 'this_label';
+        const placeholderTranslationKey = 'this_placeholder';
+
+        // Check if the translations exist before setting the form values
+        if (this.translations && this.translations[labelTranslationKey]) {
+          this.form.get('label').setValue(this.translations[labelTranslationKey]);
+        }
+        if (this.translations && this.translations[placeholderTranslationKey]) {
+          this.form.get('placeholder').setValue(this.translations[placeholderTranslationKey]);
+        }
+      });
+    });
+  }
+
+
+
   updateTags(inputValue: string): void {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);

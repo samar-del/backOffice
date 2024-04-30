@@ -22,6 +22,7 @@ import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layo
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error} from 'protractor';
 import {ShareService} from '../../services/share.service';
+import {TranslationService} from "../../services/translation.service";
 
 
 
@@ -49,7 +50,7 @@ export class ContentComponent implements OnInit {
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService) {
+              private shareService: ShareService, private translationService: TranslationService) {
     this.form = this.fb.group({});
 
   }
@@ -73,12 +74,20 @@ export class ContentComponent implements OnInit {
     this.containerDraggedOver = false;
   }
 
+
+
   // tslint:disable-next-line:typedef
   async addField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
-    // Customize other properties based on the type
+    let language: string;
+    // Subscribe to get the current language
+    this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
+      language = currentLang;
+    });    // Customize other properties based on the type
     let newField: FormlyFieldConfig[] = [{}];
-    if (type === 'Text') {
+    if ((language === 'an' && type === 'Text') ||
+      (language === 'fr' && type === 'Texte') ||
+      (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;

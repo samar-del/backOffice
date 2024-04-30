@@ -3,6 +3,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ContentComponent } from '../content/content.component';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {TranslationService} from "../../services/translation.service";
 
 @Component({
   selector: 'app-sidebar',
@@ -11,7 +12,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor() {
+  constructor(private translationService: TranslationService) {
     // Initialize showSubSubMenu array with false values for each category
     this.categories.forEach(() => this.showSubSubMenu.push(false));
   }
@@ -45,6 +46,14 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.categories.forEach(() => this.isSubmenuOpen.push(false));
+    this.translationService.getCurrentLanguage().subscribe(language => {
+      this.translationService.loadTranslations(language).subscribe(
+        (translations: any) => {
+          // Update sidebar items with translated values
+          this.categories = translations.categories;
+        }
+      );
+    });
   }
 
   mouseenter() {

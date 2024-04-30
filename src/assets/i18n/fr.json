@@ -1,0 +1,16 @@
+{
+  "categories": [
+    {
+      "name": "Basics",
+      "items": ["Texte", "Nombre", "radio", "case à cocher",  "sélectionner", "bouton"]
+    },
+    {
+      "name": "Advanced",
+      "items": ["E-mail", "Numéro de téléphone", "Adresse", "URL", "Date / Heure", "Jour", "Fichier", "Sélection multiple", "autocomplétion"]
+    },
+    {
+      "name": "Layout",
+      "items": ["Colonnes"]
+    }
+  ]
+}
