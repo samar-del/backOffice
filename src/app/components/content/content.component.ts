@@ -2,7 +2,7 @@ import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
-import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
+import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
@@ -20,7 +20,7 @@ import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-form-dialog.component';
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
-import {error} from 'protractor';
+import {error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
 
 
@@ -39,7 +39,7 @@ export class ContentComponent implements OnInit {
   form: FormGroup;
   model: any = {};
   options: FormlyFormOptions = {};
-  containerDraggedOver: boolean = false;
+  containerDraggedOver = false;
   columnSize: any [ ] = [];
   categories: { name: string, fields: FormlyFieldConfig[] }[] = [
     { name: 'Category 1', fields: [] },
@@ -84,9 +84,9 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           templateOptions: {
-            label: label,
+            label,
             type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -117,26 +117,42 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-
     if (type === 'Address'){
       const customizationData = await this.openAddressDialog();
       let field: FormlyFieldConfig = {};
       const listFieldAddress = customizationData.tableRows;
+      this.shareService.emitAddressOptions(listFieldAddress);
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
         if (listFieldAddress.length !== 0) {
+          field = {
+            type: 'column',
+            key: customizationData.property_name,
+            templateOptions: {
+              label: customizationData.label,
+              minLength: customizationData.minLength,
+              maxLength: customizationData.maxLength,
+              required: customizationData.required,
+              disabled: customizationData.disabled,
+              hidden: customizationData.hidden,
+              custom_css: customizationData.custom_css,
+              hide_label: customizationData.hide_label,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              error_label: customizationData.error_label,
+              custom_error_message: customizationData.custom_error_message
+            },
+            wrappers: ['column'],
+            fieldGroup: [ ],
+          };
           listFieldAddress.forEach(el => {
             const Key = this.generateRandomId();
-            field = {
-              fieldGroupClassName: 'display-flex',
-              wrappers: ['column'],
-              fieldGroup: [
-                {
-                  className: 'flex-1',
+            const fieldGroupElem = {
                   type: 'input',
-                  key: customizationData.propertyName,
+                  wrappers: ['address-wrapper'],
+                  key: customizationData.property_name,
                   templateOptions: {
-                    label: label,
+                    label : el.label,
                     placeholder: el.placeholder,
                     disabled: el.disabled,
                     hidden: el.hidden,
@@ -147,22 +163,20 @@ export class ContentComponent implements OnInit {
                     error_label: el.error_label,
                     custom_error_message: el.custom_error_message
                   },
-                },
-              ],
-            };
-            newField.push(field);
-          });
+                };
+            field.fieldGroup.push(fieldGroupElem);
+            });
+          newField.push(field);
         }else {
           field = {
             fieldGroupClassName: 'display-flex',
             wrappers: ['column'],
             fieldGroup: [
               {
-                className: 'flex-2',
                 type: 'input',
-                key: customizationData.propertyName,
+                key: customizationData.property_name,
                 templateOptions: {
-                  label: label,
+                  label: customizationData.propertyName,
                   placeholder: customizationData.placeholder,
                   disabled: customizationData.disabled,
                   hidden: customizationData.hidden,
@@ -178,8 +192,7 @@ export class ContentComponent implements OnInit {
           };
           newField.push(field);
         }
-      }
-    }
+    }}
     if (type === 'Email') {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
@@ -187,10 +200,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             type: 'email',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -225,10 +238,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             type: 'url',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -263,10 +276,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             type: 'tel',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -303,10 +316,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             type: 'datetime-local',
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -338,10 +351,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             type: 'date',
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -372,10 +385,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'input',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             type: 'number',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -402,10 +415,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'radio',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: label,
+            label,
             options : customizationData.tableRows ,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -425,11 +438,11 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           type: 'select',
           wrappers: ['column'],
           templateOptions : {
-            label: label,
+            label,
             options : customizationData.tableRows,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -449,11 +462,11 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           type: 'select',
           templateOptions : {
-            label: label,
+            label,
             custom_css: customizationData.custom_css,
             multiple : true,
             options : customizationData.tableRows,
@@ -473,7 +486,7 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         newField = [{
           type: 'checkbox',
-          key: customizationData.propertyName,
+          key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
             label: customizationData.label ,
@@ -506,7 +519,7 @@ export class ContentComponent implements OnInit {
         console.log(columnSizess);
         newField = [
           {
-            key: customizationData.propertyName, // Key of the wrapper component for columns
+            key: customizationData.property_name, // Key of the wrapper component for columns
             type: 'row',
             fieldArray: {
               type: 'columnSize',
@@ -661,7 +674,7 @@ export class ContentComponent implements OnInit {
       this.fields.splice(fieldIndex, 1);
 
       this.form = this.fb.group({});
-      this.formlyForm.resetForm({ model: this.model, fields: this.fields });
+      // this.formlyForm.resetForm({ model: this.model, fields: this.fields });
     }
   }
 
@@ -702,18 +715,28 @@ export class ContentComponent implements OnInit {
       this.formlyForm.resetForm({ model: this.model, fields: this.fields });
     }
   }
-
-
   // tslint:disable-next-line:typedef
-   async addFormTemplate(){
+   async addFormTemplate() {
     if (this.form.valid) {
       const fieldsId: string[] = [];
+      const fieldsGroupId: any[] = [];
+      let fieldOptions ;
+      let fieldId ;
       for (const field of this.fields) {
-        const fieldOptions = await this.saveFieldOptions(field);
-        const fieldId = await this.saveFieldWithTemplateOptions(field, fieldOptions);
-        fieldsId.push(fieldId);
+        if (field.key) {
+          if (field.fieldGroup != null && field.fieldGroup.length > 0) {
+            for (const fieldGroup of field.fieldGroup) {
+               fieldOptions = await this.saveFieldOptions(fieldGroup);
+               const fieldGroupId = await this.saveFieldsGroupWithTemplateOptions(fieldGroup, fieldOptions);
+               fieldsGroupId.push(fieldGroupId);
+            }
+            //field.fieldGroup = fieldsGroupId;
+          }
+          fieldOptions = await this.saveFieldOptions(field);
+          fieldId = await this.saveFieldWithTemplateOptions(field, fieldOptions, fieldsGroupId);
+          fieldsId.push(fieldId);
+          }
       }
-
       const formTemplate = {
         fieldIds: fieldsId,
         title: 'first form',
@@ -730,7 +753,7 @@ export class ContentComponent implements OnInit {
   }
   async saveFieldOptions(field: FormlyFieldConfig): Promise<TemplateOptions> {
     let options;
-    if (field.templateOptions.options) {
+    if (field.templateOptions.options != null) {
       options = await Promise.all((field.templateOptions.options as any[]).map(async option => {
         const newOption: Options = {
           label: option.label,
@@ -755,12 +778,12 @@ export class ContentComponent implements OnInit {
       type: field.templateOptions.type,
       required: field.templateOptions.required,
       hidden: field.templateOptions.hidden,
-      hide_label:field.templateOptions.hide_label,
-      custom_css:field.templateOptions.custom_css,
-      property_name:field.templateOptions.property_name,
-      field_tags:field.templateOptions.field_tags,
-      error_label:field.templateOptions.error_label,
-      custom_error_message:field.templateOptions.custom_error_message,
+      hide_label: field.templateOptions.hide_label,
+      custom_css: field.templateOptions.custom_css,
+      property_name: field.templateOptions.property_name,
+      field_tags: field.templateOptions.field_tags,
+      error_label: field.templateOptions.error_label,
+      custom_error_message: field.templateOptions.custom_error_message,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };
@@ -768,15 +791,31 @@ export class ContentComponent implements OnInit {
     await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();
     return templateOptions;
   }
+  async saveFieldsGroupWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions): Promise<string> {
+        const fieldsGroupId: any [] = [];
+        const mappedField: Field = {
+          type: field.type,
+          key: field.key,
+          templateOptions, // Store the ID of the templateOptions
+          id: this.generateRandomId(),
+         //
+        };
 
-  async saveFieldWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions): Promise<string> {
+        const res = await this.fieldService.addField(mappedField).toPromise();
+        return res.id;
+  }
+
+  async saveFieldWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, fieldGroupId: any[]): Promise<string> {
+    if (field.fieldGroup == null){
+      fieldGroupId = [];
+     }
     const mappedField: Field = {
       type: field.type,
-      key: field.key.toString(),
+      key: field.key,
       templateOptions, // Store the ID of the templateOptions
-      id: this.generateRandomId()
+      id: this.generateRandomId(),
+      fieldGroup: fieldGroupId,
     };
-
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res.id;
   }
@@ -789,20 +828,6 @@ export class ContentComponent implements OnInit {
     }
     return randomId;
   }
-
-
-  isLastColumn(index: number): boolean {
-    return index === this.fields.length - 1;
-  }
-
-  isNextColumnSizeDifferent(index: number): boolean {
-    if (index < this.fields.length - 1) {
-      return this.fields[index].templateOptions.size !== this.fields[index + 1].templateOptions.size;
-    }
-    return false;
-  }
-  // tslint:disable-next-line:typedef
-
   // tslint:disable-next-line:typedef
   onDragOver(event: DragEvent) {
     event.preventDefault(); // Allow drop by preventing default behavior

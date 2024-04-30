@@ -37,6 +37,7 @@ import { ListFormsComponent } from './components/list-forms/list-forms.component
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 
 
 @NgModule({
@@ -62,7 +63,8 @@ import {FileValueAccessorDirective} from './file-value-accessor.directive';
     ListFormsComponent,
     HomeComponent,
     FormlyFieldFileComponent,
-    FileValueAccessorDirective
+    FileValueAccessorDirective,
+    AddressWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -75,7 +77,9 @@ import {FileValueAccessorDirective} from './file-value-accessor.directive';
     DragDropModule,
     ReactiveFormsModule,
     FormlyModule.forRoot({
-      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent }],
+      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
+        { name: 'address-wrapper', component: AddressWrapperComponent }
+      ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },

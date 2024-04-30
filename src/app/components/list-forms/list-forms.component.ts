@@ -23,7 +23,7 @@ export class ListFormsComponent implements OnInit {
   }
   // tslint:disable-next-line:typedef
   getForm(){
-    const formid = '6627cd64ffe196654aa7230c';
+    const formid = '662bb8c3a275290cb6b9317c';
     let fieldIds = [];
     this.formContentService.getFormTemplateById(formid).subscribe(res => {
       fieldIds = res.fieldIds;
@@ -76,8 +76,15 @@ export class ListFormsComponent implements OnInit {
   getFormContent(idForm: string) {
     this.formContentService.getFormContent(idForm).subscribe(res => {
       console.log(res);
-      this.model = res.answers;
-      this.form.patchValue(this.model);
+      this.formContentService.getAnswers(res.formTemplateId).subscribe(
+        success => {
+          this.model = success.answers;
+          this.form.patchValue(this.model);
+        },
+        error => {
+          console.log('not found');
+        }
+      );
     },
       error => {
       console.log(error);
