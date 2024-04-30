@@ -1,6 +1,6 @@
 import { RadioCustomizeDialogComponent } from './../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDragEnd,moveItemInArray } from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig} from '@ngx-formly/core';
@@ -36,6 +36,8 @@ export class ContentComponent implements OnInit {
   form: FormGroup;
   model: any = {};
   options: FormlyFormOptions = {};
+  currentIndex: number = -1; // Déclarez la variable currentIndex
+
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService) {
@@ -44,45 +46,92 @@ export class ContentComponent implements OnInit {
   ngOnInit(): void {
   }
   // tslint:disable-next-line:typedef
-  onItemDropped(item: string) {
-    this.addField(item);
+  onItemDropped(item: string, indexA: number) {
+    this.addField(item, indexA);
   }
 
   // tslint:disable-next-line:typedef
-  drop(event: CdkDragDrop<string[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      const droppedItem = event.previousContainer.data[event.previousIndex];
+ /*drop(event: CdkDragDrop<string[]>) {
+    this.currentIndex = event.currentIndex; // Enregistrez l'index actuel
+    const droppedItem = event.previousContainer.data[event.previousIndex];
 
-      if (droppedItem === 'input') {
-        this.addField('input');
-      } else if (droppedItem === 'radio') {
-        this.addField('radio');
-      } else if (droppedItem === 'checkbox') {
-        this.addField('checkbox');
-      } else if (droppedItem === 'button') {
-        this.addField('button');
-      } else if (droppedItem === 'select') {
-        this.addField('select');
-      } else if (droppedItem === 'Tabs') {
-        this.addField('Tabs');
-      }
-
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
+    // Insérer le champ à la position spécifiée dans le tableau fields
+    if (droppedItem === 'input' || droppedItem === 'radio' || droppedItem === 'checkbox' ||
+        droppedItem === 'button' || droppedItem === 'select' || droppedItem === 'Tabs') {
+      this.addField(droppedItem, event.currentIndex);
     }
+
+    // Transférer l'élément entre les conteneurs
+    transferArrayItem(event.previousContainer.data,
+                      event.container.data,
+                      event.previousIndex,
+                      event.currentIndex);
+
   }
 
-  async addField(type: string) {
+  dragEnded(event: CdkDragEnd) {
+    const rect = event.source.getRootElement().getBoundingClientRect();
+    const y = event.source._dragRef.getFreeDragPosition().y + rect.height - rect.top;
+
+    const dropIndex = Math.max(0, Math.min(this.fields.length, Math.round(y / rect.height * this.fields.length)));
+
+    const droppedItem = event.source.data;
+
+    if (droppedItem === 'input' || droppedItem === 'radio' || droppedItem === 'checkbox' ||
+      droppedItem === 'button' || droppedItem === 'select' || droppedItem === 'Tabs') {
+      this.addField(droppedItem, dropIndex);
+    }
+  }*/
+
+  dropField(event: CdkDragDrop<string[]>, index: number) {
+    const offsetY = event.distance.y;
+    const newIndex = offsetY > 0 ? index + 1 : index;
+    moveItemInArray(this.fields, event.previousIndex, newIndex);
+  }
+
+
+  async addField(type: string, index: number) {
+    this.currentIndex = index;
+
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     // Customize other properties based on the type
     let newField: FormlyFieldConfig[] = [{}];
-    if (type === 'Text') {
+    this.currentIndex = index;
+    if (type === 'Tabs') {
+      try {
+        const customizationData = await this.openTabsDialog();
+        if (customizationData && customizationData.tableRows) {
+          const { label, tableRows } = customizationData;
+
+          // Create an array to hold the new tab fields
+          const tabsFields = tableRows.map(row => ({
+            ...row,
+            type: 'Tabs',
+            key: `${uniqueKey}_${row.size}_${row.width}`,
+            wrappers: ['Tabs'], // Specify the wrapper here
+            templateOptions: {
+              label: row.label || 'New Tab Label', // Use the label from each row for the tabs
+              key: row.key
+            },
+          }));
+
+          // Add the new tab fields to the existing fields array
+          tabsFields.forEach(tabField => {
+            this.fields.push(tabField); // Add each tab to your fields array
+          });
+
+          // Update the model with new keys for the added fields
+          tabsFields.forEach(tabField => {
+            this.model[tabField.key] = ''; // Update model with new keys
+          });
+        }
+      } catch (error) {
+        console.error('Error while processing tab customization:', error);
+        // Handle error (e.g., display error message to the user)
+      }
+    }
+
+    else if (type === 'Text') {
       const customizationData = await this.openInputDialog();
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
@@ -514,31 +563,7 @@ export class ContentComponent implements OnInit {
         this.formlyForm.resetForm({ model: this.model });
       }
     }
-    else if (type === 'Tabs') {
-      const customizationData = await this.openTabsDialog();
-      if (customizationData && customizationData.tableRows) { // Assurez-vous que customizationData et tableRows sont définis
-        const { label, tableRows } = customizationData;
-        const tabsFields = customizationData.tableRows.map(row => ({
-          ...row,
-          type: 'Tabs',
-          key: `${uniqueKey}_${row.size}_${row.width}`,
-          wrappers: ['Tabs'], // Specify the wrapper here
-          templateOptions: {
-            label: row.label || 'New Tab Label', // Utilisez le libellé de chaque ligne pour les onglets
-          },
-        }));
-
-        tabsFields.forEach(tabField => {
-          this.fields.push(tabField); // Ajoutez chaque onglet à votre liste de champs
-        });
-
-        // Mettez à jour le formulaire avec les nouveaux champs
-        this.form = this.fb.group({});
-        this.formlyForm.resetForm({ model: this.model });
-      }
-    }
-
-    else {
+      else {
     //  this.openRadioDialog();
     }
 
@@ -552,6 +577,22 @@ export class ContentComponent implements OnInit {
       }
       // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
+    }
+  }
+  async addTabFields() {
+    // Logic to fetch tab customization data
+    const customizationData = await this.openTabsDialog();
+
+    if (customizationData && customizationData.tableRows) {
+      const tabsFields = customizationData.tableRows.map(row => ({
+        key: row.key,
+        type: 'input', // Change the type as needed
+        templateOptions: {
+          label: row.label || 'New Tab Label'
+        }
+      }));
+
+      this.fields.push(...tabsFields);
     }
   }
 

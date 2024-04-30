@@ -1,8 +1,7 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormColumnLayoutDialogComponent } from '../form-column-layout-dialog/form-column-layout-dialog.component';
-import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
+import { FormlyFieldConfig } from '@ngx-formly/core';
 
 @Component({
   selector: 'app-form-tabs-layout-dialog',
@@ -11,103 +10,63 @@ import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 })
 export class FormTabsLayoutDialogComponent implements OnInit {
 
-  form:FormGroup;
- // tabs: FormArray;
- previewForm: FormGroup;
-  newField: FormlyFieldConfig;
-  @ViewChild('formlyForm') formlyForm: any;
-  options: FormlyFormOptions = {};
-  model: any = {};
- selectedTabIndex = 0;
+  form: FormGroup;
+  fields: FormlyFieldConfig[];
+  sizes: string[] = ['md', 'lg', 'sm']; // Define available sizes
 
 
-  constructor(private fb: FormBuilder,
+
+
+  constructor(
+    private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormTabsLayoutDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {  }
 
   ngOnInit(): void {
-    this.initializeForm();
     this.form = this.fb.group({
-      custom_css: [this.data.custom_css],
-      tableRows: this.fb.array([])
+      label: [this.data.label, Validators.required],
+      tableRows: this.fb.array([]) // Initialize form array for table rows
     });
 
-    this.form.valueChanges.subscribe(() => {
-      this.updateFields();
-    });
-
-    this.updateFields();
-
+    // If there are existing table rows, populate them
+    if (this.data.tableRows) {
+      this.data.tableRows.forEach(row => this.addRow(row.size, row.width));
+    }
   }
 
-  onNoClick(): void {
-    this.dialogRef.close();
+  // Add a new table row
+  addTableRow() {
+    this.addRow('md', ''); // Default values for size and width
   }
 
-  getLabelStyles(): any {
-    const customCss = this.form.get('custom_css').value;
-    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
-  }
-  get tableRows(): FormArray {
-    console.log(this.form.get('tableRows') );
-    return this.form.get('tableRows') as FormArray;
-  }
-  createRow(): FormGroup {
-    const row = this.fb.group({
-      label: [''],
-      value: [''],
-    });
-    return row;
-  }
-  addRow(): void {
-    const tableRowsArray = this.form.get('tableRows') as FormArray;
-    tableRowsArray.push(this.createRow());
-  }
-  initializeForm(): void {
-    this.form = this.fb.group({
-      label: [''], // Ajoutez les contrôles de formulaire nécessaires
-      tabs: this.fb.array([]) // Initialisez un FormArray vide pour les onglets
-    });
-  }
-  get tabs(): FormArray {
-    return this.form.get('tabs') as FormArray;
-  }
-
-  addTab(): void {
-    this.tabs.push(this.createTabFormGroup());
-  }
-
-  removeTab(index: number): void {
-    this.tabs.removeAt(index);
-  }
-
-  removeRow(index: number): void {
+  // Remove a table row
+  removeTableRow(index: number) {
     this.tableRows.removeAt(index);
   }
-  // Méthode pour créer un FormGroup pour un onglet
-  createTabFormGroup(): FormGroup {
-    return this.fb.group({
-      label: [''], // Ajoutez d'autres contrôles de formulaire si nécessaire
-      key: ['']
-    });
+
+  // Getters for form array
+  get tableRows() {
+    return this.form.get('tableRows') as FormArray;
   }
 
-  updateFields(): void {
+  // Helper method to add a row to the form array
+  private addRow(size: string, width: string) {
+    this.tableRows.push(this.fb.group({
+      size: [size, Validators.required],
+      width: [width, Validators.required]
+    }));
+  }
 
-
-    this.newField = {
-      key: 'key',
-        type: 'select',
-      templateOptions : {
-        options : this.form.get('tableRows').value,
-        custom_css: this.form.get('custom_css').value,
-      },
+  saveColumnLayout() {
+    const columnLayout = {
+      label: this.form.value.label,
+      tableRows: this.form.value.tableRows
     };
+    this.dialogRef.close(columnLayout);
   }
 
-cancel() {
-  this.dialogRef.close();
-}
-
+  cancel() {
+    this.dialogRef.close();
+  }
 }

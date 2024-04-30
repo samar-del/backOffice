@@ -17,7 +17,7 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import {FormlyModule} from "@ngx-formly/core";
+import {FormlyField, FormlyModule} from "@ngx-formly/core";
 import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -33,6 +33,7 @@ import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 import { FormTabsLayoutDialogComponent } from './components/fields-dialog/form-tabs-layout-dialog/form-tabs-layout-dialog.component';
+import { TabWrapperComponent } from './tab-wrapper/tab-wrapper.component';
 
 
 @NgModule({
@@ -54,13 +55,15 @@ import { FormTabsLayoutDialogComponent } from './components/fields-dialog/form-t
     FormColumnLayoutDialogComponent,
     ColumnWrapperComponent,
     RowWrapperComponent,
-    FormTabsLayoutDialogComponent
+    FormTabsLayoutDialogComponent,
+    TabWrapperComponent
   ],
     imports: [
         BrowserModule,
         AppRoutingModule,
         MatSidenavModule,
         BrowserAnimationsModule,
+        MatTabsModule,
         MatListModule,
         MatIconModule,
         MatToolbarModule,
@@ -69,7 +72,9 @@ import { FormTabsLayoutDialogComponent } from './components/fields-dialog/form-t
         MatTabsModule,
         FormlyBootstrapModule,
         FormlyModule.forRoot({
-            wrappers: [{name: 'column', component: ColumnWrapperComponent}],
+            wrappers: [{name: 'column', component: ColumnWrapperComponent},
+                        {name:'Tabs', component: TabWrapperComponent}
+            ],
             types: [
                 {
                     name: 'column',
@@ -77,12 +82,15 @@ import { FormTabsLayoutDialogComponent } from './components/fields-dialog/form-t
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
                 },
-                { name: 'tabs',
-                  defaultOptions: {templateOptions: {tabs: true}}
-                 }
-
+                {
+                  name:'Tabs',
+                  extends: 'formly-group',
+                  wrappers: ['form-field'],
+                  defaultOptions: {templateOptions: {Tabs: true}}
+                }
             ],
-            validationMessages: [{ name: 'required', message: 'This field is required' }],
+            validationMessages: [{ name: 'required',
+                                   message: 'This field is required' }],
 
         }
       ),

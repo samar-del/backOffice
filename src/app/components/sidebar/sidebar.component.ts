@@ -3,6 +3,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ContentComponent } from '../content/content.component';
 import {animate, style, transition, trigger} from '@angular/animations';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,7 +12,9 @@ import {animate, style, transition, trigger} from '@angular/animations';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor() {
+  form: FormGroup;
+  constructor(private fb:FormBuilder) {
+    this.form= this.fb.group({});
     // Initialize showSubSubMenu array with false values for each category
     this.categories.forEach(() => this.showSubSubMenu.push(false));
   }
@@ -67,6 +70,7 @@ export class SidebarComponent implements OnInit {
     const currentPosition = event.item.element.nativeElement.getBoundingClientRect();
     this.itemDragged.emit({ item: droppedItem, position: currentPosition });
     console.log(currentPosition);
-    this.contentComponent.onItemDropped(droppedItem);
-  }
+    this.contentComponent.onItemDropped(droppedItem, categoryIndex);
+}
+
 }
