@@ -57,7 +57,7 @@ export class ContentComponent implements OnInit {
   }
 
   // tslint:disable-next-line:typedef
-  drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
+  /*drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
     if (event.previousContainer === event.container) {
       this.addField(droppedItem);
     //  moveItemInArray(this.fields, event.previousIndex, position);
@@ -71,10 +71,41 @@ export class ContentComponent implements OnInit {
       );
     }
     this.containerDraggedOver = false;
+  }*/
+
+  drop(event: CdkDragDrop<string[]>, droppedItem: string) {
+    // Calculate the position based on the cursor position
+    const position = this.calculatePosition(event);
+
+    // Insert the dropped item at the calculated position
+    this.addField(droppedItem, position);
+
+    this.containerDraggedOver = false;
   }
 
+  calculatePosition(event: CdkDragDrop<string[]>): number {
+
+    // Calculate the position based on the cursor's position
+    // You may need to implement your own logic here based on your requirements
+    // For example, you can calculate the position based on the Y coordinate of the cursor
+
+    // Get the Y coordinate of the cursor relative to the content-container
+    const offsetY = event.distance.y - event.container.element.nativeElement.getBoundingClientRect().top;
+
+    // Calculate the position based on offsetY
+    // Example: dividing the container's height into equal segments and determining the segment based on the cursor's position
+    // This is just a placeholder; you'll need to adjust it based on your specific layout and requirements
+    const containerHeight = event.container.element.nativeElement.clientHeight;
+    const totalSegments = this.fields.length + 1; // Total segments including existing fields
+    const segmentHeight = containerHeight / totalSegments;
+    const position = Math.floor(offsetY / segmentHeight);
+
+    return position;
+  }
+
+
   // tslint:disable-next-line:typedef
-  async addField(type: string) {
+  async addField(type: string, position: number) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     // Customize other properties based on the type
     let newField: FormlyFieldConfig[] = [{}];
@@ -86,7 +117,7 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            label,
+            label: label,
             type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,

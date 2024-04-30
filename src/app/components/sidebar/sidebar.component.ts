@@ -71,7 +71,7 @@ export class SidebarComponent implements OnInit {
     console.log(currentPosition);
     // tslint:disable-next-line:prefer-const
     let position: number;
-    this.contentComponent.drop(event, droppedItem , position );
+    this.contentComponent.drop(event, droppedItem);
   }
   onDragEntered() {
     // Add a CSS class when an element is dragged over the container
