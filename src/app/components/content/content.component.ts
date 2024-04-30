@@ -56,23 +56,6 @@ export class ContentComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // tslint:disable-next-line:typedef
-  /*drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
-    if (event.previousContainer === event.container) {
-      this.addField(droppedItem);
-    //  moveItemInArray(this.fields, event.previousIndex, position);
-    }
-    else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
-    this.containerDraggedOver = false;
-  }*/
-
   drop(event: CdkDragDrop<string[]>, droppedItem: string) {
     // Calculate the position based on the cursor position
     const position = this.calculatePosition(event);
@@ -112,12 +95,15 @@ export class ContentComponent implements OnInit {
     if (type === 'Text') {
       const customizationData = await this.openInputDialog();
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label = customizationData.hide_label ? null : customizationData.label; // Set label to an empty string when hide_label is true
         newField = [{
           type: 'input',
           key: customizationData.property_name,
+
           templateOptions: {
-            label: label,
+            wrappers: ['column'],
+
+            label: customizationData.label, // Assign the label with the modified value
             type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -126,13 +112,12 @@ export class ContentComponent implements OnInit {
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             custom_css: customizationData.custom_css,
-            hide_label: customizationData.hide_label,
+           // hide_label: customizationData.hide_label,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -148,6 +133,7 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
+
     if (type === 'Address'){
       const customizationData = await this.openAddressDialog();
       let field: FormlyFieldConfig = {};
@@ -160,6 +146,8 @@ export class ContentComponent implements OnInit {
             type: 'column',
             key: customizationData.property_name,
             templateOptions: {
+              wrappers: ['column'],
+
               label: customizationData.label,
               minLength: customizationData.minLength,
               maxLength: customizationData.maxLength,
@@ -173,7 +161,6 @@ export class ContentComponent implements OnInit {
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
             },
-            wrappers: ['column'],
             fieldGroup: [ ],
           };
           listFieldAddress.forEach(el => {
@@ -183,6 +170,8 @@ export class ContentComponent implements OnInit {
                   wrappers: ['address-wrapper'],
                   key: customizationData.property_name,
                   templateOptions: {
+                    wrappers: ['column'],
+
                     label : el.label,
                     placeholder: el.placeholder,
                     disabled: el.disabled,
@@ -207,6 +196,8 @@ export class ContentComponent implements OnInit {
                 type: 'input',
                 key: customizationData.property_name,
                 templateOptions: {
+                  wrappers: ['column'],
+
                   label: customizationData.propertyName,
                   placeholder: customizationData.placeholder,
                   disabled: customizationData.disabled,
@@ -232,8 +223,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label,
             type: 'email',
             placeholder: customizationData.placeholder,
@@ -270,8 +262,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label,
             type: 'url',
             placeholder: customizationData.placeholder,
@@ -308,8 +301,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label,
             type: 'tel',
             placeholder: customizationData.placeholder,
@@ -348,8 +342,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label,
             type: 'datetime-local',
             custom_css: customizationData.custom_css,
@@ -383,8 +378,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label,
             type: 'date',
             custom_css: customizationData.custom_css,
@@ -417,8 +413,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label,
             type: 'number',
             placeholder: customizationData.placeholder,
@@ -447,8 +444,8 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'radio',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
             label,
             options : customizationData.tableRows ,
             disabled: customizationData.disabled,
@@ -471,8 +468,8 @@ export class ContentComponent implements OnInit {
         newField = [{
           key: customizationData.property_name,
           type: 'select',
-          wrappers: ['column'],
           templateOptions : {
+            wrappers: ['column'],
             label,
             options : customizationData.tableRows,
             custom_css: customizationData.custom_css,
@@ -494,9 +491,10 @@ export class ContentComponent implements OnInit {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           key: customizationData.property_name,
-          wrappers: ['column'],
           type: 'select',
           templateOptions : {
+            wrappers: ['column'],
+
             label,
             custom_css: customizationData.custom_css,
             multiple : true,
@@ -518,8 +516,9 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'checkbox',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
+            wrappers: ['column'],
+
             label: customizationData.label ,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -550,15 +549,17 @@ export class ContentComponent implements OnInit {
         console.log(columnSizess);
         newField = [
           {
+            wrappers: ['columnSize'],
+
             key: customizationData.property_name, // Key of the wrapper component for columns
             type: 'row',
             fieldArray: {
               type: 'columnSize',
               fieldGroup: [],
             },
-            wrappers: ['columnSize'],
           },
         ];
+
         this.columnSize = customizationData.tableRows;
         this.shareService.emitNumberColumn(this.columnSize);
       }
