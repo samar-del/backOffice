@@ -14,8 +14,10 @@
     }
   ],
   "translations": {
-    "label": "تسمية",
-    "placeholder": "نص بديل",
+    "label_fr": "التسمية باللغة الفرنسية",
+    "label_ar": "التسمية باللغة العربية",
+    "placeholder_fr": "نص بديل باللغة الفرنسية",
+    "placeholder_ar": "نص بديل باللغة العربية",
     "cancel": "إلغاء",
     "save": "حفظ"
   }

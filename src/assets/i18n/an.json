@@ -14,8 +14,10 @@
     }
   ],
   "translations": {
-    "label": "Label",
-    "placeholder": "Placeholder",
+    "label_fr": "Label in french",
+    "label_ar": "Label in arabic",
+    "placeholder_fr": "Placeholder in french",
+    "placeholder_ar": "Placeholder in arabic",
     "cancel": "Cancel",
     "save": "Save"
   }

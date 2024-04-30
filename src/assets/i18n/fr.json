@@ -14,8 +14,10 @@
     }
   ],
   "translations": {
-    "label": "Label",
-    "placeholder": "Placeholder",
+    "label_fr": "Label en français",
+    "label_ar": "Label en arabe",
+    "placeholder_fr": "Placeholder en français",
+    "placeholder_ar": "Placeholder en arabe",
     "cancel": "Annuler",
     "save": "Enregistrer"
   }
