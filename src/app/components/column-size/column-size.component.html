@@ -1,7 +1,6 @@
 <div class="row" cdkDropList  >
   <ng-container *ngFor="let columnSize of columns let i = index;">
     <div class="col-{{columnSize.size}}-{{columnSize.width}}" (cdkDropListDropped)="onDrop($event)">
-      <h1>column{{i}}</h1>
   <ng-container #fieldComponent></ng-container>
   <formly-field *ngFor="let field of field.fieldGroup" [field]="field" [options]="options"></formly-field>
     </div>

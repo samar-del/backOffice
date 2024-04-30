@@ -24,4 +24,7 @@ export class FormContentService {
     const url = `http://localhost:8078/options/getOption/${optionId}`;
     return this.httpClient.get<any>(url);
   }
+  public getAnswers(formTemplateId: string): Observable<any> {
+    return this.httpClient.get(`http://localhost:8078/answers/getAnswersById/${formTemplateId}`);
+  }
 }
