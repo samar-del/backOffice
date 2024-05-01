@@ -44,7 +44,7 @@ export class ContentComponent implements OnInit {
   categories: { name: string, fields: FormlyFieldConfig[] }[] = [
     { name: 'Category 1', fields: [] },
     { name: 'Category 2', fields: [] },
-    // Add more categories if needed
+
   ];
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
@@ -62,6 +62,7 @@ export class ContentComponent implements OnInit {
 
     // Insert the dropped item at the calculated position
     this.addField(droppedItem, position);
+
 
     this.containerDraggedOver = false;
   }
@@ -91,19 +92,20 @@ export class ContentComponent implements OnInit {
   async addField(type: string, position: number) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     // Customize other properties based on the type
-    let newField: FormlyFieldConfig[] = [{}];
-    if (type === 'Text') {
+    let newField: FormlyFieldConfig[] = [{
+
+
+    }];
+    if (type === 'Text' ) {
       const customizationData = await this.openInputDialog();
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label; // Set label to an empty string when hide_label is true
+        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
+          wrappers: ['column'],
           type: 'input',
           key: customizationData.property_name,
-
           templateOptions: {
-            wrappers: ['column'],
-
-            label: customizationData.label, // Assign the label with the modified value
+            label: label || '',
             type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -112,18 +114,18 @@ export class ContentComponent implements OnInit {
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             custom_css: customizationData.custom_css,
-           // hide_label: customizationData.hide_label,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
           },
+
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
               const value = model[uniqueKey];
               if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
+                return false;
               }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
@@ -133,6 +135,7 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
+
 
     if (type === 'Address'){
       const customizationData = await this.openAddressDialog();
@@ -146,7 +149,6 @@ export class ContentComponent implements OnInit {
             type: 'column',
             key: customizationData.property_name,
             templateOptions: {
-              wrappers: ['column'],
 
               label: customizationData.label,
               minLength: customizationData.minLength,
@@ -161,6 +163,8 @@ export class ContentComponent implements OnInit {
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
             },
+            wrappers: ['column'],
+
             fieldGroup: [ ],
           };
           listFieldAddress.forEach(el => {
@@ -170,7 +174,6 @@ export class ContentComponent implements OnInit {
                   wrappers: ['address-wrapper'],
                   key: customizationData.property_name,
                   templateOptions: {
-                    wrappers: ['column'],
 
                     label : el.label,
                     placeholder: el.placeholder,
@@ -190,13 +193,11 @@ export class ContentComponent implements OnInit {
         }else {
           field = {
             fieldGroupClassName: 'display-flex',
-            wrappers: ['column'],
             fieldGroup: [
               {
                 type: 'input',
                 key: customizationData.property_name,
                 templateOptions: {
-                  wrappers: ['column'],
 
                   label: customizationData.propertyName,
                   placeholder: customizationData.placeholder,
@@ -209,6 +210,8 @@ export class ContentComponent implements OnInit {
                   error_label: customizationData.error_label,
                   custom_error_message: customizationData.custom_error_message
                 },
+                wrappers: ['column'],
+
               },
             ],
           };
@@ -224,9 +227,8 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
 
-            label,
+            label: customizationData.label,
             type: 'email',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -239,8 +241,12 @@ export class ContentComponent implements OnInit {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+
           },
+          wrappers: ['column'],
+
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -263,7 +269,6 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
 
             label,
             type: 'url',
@@ -280,6 +285,8 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -302,8 +309,6 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
-
             label,
             type: 'tel',
             placeholder: customizationData.placeholder,
@@ -320,6 +325,8 @@ export class ContentComponent implements OnInit {
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -343,8 +350,6 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
-
             label,
             type: 'datetime-local',
             custom_css: customizationData.custom_css,
@@ -357,6 +362,8 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -379,8 +386,6 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
-
             label,
             type: 'date',
             custom_css: customizationData.custom_css,
@@ -393,6 +398,8 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -414,8 +421,6 @@ export class ContentComponent implements OnInit {
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
-
             label,
             type: 'number',
             placeholder: customizationData.placeholder,
@@ -430,6 +435,8 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               const value = model[customizationData.propertyName];
@@ -445,7 +452,6 @@ export class ContentComponent implements OnInit {
           type: 'radio',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
             label,
             options : customizationData.tableRows ,
             disabled: customizationData.disabled,
@@ -457,6 +463,8 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
         }];
       }
     }
@@ -469,7 +477,6 @@ export class ContentComponent implements OnInit {
           key: customizationData.property_name,
           type: 'select',
           templateOptions : {
-            wrappers: ['column'],
             label,
             options : customizationData.tableRows,
             custom_css: customizationData.custom_css,
@@ -482,19 +489,22 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
         },
+        wrappers: ['column'],
+
       }]; }
     }
     else if (type === 'Select Multiple'){
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
+
         const label = customizationData.hide_label ? null : customizationData.label;
+
         newField = [{
+
           key: customizationData.property_name,
           type: 'select',
           templateOptions : {
-            wrappers: ['column'],
-
             label,
             custom_css: customizationData.custom_css,
             multiple : true,
@@ -508,8 +518,12 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-        }]; }
+
+        }];
+       }
+
     }
+
     else if (type === 'checkbox') {
       const customizationData = await this.openCheckboxDialog().toPromise();
       if (customizationData) {
@@ -517,8 +531,6 @@ export class ContentComponent implements OnInit {
           type: 'checkbox',
           key: customizationData.property_name,
           templateOptions: {
-            wrappers: ['column'],
-
             label: customizationData.label ,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -530,6 +542,8 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           defaultValue: false,
         }];
       }
@@ -540,7 +554,7 @@ export class ContentComponent implements OnInit {
         type: 'file',
       }];
     }
-    else if (type === 'Columns') {
+   else if (type === 'Columns') {
       const customizationData = await this.openColumnDialog();
       if (customizationData) {
         let columnSizess  = [{size: '', width: ''}] ;
@@ -669,7 +683,8 @@ export class ContentComponent implements OnInit {
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: '', tableRows: [{label : '', value: ''}]},
+      data: {label: '', placeholder: '',
+            tableRows: [{label : '', value: ''}]},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();

@@ -1,16 +1,14 @@
 <div class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
-    <div class="row align-items-center">
-      <ng-container *ngFor="let field of fields; let i = index">
-        <div class="col-10" cdkDrag> <!-- Add cdkDrag directive here -->
+    <ng-container *ngFor="let field of fields; let i = index">
+      <div class="row align-items-center" cdkDrag> <!-- Add cdkDrag directive here to make the row draggable -->
+        <div class="col-12">
           <div class="formly-form-container">
             <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form">
-              <formly-field *ngIf="field.templateOptions.custom_css"[ngStyle]="{ 'cssText': field.templateOptions.custom_css }"></formly-field>
+              <formly-field *ngIf="field.templateOptions.custom_css" [field]="field"></formly-field>
             </formly-form>
           </div>
-        </div>
-        <div class="col-2" *ngIf="field.type">
-          <div class="button-container" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
+          <div class="button-container">
             <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
               <mat-icon>edit</mat-icon>
             </button>
@@ -19,8 +17,8 @@
             </button>
           </div>
         </div>
-      </ng-container>
-    </div>
+      </div>
+    </ng-container>
     <div class="submit-button-container">
       <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
       <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
