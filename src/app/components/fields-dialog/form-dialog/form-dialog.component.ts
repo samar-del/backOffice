@@ -120,17 +120,26 @@ export class FormDialogComponent implements OnInit {
     const labelArHidden = this.form.get('hide_label_ar').value;
     const inputHidden = this.form.get('hidden').value;
     const inputDisabled = this.form.get('disabled').value;
+    this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
+      const label_fr = this.form.get('label_fr').value;
+      const label_ar = this.form.get('label_ar').value;
+      const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
+      const placeholder_ar = this.form.get('placeholder_ar').value;
+      const placeholder_fr = this.form.get('placeholder_fr').value;
+      const placeholderText = currentLanguage === 'ar' ? placeholder_ar : placeholder_fr;
 
     this.newField = {
       type: 'input',
       key: 'key1',
       templateOptions: {
+        label:textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
         type: 'text',
-        required: true,
+        required: false,
         placeholder_fr: this.form.get('placeholder_fr').value,
         placeholder_ar: this.form.get('placeholder_ar').value,
+        placeholder:placeholderText,
         disabled: inputDisabled,
         custom_css: this.form.get('custom_css').value,
         error_label: this.form.get('error_label').value,
@@ -157,8 +166,9 @@ export class FormDialogComponent implements OnInit {
             return !value || value.length <= maxLength;
           }
         }
-      }
+      },
     };
+    });
   }
 
 

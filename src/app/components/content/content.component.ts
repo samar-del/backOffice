@@ -83,7 +83,7 @@ export class ContentComponent implements OnInit {
     // Subscribe to get the current language
     this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
       language = currentLang;
-    });    // Customize other properties based on the type
+    });// Customize other properties based on the type
     let newField: FormlyFieldConfig[] = [{}];
     if ((language === 'an' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
@@ -92,15 +92,20 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: label_fr,
             label_ar: label_ar,
             type: 'text',
-            placeholder_fr: customizationData.placeholder_fr,
-            placeholder_ar: customizationData.placeholder_ar,
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr: placeholder_fr,
+            placeholder_ar: placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             required: customizationData.required,
@@ -422,20 +427,24 @@ export class ContentComponent implements OnInit {
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
             }, }}]; }
-    } else if (type === 'radio'){
+    }
+
+    else if ((language === 'an' && type === 'radio') ||
+      (language === 'fr' && type === 'radio') ||
+      (language === 'ar' && type === 'راديو')){
       const customizationData = await this.openRadioDialog();
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           type: 'radio',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
             options : customizationData.tableRows ,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
             custom_css: customizationData.custom_css,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
@@ -445,17 +454,20 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-    else if (type === 'select'){
+    else if ((language === 'an' && type === 'select') ||
+      (language === 'fr' && type === 'select') ||
+      (language === 'ar' && type === 'اختيار')){
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
           key: customizationData.property_name,
           type: 'select',
           wrappers: ['column'],
           templateOptions : {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
             options : customizationData.tableRows,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -474,12 +486,16 @@ export class ContentComponent implements OnInit {
       console.log(customizationData);
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
         newField = [{
           key: customizationData.property_name,
           wrappers: ['column'],
           type: 'select',
           templateOptions : {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr:label_fr,
+            label_ar:label_ar,
             custom_css: customizationData.custom_css,
             multiple : true,
             options : customizationData.tableRows,
@@ -494,15 +510,22 @@ export class ContentComponent implements OnInit {
           },
         }]; }
     }
-    else if (type === 'checkbox') {
+    else if ((language === 'an' && type === 'checkbox') ||
+      (language === 'fr' && type === 'checkbox') ||
+      (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
       if (customizationData) {
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
         newField = [{
           type: 'checkbox',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label: customizationData.label ,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr:label_fr,
+            label_ar:label_ar,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -570,7 +593,8 @@ export class ContentComponent implements OnInit {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
-        label: '' // Default label value
+        label_fr: '' ,// Default label value
+        label_ar: ''
       }
     });
 
@@ -650,7 +674,7 @@ export class ContentComponent implements OnInit {
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: '', tableRows: [{label : '', value: ''}]},
+      data: {label_fr: '', label_ar:'', placeholder: '', tableRows: [{label : '', value: ''}]},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -663,7 +687,7 @@ export class ContentComponent implements OnInit {
   async openSelectDialog() {
     const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: '', tableRows: [{label : '', value: ''}]},
+      data: {label_fr: '',label_ar: '', placeholder: '', tableRows: [{label : '', value: ''}]},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -765,6 +789,7 @@ export class ContentComponent implements OnInit {
     }
   }
   async saveFieldOptions(field: FormlyFieldConfig): Promise<TemplateOptions> {
+
     let options;
     if (field.templateOptions.options != null) {
       options = await Promise.all((field.templateOptions.options as any[]).map(async option => {
@@ -801,7 +826,7 @@ export class ContentComponent implements OnInit {
       error_label:field.templateOptions.error_label,
       custom_error_message:field.templateOptions.custom_error_message,
       options: optionValues, // Store option IDs instead of values
-      id: this.generateRandomId()
+      id: this.generateRandomId(),
     };
 
     await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();
