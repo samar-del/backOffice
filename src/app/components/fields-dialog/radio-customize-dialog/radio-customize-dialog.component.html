@@ -6,11 +6,17 @@
   <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
     <form [formGroup]="form" >
       <div mat-dialog-content>
-        <div class="form-group">
-          <label for="label" >Label</label>
-          <input id="label" type="text" formControlName="label" class="form-control" />
+        <div class="row">
+          <div class="col form-group">
+            <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
+            <input id="label_fr" formControlName="label_fr" class="form-control" />
+          </div>
+          <div class="col form-group">
+            <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
+            <input id="label_ar" formControlName="label_ar" class="form-control" />
+          </div>
         </div>
-        <div class="form-group">
+
           <label for="position">Label position</label>
           <select name="position" id="position"  class="form-control">
             <option value="right">Right</option>
@@ -18,7 +24,7 @@
             <option value="top">Top</option>
             <option value="bottom">Bottom</option>
           </select>
-        </div>
+
         <div class="form-group">
           <label for="custom_css" >Custom CSS</label>
           <input id="custom_css" formControlName="custom_css" type="text"  class="form-control" />
@@ -27,12 +33,6 @@
           <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
           <label class="form-check-label" for="hidden">
             Hidden
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="hide_label" formControlName="hide_label">
-          <label class="form-check-label" for="hide_label">
-            Hide label
           </label>
         </div>
         <div class="form-check">
