@@ -5,7 +5,10 @@
   <h1>Responsive Material Sidenavigation</h1>
   <div class="d-flex align-items-center">
   <img src="./../../../assets/img/Logo%20Numeryx.png" style="width:8%">
-  <button type="button" class="btn btn-link px-3 me-2">
+    <button (click)="changeLanguage('fr')">French (FR)</button>
+    <button (click)="changeLanguage('ar')">Arabic (AR)</button>
+    <button (click)="changeLanguage('an')">English (EN)</button>
+    <button type="button" class="btn btn-link px-3 me-2">
     <a  routerLink="">Logout</a>
   </button>
   </div>

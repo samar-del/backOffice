@@ -22,6 +22,7 @@ import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layo
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
+import {TranslationService} from "../../services/translation.service";
 
 
 
@@ -49,7 +50,7 @@ export class ContentComponent implements OnInit {
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService) {
+              private shareService: ShareService, private translationService: TranslationService) {
     this.form = this.fb.group({});
 
   }
@@ -73,29 +74,41 @@ export class ContentComponent implements OnInit {
     this.containerDraggedOver = false;
   }
 
+
+
   // tslint:disable-next-line:typedef
   async addField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
-    // Customize other properties based on the type
+    let language: string;
+    // Subscribe to get the current language
+    this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
+      language = currentLang;
+    });    // Customize other properties based on the type
     let newField: FormlyFieldConfig[] = [{}];
-    if (type === 'Text') {
+    if ((language === 'an' && type === 'Text') ||
+      (language === 'fr' && type === 'Texte') ||
+      (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            label,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'text',
-            placeholder: customizationData.placeholder,
+            placeholder_fr: customizationData.placeholder_fr,
+            placeholder_ar: customizationData.placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             custom_css: customizationData.custom_css,
-            hide_label: customizationData.hide_label,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
@@ -566,7 +579,7 @@ export class ContentComponent implements OnInit {
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: ''},
+      data: {label_fr: '', label_ar:'', placeholder_fr: '',placeholder_ar: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -768,9 +781,11 @@ export class ContentComponent implements OnInit {
     }
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
-      label: field.templateOptions.label,
+      label_fr: field.templateOptions.label_fr,
+      label_ar: field.templateOptions.label_ar,
       disabled: field.templateOptions.disabled,
-      placeholder: field.templateOptions.placeholder,
+      placeholder_fr: field.templateOptions.placeholder_fr,
+      placeholder_ar: field.templateOptions.placeholder_ar,
       maxlength: field.templateOptions.maxLength,
       minlength: field.templateOptions.minLength,
       pattern: field.templateOptions.pattern,
@@ -778,12 +793,13 @@ export class ContentComponent implements OnInit {
       type: field.templateOptions.type,
       required: field.templateOptions.required,
       hidden: field.templateOptions.hidden,
-      hide_label: field.templateOptions.hide_label,
-      custom_css: field.templateOptions.custom_css,
-      property_name: field.templateOptions.property_name,
-      field_tags: field.templateOptions.field_tags,
-      error_label: field.templateOptions.error_label,
-      custom_error_message: field.templateOptions.custom_error_message,
+      hide_label_fr:field.templateOptions.hide_label_fr,
+      hide_label_ar:field.templateOptions.hide_label_ar,
+      custom_css:field.templateOptions.custom_css,
+      property_name:field.templateOptions.property_name,
+      field_tags:field.templateOptions.field_tags,
+      error_label:field.templateOptions.error_label,
+      custom_error_message:field.templateOptions.custom_error_message,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };

@@ -2,6 +2,7 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {TranslationService} from "../../../services/translation.service";
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.component.html',
@@ -17,38 +18,48 @@ export class FormDialogComponent implements OnInit {
   options: FormlyFormOptions = {};
   model: any = {};
   selectedTabIndex = 0; // Default tab index
-
+  translations: any = {};
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormDialogComponent>,
+    private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
     this.form = this.fb.group({
-      label: [this.data.label, Validators.required],
-      placeholder: [this.data.placeholder],
+      label_fr: [this.data.label_fr, Validators.required],
+      label_ar: [this.data.label_ar, Validators.required],
+      placeholder_fr: [this.data.placeholder_fr],
+      placeholder_ar: [this.data.placeholder_ar],
       minLength: [this.data.minLength, Validators.min(0)],
       maxLength: [this.data.maxLength, Validators.min(0)],
       label_position: [this.data.label_position || 'top'],
       custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
-      hide_label: [this.data.hide_label],
+      hide_label_fr: [this.data.hide_label_fr],
+      hide_label_ar: [this.data.hide_label_ar],
       disabled: [this.data.disabled],
       required: [this.data.required, Validators.required],
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
-      property_name: [this.generatePropertyName(this.data.label)],
+      property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags]
     });
 
     // Subscribe to label changes to update property name
-    this.form.get('label').valueChanges.subscribe((label: string) => {
+    this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
       propertyNameControl.setValue(this.generatePropertyName(label));
     });
+
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+
+    this.loadTranslations();
 
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -88,13 +99,25 @@ export class FormDialogComponent implements OnInit {
 
     return propertyName;
   }
+
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
+  }
+
+
   updateTags(inputValue: string): void {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);
   }
 
   updateFields(): void {
-    const labelHidden = this.form.get('hide_label').value;
+    const labelFrHidden = this.form.get('hide_label_fr').value;
+    const labelArHidden = this.form.get('hide_label_ar').value;
     const inputHidden = this.form.get('hidden').value;
     const inputDisabled = this.form.get('disabled').value;
 
@@ -102,10 +125,12 @@ export class FormDialogComponent implements OnInit {
       type: 'input',
       key: 'key1',
       templateOptions: {
-        label: labelHidden ? null : this.form.get('label').value,
+        label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
+        label_ar: labelArHidden ? null : this.form.get('label_ar').value,
         type: 'text',
         required: true,
-        placeholder: this.form.get('placeholder').value,
+        placeholder_fr: this.form.get('placeholder_fr').value,
+        placeholder_ar: this.form.get('placeholder_ar').value,
         disabled: inputDisabled,
         custom_css: this.form.get('custom_css').value,
         error_label: this.form.get('error_label').value,
@@ -114,7 +139,8 @@ export class FormDialogComponent implements OnInit {
       },
       hide: inputHidden,
       expressionProperties: {
-        'templateOptions.hideLabel': () => labelHidden
+        'templateOptions.hideLabel_fr': () => labelFrHidden,
+        'templateOptions.hideLabel_ar': () => labelArHidden
       },
       validators: {
         minLength: {

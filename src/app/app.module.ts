@@ -37,7 +37,11 @@ import { ListFormsComponent } from './components/list-forms/list-forms.component
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
+import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+
 
 
 @NgModule({
@@ -81,15 +85,25 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
         { name: 'address-wrapper', component: AddressWrapperComponent }
       ],
       types: [
-        { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
-        { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] }
+        {
+          name: 'column',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {column: true}}
+        },
+        {name: 'columnSize', component: ColumnSizeComponent},
+        {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']}
       ],
     }),
     FormlyModule.forChild({
-      wrappers: [{ name: 'row', component: RowWrapperComponent }],
+      wrappers: [{name: 'row', component: RowWrapperComponent}],
       types: [
-        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } },
+        {
+          name: 'row',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {row: true}}
+        },
       ],
     }),
     FormlyBootstrapModule,
@@ -97,7 +111,10 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     MatDialogModule,
     NgbModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule
   ],
   providers: [],
   bootstrap: [AppComponent]
