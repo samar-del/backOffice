@@ -4,7 +4,7 @@ import {FormlyTemplateOptions} from '@ngx-formly/core';
 
 export class Field {
   id ?: string;
-  key ?: string;
+  key ?: any;
   templateOptions ?: TemplateOptions;
   type ?: string;
 }

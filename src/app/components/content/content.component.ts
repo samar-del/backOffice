@@ -788,7 +788,7 @@ export class ContentComponent implements OnInit {
   async saveFieldWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions): Promise<string> {
     const mappedField: Field = {
       type: field.type,
-      key: field.key,
+      key: field.key.toString(),
       templateOptions, // Store the ID of the templateOptions
       id: this.generateRandomId()
     };
