@@ -96,7 +96,6 @@ export class AddressCustomizeDialogComponent implements OnInit {
     this.dialogRef.close();
   }
   get tableRows(): FormArray {
-    console.log(this.form.get('tableRows') );
     return this.form.get('tableRows') as FormArray;
   }
 

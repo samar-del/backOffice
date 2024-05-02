@@ -40,6 +40,8 @@ import {FileValueAccessorDirective} from './file-value-accessor.directive';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
+import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+
 
 
 @NgModule({
@@ -65,7 +67,8 @@ import {MatOptionModule} from "@angular/material/core";
     ListFormsComponent,
     HomeComponent,
     FormlyFieldFileComponent,
-    FileValueAccessorDirective
+    FileValueAccessorDirective,
+    AddressWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -78,10 +81,9 @@ import {MatOptionModule} from "@angular/material/core";
     DragDropModule,
     ReactiveFormsModule,
     FormlyModule.forRoot({
-      wrappers: [{name: 'column', component: ColumnWrapperComponent}, {
-        name: 'columnSize',
-        component: ColumnSizeComponent
-      }],
+      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
+        { name: 'address-wrapper', component: AddressWrapperComponent }
+      ],
       types: [
         {
           name: 'column',

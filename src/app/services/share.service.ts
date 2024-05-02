@@ -7,6 +7,7 @@ import {BehaviorSubject} from 'rxjs';
 export class ShareService {
   private nomberOfColumns = new BehaviorSubject<any[]>([]);
   currentNomberOfColumns = this.nomberOfColumns.asObservable();
+  addressOptions =  new BehaviorSubject<any[]>([]);
 
   constructor() { }
 
@@ -14,5 +15,7 @@ export class ShareService {
   emitNumberColumn(message: {}[]) {
     this.nomberOfColumns.next(message);
   }
-
+  emitAddressOptions(values: {}[]){
+    this.addressOptions.next(values);
+  }
 }
