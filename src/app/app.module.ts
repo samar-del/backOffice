@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -38,7 +38,6 @@ import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
-
 
 @NgModule({
   declarations: [
@@ -79,11 +78,12 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'address-wrapper', component: AddressWrapperComponent }
+
       ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] }
+        { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
       ],
     }),
     FormlyModule.forChild({
@@ -97,7 +97,8 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     MatDialogModule,
     NgbModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,3 +1,4 @@
+import { ColumnSizeComponent } from './../column-size/column-size.component';
 import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
@@ -22,6 +23,7 @@ import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layo
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
+import { FormTabLayoutDialogComponent } from '../fields-dialog/form-tab-layout-dialog/form-tab-layout-dialog.component';
 
 
 
@@ -101,11 +103,11 @@ export class ContentComponent implements OnInit {
       if (customizationData) {
         const label = customizationData.hide_label ? null : customizationData.label;
         newField = [{
-          wrappers: ['column'],
+
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
-            label: label || '',
+            label: label,
             type: 'text',
             placeholder: customizationData.placeholder,
             minLength: customizationData.minLength,
@@ -118,9 +120,9 @@ export class ContentComponent implements OnInit {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
+
           },
-
-
+          wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               const value = model[uniqueKey];
@@ -581,6 +583,7 @@ export class ContentComponent implements OnInit {
       this.form = this.fb.group({});
     //  this.formlyForm.resetForm({ model: this.model });
       }
+
     else {
     //  this.openRadioDialog();
     }
@@ -599,7 +602,8 @@ export class ContentComponent implements OnInit {
     }
   }
 
-  openCheckboxDialog(): Observable<any> {
+  
+  openCheckboxDialog():Observable<any> {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
