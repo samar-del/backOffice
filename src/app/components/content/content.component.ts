@@ -135,19 +135,24 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-    if (type === 'Address'){
+    if ((language === 'an' && type === 'Address') ||
+      (language === 'fr' && type === 'Adresse') ||
+      (language === 'ar' && type === 'العنوان')){
       const customizationData = await this.openAddressDialog();
       let field: FormlyFieldConfig = {};
       const listFieldAddress = customizationData.tableRows;
       this.shareService.emitAddressOptions(listFieldAddress);
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
         if (listFieldAddress.length !== 0) {
           field = {
             type: 'column',
             key: customizationData.property_name,
             templateOptions: {
-              label: customizationData.label,
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: label_fr,
+              label_ar: label_ar,
               minLength: customizationData.minLength,
               maxLength: customizationData.maxLength,
               required: customizationData.required,
@@ -194,7 +199,9 @@ export class ContentComponent implements OnInit {
                 type: 'input',
                 key: customizationData.property_name,
                 templateOptions: {
-                  label: customizationData.propertyName,
+                  label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+                  label_fr: label_fr,
+                  label_ar: label_ar,
                   placeholder: customizationData.placeholder,
                   disabled: customizationData.disabled,
                   hidden: customizationData.hidden,
@@ -211,26 +218,37 @@ export class ContentComponent implements OnInit {
           newField.push(field);
         }
     }}
-    if (type === 'Email') {
+    if ((language === 'an' && type === 'Email') ||
+      (language === 'fr' && type === 'E-mail') ||
+      (language === 'ar' && type === 'البريد الإلكتروني')) {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'email',
-            placeholder: customizationData.placeholder,
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr: placeholder_fr,
+            placeholder_ar: placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
@@ -239,7 +257,10 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[customizationData.propertyName];
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -249,26 +270,36 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-    if (type === 'Url') {
+    if ((language === 'an' && type === 'Url') ||
+      (language === 'fr' && type === 'URL') ||
+      (language === 'ar' && type === 'عنوان URL')) {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'url',
-            placeholder: customizationData.placeholder,
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr: placeholder_fr,
+            placeholder_ar: placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
@@ -277,7 +308,10 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[customizationData.propertyName];
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -287,19 +321,28 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-    if (type === 'Phone Number') {
+    if ((language === 'an' && type === 'Phone Number') ||
+      (language === 'fr' && type === 'Numéro de téléphone') ||
+      (language === 'ar' && type === 'رقم الهاتف')) {
       const customizationData = await this.openPhoneDialog();
       // @ts-ignore
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'tel',
-            placeholder: customizationData.placeholder,
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr: placeholder_fr,
+            placeholder_ar: placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
@@ -316,10 +359,13 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[customizationData.propertyName];
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
               return value.length < minLength || value.length > maxLength || !isValidPhoneNumber;
             },
           },
@@ -327,23 +373,29 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-    if (type === 'Date / Time') {
+    if ((language === 'an' && type === 'Date / Time') ||
+      (language === 'fr' && type === 'Date / Heure') ||
+      (language === 'ar' && type === 'تاريخ / وقت')) {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'datetime-local',
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
@@ -352,33 +404,40 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[customizationData.propertyName];
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
             },
           },
-          // Customize other properties as needed
         }];
       }
     }
-    if (type === 'Day') {
+    if ((language === 'an' && type === 'Day') ||
+      (language === 'fr' && type === 'Jour') ||
+      (language === 'ar' && type === 'اليوم')) {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
-        newField = [{
+        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;        newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'date',
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
@@ -387,7 +446,10 @@ export class ContentComponent implements OnInit {
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
-              const value = model[customizationData.propertyName];
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
@@ -396,24 +458,35 @@ export class ContentComponent implements OnInit {
         }];
       }
     }
-    else if (type === 'Number') {
+    else if ((language === 'an' && type === 'Number') ||
+      (language === 'fr' && type === 'Nombre') ||
+      (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
-            label,
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
             type: 'number',
-            placeholder: customizationData.placeholder,
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr: placeholder_fr,
+            placeholder_ar: placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
             custom_css: customizationData.custom_css,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
@@ -422,11 +495,18 @@ export class ContentComponent implements OnInit {
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
-              const value = model[customizationData.propertyName];
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
-            }, }}]; }
+            },
+          },
+        }];
+      }
     }
 
     else if ((language === 'an' && type === 'radio') ||
@@ -481,21 +561,20 @@ export class ContentComponent implements OnInit {
         },
       }]; }
     }
-    else if (type === 'Select Multiple'){
+    else if ((language === 'an' && type === 'Select Multiple') ||
+      (language === 'fr' && type === 'Sélection multiple') ||
+      (language === 'ar' && type === 'اختيار متعدد')){
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
-        const label = customizationData.hide_label ? null : customizationData.label;
-        const label_fr = customizationData.label_fr;
-        const label_ar = customizationData.label_ar;
         newField = [{
           key: customizationData.property_name,
           wrappers: ['column'],
           type: 'select',
           templateOptions : {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr:label_fr,
-            label_ar:label_ar,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
             custom_css: customizationData.custom_css,
             multiple : true,
             options : customizationData.tableRows,
@@ -631,7 +710,7 @@ export class ContentComponent implements OnInit {
   async openDateDialog() {
     const dialogRef = this.dialog.open(DateFormDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: ''},
+      data: {label_fr: '',label_ar: '', placeholder: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -645,7 +724,7 @@ export class ContentComponent implements OnInit {
   async openPhoneDialog() {
     const dialogRef = this.dialog.open(TelFormDialogComponent, {
       width: '1400px',
-      data: {label: '', placeholder: ''},
+      data: {label_fr: '', label_ar:'', placeholder_fr: '',placeholder_ar: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
