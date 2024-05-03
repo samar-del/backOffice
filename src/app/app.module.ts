@@ -13,8 +13,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
 import {MatIconModule} from "@angular/material/icon";
-import {MatTabsModule} from "@angular/material/tabs";
-import {MatDialogModule} from "@angular/material/dialog";
+import { MatTabsModule} from "@angular/material/tabs";
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FormlyModule} from "@ngx-formly/core";
@@ -38,6 +38,8 @@ import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
+import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     HomeComponent,
     FormlyFieldFileComponent,
     FileValueAccessorDirective,
-    AddressWrapperComponent
+    AddressWrapperComponent,
+    FormTableComponent,
+    TableWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -77,13 +81,20 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     ReactiveFormsModule,
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'address-wrapper', component: AddressWrapperComponent }
-
+        { name: 'address-wrapper', component: AddressWrapperComponent },
+        { name: 'table-wrapper', component: TableWrapperComponent },
       ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
+        {
+          name: 'table',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {
+            templateOptions: {table:true}
+          }}
       ],
     }),
     FormlyModule.forChild({
@@ -98,7 +109,8 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     NgbModule,
     HttpClientModule,
     FormsModule,
-    MatTabsModule
+
+
   ],
   providers: [],
   bootstrap: [AppComponent]

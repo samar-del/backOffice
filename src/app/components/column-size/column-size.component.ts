@@ -31,7 +31,7 @@ export class ColumnSizeComponent extends FieldWrapper {
   onDrop(event: any) {
     if (event.previousContainer !== event.container) {
       const field = {...event.item.data};
-      this.contentComponent.addField(field);
+      this.contentComponent.addField(field, event.currentIndex);
      // this.field.fieldArray.push(this.contentComponent.addField(field));
     } else {
       transferArrayItem(

@@ -1,18 +1,17 @@
 import { ColumnSizeComponent } from './../column-size/column-size.component';
 import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {FormTemplate} from '../../models/FormTemplate';
 import {FormCreationService} from '../../services/form-creation.service';
 import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
-import {forkJoin, Observable} from 'rxjs';
+import { Observable} from 'rxjs';
 import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import {TelFormDialogComponent} from '../fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import {FieldService} from '../../services/field.service';
@@ -21,9 +20,10 @@ import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-form-dialog.component';
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
-import {error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
-import { FormTabLayoutDialogComponent } from '../fields-dialog/form-tab-layout-dialog/form-tab-layout-dialog.component';
+import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
+import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
+import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
 
 
@@ -35,6 +35,8 @@ import { FormTabLayoutDialogComponent } from '../fields-dialog/form-tab-layout-d
   encapsulation: ViewEncapsulation.None,
 })
 export class ContentComponent implements OnInit {
+
+  @ViewChild('tableWrapper') tableWrapper: TableWrapperComponent;
 
  fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
@@ -48,6 +50,7 @@ export class ContentComponent implements OnInit {
     { name: 'Category 2', fields: [] },
 
   ];
+
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
@@ -57,6 +60,7 @@ export class ContentComponent implements OnInit {
   }
   ngOnInit(): void {
   }
+
 
   drop(event: CdkDragDrop<string[]>, droppedItem: string) {
     // Calculate the position based on the cursor position
@@ -565,7 +569,6 @@ export class ContentComponent implements OnInit {
         console.log(columnSizess);
         newField = [
           {
-            wrappers: ['columnSize'],
 
             key: customizationData.property_name, // Key of the wrapper component for columns
             type: 'row',
@@ -573,6 +576,8 @@ export class ContentComponent implements OnInit {
               type: 'columnSize',
               fieldGroup: [],
             },
+            wrappers: ['column'],
+
           },
         ];
 
@@ -583,6 +588,28 @@ export class ContentComponent implements OnInit {
       this.form = this.fb.group({});
     //  this.formlyForm.resetForm({ model: this.model });
       }
+      else if (type === 'Table') {
+        const customizationData = await this.openTableDialog();
+        if (customizationData) {
+          // Extract customization data
+          const { rows, columns } = customizationData;
+
+          // Generate table fields dynamically
+          const tableFields = this.generateTableFields(rows, columns);
+
+          // Create a form group for the dynamic form fields
+          const dynamicForm = this.fb.group({});
+
+          // Add the table fields to the form group
+          tableFields.forEach(field => {
+            dynamicForm.addControl(field.key, this.fb.control('')); // Adjust control value as needed
+          });
+
+          // Replace this.form with the newly created form group
+          this.form = dynamicForm;
+        }
+      }
+
 
     else {
     //  this.openRadioDialog();
@@ -602,7 +629,43 @@ export class ContentComponent implements OnInit {
     }
   }
 
-  
+  generateTableFields(rows: number, columns: number): any[] {
+    const tableFields = [];
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        const key = `row${i}_column${j}`;
+        const field = {
+          key: key,
+          type: 'input', // You can adjust the type as needed
+          templateOptions: {
+            label: `Row ${i + 1} - Column ${j + 1}` // Adjust the label as needed
+          }
+        };
+        tableFields.push(field);
+      }
+    }
+    return tableFields;
+  }
+
+
+  async openTableDialog() {
+    const dialogRef = this.dialog.open(FormTableComponent, {
+      width: '1400px',
+      data: {
+        label:''
+      } // Vous pouvez passer des données supplémentaires au composant de personnalisation du tableau si nécessaire
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+
+
   openCheckboxDialog():Observable<any> {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
@@ -835,6 +898,8 @@ export class ContentComponent implements OnInit {
       field_tags: field.templateOptions.field_tags,
       error_label: field.templateOptions.error_label,
       custom_error_message: field.templateOptions.custom_error_message,
+      rows: field.templateOptions.rows,
+      columns: field.templateOptions.rows,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };

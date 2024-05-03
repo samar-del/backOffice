@@ -47,7 +47,7 @@ export class ColumnWrapperComponent extends FieldWrapper{
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
       const droppedItem = event.previousContainer.data[event.previousIndex];
-      this.addFieldToColumn(droppedItem);
+      this.addFieldToColumn(droppedItem, event.currentIndex);
     }
 
     transferArrayItem(
