@@ -1,15 +1,15 @@
 {
   "categories": [
     {
-      "name": "Basics",
+      "name": "Basique",
       "items": ["Texte", "Nombre", "radio", "case à cocher",  "sélectionner", "bouton"]
     },
     {
-      "name": "Advanced",
+      "name": "Advancé",
       "items": ["E-mail", "Numéro de téléphone", "Adresse", "URL", "Date / Heure", "Jour", "Fichier", "Sélection multiple", "autocomplétion"]
     },
     {
-      "name": "Layout",
+      "name": "Mise en page",
       "items": ["Colonnes"]
     }
   ],
