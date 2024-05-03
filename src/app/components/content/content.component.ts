@@ -24,6 +24,7 @@ import {ShareService} from '../../services/share.service';
 import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
 import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
+import { PanelDialogComponent } from '../fields-dialog/panel-dialog/panel-dialog.component';
 
 
 
@@ -92,7 +93,7 @@ export class ContentComponent implements OnInit {
 
     return position;
   }
-
+  
 
   // tslint:disable-next-line:typedef
   async addField(type: string, position: number) {
@@ -610,7 +611,19 @@ export class ContentComponent implements OnInit {
         }
       }
 
-
+      else if (type === 'panel') {
+        const customizationData = await this.openPanelDialog();
+        if (customizationData) {
+          newField = [{
+            type: 'panel',
+            key: customizationData.property_name,
+            templateOptions: {
+              label: customizationData.label,
+              // Add any other template options as needed
+            },
+          }];
+        }
+      }
     else {
     //  this.openRadioDialog();
     }
@@ -647,6 +660,22 @@ export class ContentComponent implements OnInit {
     return tableFields;
   }
 
+  async openPanelDialog() {
+    const dialogRef = this.dialog.open(PanelDialogComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label: '' // You can pass additional data to the panel customization component if needed
+      }
+    });
+
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
 
   async openTableDialog() {
     const dialogRef = this.dialog.open(FormTableComponent, {

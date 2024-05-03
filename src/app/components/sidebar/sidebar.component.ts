@@ -28,7 +28,7 @@ export class SidebarComponent implements OnInit {
   categories = [
     { name: 'Basics', items: ['Text', 'Number', 'radio', 'checkbox',  'select', 'button'] },
     { name: 'Advanced', items: ['Email', 'Phone Number', 'Address', 'Url', 'Date / Time', 'Day', 'File', 'Select Multiple', 'autocomplete'] },
-    { name: 'Layout', items: ['Columns','Table'] }
+    { name: 'Layout', items: ['Columns','Table', 'panel'] }
      // Add more categories as needed
   ];
   containers: [] = [];

@@ -1,0 +1,31 @@
+<!-- customize-panel-dialog.component.html -->
+<div class="dialog-field">
+  <div class="form-tab">
+    <h3 mat-dialog-title>Customize Panel</h3>
+    <hr>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
+        <form [formGroup]="form">
+          <div mat-dialog-content>
+            <div class="form-group" >
+              <label for="label">Label</label>
+              <input id="label" formControlName="label" class="form-control" />
+            </div>
+          </div>
+          <div mat-dialog-actions>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+          </div>
+        </form>
+      </mat-tab>
+      <!-- Other tabs for Validation, API, Layout -->
+    </mat-tab-group>
+  </div>
+
+  <div class="preview-tab">
+    <h4>Preview Panel</h4>
+    <hr>
+    <div class="formly-form-container">
+    </div>
+  </div>
+</div>

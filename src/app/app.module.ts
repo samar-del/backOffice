@@ -40,6 +40,8 @@ import {FileValueAccessorDirective} from './file-value-accessor.directive';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
+import { PanelDialogComponent } from './components/fields-dialog/panel-dialog/panel-dialog.component';
+import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/panel-field-wrapper.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +69,9 @@ import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.
     FileValueAccessorDirective,
     AddressWrapperComponent,
     FormTableComponent,
-    TableWrapperComponent
+    TableWrapperComponent,
+    PanelDialogComponent,
+    PanelFieldWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -82,19 +86,18 @@ import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'address-wrapper', component: AddressWrapperComponent },
-        { name: 'table-wrapper', component: TableWrapperComponent },
+        { name: 'table', component: TableWrapperComponent },
+
       ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
-        {
-          name: 'table',
-          extends: 'formly-group',
-          wrappers: ['form-field'],
-          defaultOptions: {
-            templateOptions: {table:true}
-          }}
+        { name: 'table', component: TableWrapperComponent , wrappers: ['form-field'] },
+
+          { name: 'panel', component: PanelFieldWrapperComponent },
+
+
       ],
     }),
     FormlyModule.forChild({
