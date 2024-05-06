@@ -34,14 +34,16 @@ import {TranslationService} from "../../services/translation.service";
   encapsulation: ViewEncapsulation.None,
 })
 export class ContentComponent implements OnInit {
-
+  previewForm: FormGroup;
  fields: FormlyFieldConfig[] = [];
+  previewfields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
   model: any = {};
   options: FormlyFormOptions = {};
   containerDraggedOver = false;
   columnSize: any [ ] = [];
+  recentListFields: any[] = [];
   categories: { name: string, fields: FormlyFieldConfig[] }[] = [
     { name: 'Category 1', fields: [] },
     { name: 'Category 2', fields: [] },
@@ -52,7 +54,7 @@ export class ContentComponent implements OnInit {
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
               private shareService: ShareService, private translationService: TranslationService) {
     this.form = this.fb.group({});
-
+    this.previewForm = this.fb.group({});
   }
   ngOnInit(): void {
   }
@@ -83,7 +85,7 @@ export class ContentComponent implements OnInit {
     // Subscribe to get the current language
     this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
       language = currentLang;
-    });// Customize other properties based on the type
+    });
     let newField: FormlyFieldConfig[] = [{}];
     if ((language === 'an' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
@@ -110,14 +112,17 @@ export class ContentComponent implements OnInit {
             maxLength: customizationData.maxLength,
             required: customizationData.required,
             disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
+            // hidden: customizationData.hidden,
             custom_css: customizationData.custom_css,
             hide_label_fr: customizationData.hide_label_fr,
             hide_label_ar: customizationData.hide_label_ar,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           wrappers: ['column'],
           expressionProperties: {
@@ -133,6 +138,31 @@ export class ContentComponent implements OnInit {
             },
           },
         }];
+        if (customizationData.condi_shouldDisplay && customizationData.condi_shouldDisplay){
+          if (customizationData.condi_shouldDisplay === true){
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay){
+                if (el.model === customizationData.condi_value ){
+                  newField.map(field => {
+                    field.hide = false ;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            });
+          }else {
+            this.fields.forEach(el => {
+            if (el.key === customizationData.condi_shouldDisplay){
+              if (el.model === customizationData.condi_value ){
+                newField.map(field => {
+                  field.hide = true ;
+                  this.previewfields.push(field);
+                });
+              }
+            }
+          }); }
+        }
+
       }
     }
     if ((language === 'an' && type === 'Address') ||
@@ -657,7 +687,9 @@ export class ContentComponent implements OnInit {
     if (newField.length > 0) {
       console.log(newField);
       newField.forEach(el => {
-        this.fields.push(el); });
+        this.fields.push(el);
+        this.recentListFields.push(el.key);
+        this.shareService.emitListFields(this.recentListFields); });
 
       // Check if formlyForm is defined before calling resetForm
       if (this.formlyForm) {
@@ -682,7 +714,7 @@ export class ContentComponent implements OnInit {
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar:'', placeholder_fr: '',placeholder_ar: ''},
+      data: {label_fr: '', label_ar: '', placeholder_fr: '', placeholder_ar: '' , condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();

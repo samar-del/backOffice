@@ -3,6 +3,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {TranslationService} from "../../../services/translation.service";
+import {ShareService} from '../../../services/share.service';
+import {Subscription} from 'rxjs';
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.component.html',
@@ -19,16 +21,23 @@ export class FormDialogComponent implements OnInit {
   model: any = {};
   selectedTabIndex = 0; // Default tab index
   translations: any = {};
-
+  fieldsList: any[] = [];
+  private fieldsListSub: Subscription;
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormDialogComponent>,
     private translationService: TranslationService,
+    private shareService: ShareService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) {
+    this.fieldsListSub = this.shareService.fieldsList$.subscribe(data => {
+      this.fieldsList = data;
+    });
+  }
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
+    console.log(this.fieldsList);
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
@@ -46,7 +55,10 @@ export class FormDialogComponent implements OnInit {
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
     });
 
     // Subscribe to label changes to update property name
@@ -132,14 +144,14 @@ export class FormDialogComponent implements OnInit {
       type: 'input',
       key: 'key1',
       templateOptions: {
-        label:textLabel,
+        label: textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
         type: 'text',
         required: false,
         placeholder_fr: this.form.get('placeholder_fr').value,
         placeholder_ar: this.form.get('placeholder_ar').value,
-        placeholder:placeholderText,
+        placeholder: placeholderText,
         disabled: inputDisabled,
         custom_css: this.form.get('custom_css').value,
         error_label: this.form.get('error_label').value,

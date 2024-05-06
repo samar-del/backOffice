@@ -8,8 +8,12 @@ export class ShareService {
   private nomberOfColumns = new BehaviorSubject<any[]>([]);
   currentNomberOfColumns = this.nomberOfColumns.asObservable();
   addressOptions =  new BehaviorSubject<any[]>([]);
-
+  recentFieldsList = new BehaviorSubject<any[]>([]);
+  fieldsList$ = this.recentFieldsList.asObservable();
   constructor() { }
+  emitListFields(list: {}[]){
+    this.recentFieldsList.next(list);
+  }
 
   // tslint:disable-next-line:typedef
   emitNumberColumn(message: {}[]) {
