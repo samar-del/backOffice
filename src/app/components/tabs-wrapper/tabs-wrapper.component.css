@@ -1,0 +1,9 @@
+.mat-tab-link {
+  color: white; /* Change tab link color */
+  font-weight: bold; /* Make tab link text bold */
+  text-transform: uppercase; /* Convert tab link text to uppercase */
+}
+
+.mat-tab-link.active {
+  background-color: #007bff; /* Change background color of active tab */
+}

@@ -1,3 +1,4 @@
+import { TabsDialogComponent } from './../fields-dialog/tabs-dialog/tabs-dialog.component';
 import { ColumnSizeComponent } from './../column-size/column-size.component';
 import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
@@ -609,6 +610,18 @@ export class ContentComponent implements OnInit {
           this.form = dynamicForm;
         }
       }
+      else if (type === 'tabs') {
+        const customizationData = await this.openTabsDialog();
+        if (customizationData) {
+          // Process customization data as needed
+          const tabs = customizationData.tabs; // Récupérez les onglets personnalisés depuis les données de personnalisation
+
+          // Mettez à jour les onglets ou effectuez d'autres opérations en fonction des données personnalisées
+          // Par exemple, vous pouvez mettre à jour l'affichage des onglets ou effectuer d'autres actions nécessaires
+
+          console.log('Customized tabs:', tabs);
+        }
+      }
 
 
     else {
@@ -648,6 +661,21 @@ export class ContentComponent implements OnInit {
   }
 
 
+  async openTabsDialog() {
+    const dialogRef = this.dialog.open(TabsDialogComponent, {
+      width: '1400px',
+      data: {
+        label:''
+      } // You can pass additional data to the tabs dialog component if needed
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
   async openTableDialog() {
     const dialogRef = this.dialog.open(FormTableComponent, {
       width: '1400px',

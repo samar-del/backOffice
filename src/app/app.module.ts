@@ -1,3 +1,4 @@
+import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, Component } from '@angular/core';
 
@@ -13,7 +14,6 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
 import {MatIconModule} from "@angular/material/icon";
-import { MatTabsModule} from "@angular/material/tabs";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {DragDropModule} from "@angular/cdk/drag-drop";
@@ -40,6 +40,8 @@ import {FileValueAccessorDirective} from './file-value-accessor.directive';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
+import { TabsWrapperComponent } from './components/tabs-wrapper/tabs-wrapper.component';
+import { TabsDialogComponent } from './components/fields-dialog/tabs-dialog/tabs-dialog.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +69,9 @@ import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.
     FileValueAccessorDirective,
     AddressWrapperComponent,
     FormTableComponent,
-    TableWrapperComponent
+    TableWrapperComponent,
+    TabsWrapperComponent,
+    TabsDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -83,6 +87,7 @@ import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'address-wrapper', component: AddressWrapperComponent },
         { name: 'table-wrapper', component: TableWrapperComponent },
+        { name: 'tabs', component: TabsWrapperComponent }
       ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
@@ -94,7 +99,9 @@ import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.
           wrappers: ['form-field'],
           defaultOptions: {
             templateOptions: {table:true}
-          }}
+          }},
+          { name: 'tabs', component: TabsWrapperComponent }
+
       ],
     }),
     FormlyModule.forChild({
@@ -104,11 +111,11 @@ import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.
       ],
     }),
     FormlyBootstrapModule,
-    MatTabsModule,
     MatDialogModule,
     NgbModule,
     HttpClientModule,
     FormsModule,
+    MatTabsModule
 
 
   ],
