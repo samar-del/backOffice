@@ -21,4 +21,6 @@ export class TemplateOptions {
   custom_error_message ?: string;
   rows ?: number;
   columns ?: number;
+  theme ?: string;
+  collapsible?: string;
 }

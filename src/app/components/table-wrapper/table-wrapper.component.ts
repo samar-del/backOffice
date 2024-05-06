@@ -1,34 +1,32 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { FieldType, FieldTypeConfig, FieldWrapper } from '@ngx-formly/core';
+import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
 
 @Component({
   selector: 'app-table-wrapper',
   template: `
-    <table class="table">
-      <thead>
-        <tr>
-          <th *ngFor="let header of headers">{{ header }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of rows">
-          <td *ngFor="let cell of row">{{ cell }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-layout-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th *ngFor="let column of to.columns">{{ column }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td *ngFor="let f of field.fieldGroup" [ngClass]="f.className">
+              <formly-field [field]="f"></formly-field>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   `,
 })
-export class TableWrapperComponent extends FieldWrapper<FieldTypeConfig> {
-  @Input() tableData: any;
+export class TableWrapperComponent extends FieldType {
+  @Input() to: any; // Access the field's template options
+  @Input() field: FormlyFieldConfig; // Access the field configuration
 
-  get headers(): string[] {
-    // Return column headers
-    return this.tableData?.components[0]?.rows[0] || [];
-  }
-
-  get rows(): any[] {
-    // Return table rows excluding the header row
-    return this.tableData?.components[0]?.rows.slice(1) || [];
+  get tableField(): FormlyFieldConfig {
+    return this.field as FormlyFieldConfig;
   }
 }

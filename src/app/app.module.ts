@@ -93,7 +93,7 @@ import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/pan
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
-        { name: 'table', component: TableWrapperComponent , wrappers: ['form-field'] },
+        { name: 'table', component: TableWrapperComponent },
 
           { name: 'panel', component: PanelFieldWrapperComponent },
 

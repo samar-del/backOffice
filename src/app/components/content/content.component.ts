@@ -93,7 +93,7 @@ export class ContentComponent implements OnInit {
 
     return position;
   }
-  
+
 
   // tslint:disable-next-line:typedef
   async addField(type: string, position: number) {
@@ -593,7 +593,10 @@ export class ContentComponent implements OnInit {
         const customizationData = await this.openTableDialog();
         if (customizationData) {
           // Extract customization data
-          const { rows, columns } = customizationData;
+          const { rows, columns, cloneRowComponents, cellAlignment, striped, bordered, hover, condensed } = customizationData;
+
+          // Logic for cloning row components
+          // Implement logic to clone components in a cell of one column to all other cells of that column if `cloneRowComponents` is true
 
           // Generate table fields dynamically
           const tableFields = this.generateTableFields(rows, columns);
@@ -611,6 +614,7 @@ export class ContentComponent implements OnInit {
         }
       }
 
+
       else if (type === 'panel') {
         const customizationData = await this.openPanelDialog();
         if (customizationData) {
@@ -619,8 +623,18 @@ export class ContentComponent implements OnInit {
             key: customizationData.property_name,
             templateOptions: {
               label: customizationData.label,
+              theme: customizationData.theme,
+              disabled: customizationData.disabled,
+              hidden: customizationData.hidden,
+              hide_label: customizationData.hide_label,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            collapsible: customizationData.collapsible
               // Add any other template options as needed
             },
+            wrappers: ['column'],
+
           }];
         }
       }
@@ -929,6 +943,8 @@ export class ContentComponent implements OnInit {
       custom_error_message: field.templateOptions.custom_error_message,
       rows: field.templateOptions.rows,
       columns: field.templateOptions.rows,
+      theme: field.templateOptions.theme,
+      collapsible: field.templateOptions.collapsible,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };

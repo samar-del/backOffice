@@ -27,3 +27,49 @@
   background-color: #309ec2; /* Set background color for active tab */
   font-weight: bold;
 }
+.theme-default {
+  background-color: #f8f9fa; /* light gray */
+}
+
+.theme-primary {
+  background-color: #007bff; /* primary color - blue */
+}
+
+.theme-secondary {
+  background-color: #6c757d; /* secondary color - gray */
+}
+
+.theme-success {
+  background-color: #28a745; /* success color - green */
+}
+
+.theme-danger {
+  background-color: #dc3545; /* danger color - red */
+}
+
+.theme-warning {
+  background-color: #ffc107; /* warning color - yellow */
+}
+
+.theme-info {
+  background-color: #17a2b8; /* info color - cyan */
+}
+
+.theme-light {
+  background-color: #f8f9fa; /* light color - light gray */
+}
+
+.theme-dark {
+  background-color: #343a40; /* dark color - dark gray */
+}
+.card-header.primary {
+  background-color: blue; /* Couleur pour le thème primary */
+}
+
+.card-header.accent {
+  background-color: green; /* Couleur pour le thème accent */
+}
+
+.card-header.warn {
+  background-color: red; /* Couleur pour le thème warn */
+}
