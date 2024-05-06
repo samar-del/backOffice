@@ -34,3 +34,10 @@
 
 </div>
 <app-list-forms></app-list-forms>
+<div class="preview-tab">
+  <h4>Preview Form</h4>
+  <hr>
+  <div class="formly-form-container">
+    <formly-form #formlyForm [model]="model" [fields]="previewfields" [form]="previewForm" [options]="options"></formly-form>
+  </div>
+</div>
