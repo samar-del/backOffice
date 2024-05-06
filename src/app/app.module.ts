@@ -86,21 +86,21 @@ import { TabsDialogComponent } from './components/fields-dialog/tabs-dialog/tabs
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'address-wrapper', component: AddressWrapperComponent },
-        { name: 'table-wrapper', component: TableWrapperComponent },
-        { name: 'tabs', component: TabsWrapperComponent }
+        { name: 'container', component: TableWrapperComponent },
+        { name: 'nav', component: TabsWrapperComponent }
       ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
         {
-          name: 'table',
+          name: 'container',
           extends: 'formly-group',
           wrappers: ['form-field'],
           defaultOptions: {
             templateOptions: {table:true}
           }},
-          { name: 'tabs', component: TabsWrapperComponent }
+          { name: 'nav', component: TabsWrapperComponent }
 
       ],
     }),
