@@ -8,13 +8,25 @@
       <form [formGroup]="form">
 
         <div mat-dialog-content>
-          <div class="form-group" [hidden]="form.get('hide_label').value">
-            <label for="label">Label</label>
-            <input id="label" formControlName="label" class="form-control" />
+          <div class="row">
+            <div class="col form-group" [hidden]="form.get('hide_label_fr').value">
+              <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
+              <input id="label_fr" formControlName="label_fr" class="form-control" />
+            </div>
+            <div class="col form-group" [hidden]="form.get('hide_label_ar').value">
+              <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
+              <input id="label_ar" formControlName="label_ar" class="form-control" />
+            </div>
           </div>
-          <div class="form-group" [hidden]="form.get('hidden').value">
-            <label for="placeholder">Placeholder</label>
-            <input id="placeholder" formControlName="placeholder" class="form-control" />
+          <div class="row">
+            <div class="col form-group" [hidden]="form.get('hidden').value">
+              <label for="placeholder_fr">{{ translations?.translations?.placeholder_fr }}</label>
+              <input id="placeholder_fr" formControlName="placeholder_fr" class="form-control" />
+            </div>
+            <div class="col form-group" [hidden]="form.get('hidden').value">
+              <label for="placeholder_ar">{{ translations?.translations?.placeholder_ar }}</label>
+              <input id="placeholder_ar" formControlName="placeholder_ar" class="form-control" />
+            </div>
           </div>
           <label for="label_position">Label Position</label>
           <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
@@ -34,9 +46,15 @@
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="hide_label" formControlName="hide_label">
-            <label class="form-check-label" for="hide_label">
-              Hide label
+            <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
+            <label class="form-check-label" for="hide_label_fr">
+              Hide label fr
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
+            <label class="form-check-label" for="hide_label_ar">
+              Hide label ar
             </label>
           </div>
           <div class="form-check">
@@ -92,6 +110,27 @@
       </form>
     </mat-tab>
     <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
+    <mat-tab label="Conditional"  [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
+      <form [formGroup]="form">
+        <div class="form-group">
+          <label for="shouldDisplay">This component should Display:</label>
+          <select class="form-select"id="shouldDisplay" formControlName="condi_shouldDisplay" >
+            <option value="true">True</option>
+            <option value="false">False</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="whenShouldDisplay">When the form component:</label>
+          <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay" *ngFor="let f of fieldsList">
+            <option value="{{f}}">{{f}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="condi-value">Has the value:</label>
+          <input id="condi-value" formControlName="condi_value" type="text" class="form-control" />
+        </div>
+      </form>
+    </mat-tab>
   </mat-tab-group>
 </div>
 

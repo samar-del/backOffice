@@ -1,16 +1,17 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {Subscription} from "rxjs";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {TranslationService} from "../../../services/translation.service";
-import {ShareService} from '../../../services/share.service';
-import {Subscription} from 'rxjs';
+import {ShareService} from "../../../services/share.service";
+
 @Component({
-  selector: 'app-form-dialog',
-  templateUrl: './form-dialog.component.html',
-  styleUrls: ['./form-dialog.component.css']
+  selector: 'app-i-frame-dialog',
+  templateUrl: './i-frame-dialog.component.html',
+  styleUrls: ['./i-frame-dialog.component.css']
 })
-export class FormDialogComponent implements OnInit {
+export class IFrameDialogComponent implements OnInit {
 
   form: FormGroup;
   previewForm: FormGroup;
@@ -25,7 +26,7 @@ export class FormDialogComponent implements OnInit {
   private fieldsListSub: Subscription;
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<FormDialogComponent>,
+    public dialogRef: MatDialogRef<IFrameDialogComponent>,
     private translationService: TranslationService,
     private shareService: ShareService,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -41,21 +42,17 @@ export class FormDialogComponent implements OnInit {
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
-      placeholder_fr: [this.data.placeholder_fr],
-      placeholder_ar: [this.data.placeholder_ar],
-      minLength: [this.data.minLength, Validators.min(0)],
-      maxLength: [this.data.maxLength, Validators.min(0)],
       label_position: [this.data.label_position || 'top'],
       custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
       hide_label_fr: [this.data.hide_label_fr],
       hide_label_ar: [this.data.hide_label_ar],
-      disabled: [this.data.disabled],
       required: [this.data.required, Validators.required],
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
+      link_iframe: [this.data.link_iframe, Validators.required],
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
@@ -121,7 +118,6 @@ export class FormDialogComponent implements OnInit {
     });
   }
 
-
   updateTags(inputValue: string): void {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);
@@ -131,58 +127,34 @@ export class FormDialogComponent implements OnInit {
     const labelFrHidden = this.form.get('hide_label_fr').value;
     const labelArHidden = this.form.get('hide_label_ar').value;
     const inputHidden = this.form.get('hidden').value;
-    const inputDisabled = this.form.get('disabled').value;
     this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
-      const placeholder_ar = this.form.get('placeholder_ar').value;
-      const placeholder_fr = this.form.get('placeholder_fr').value;
-      const placeholderText = currentLanguage === 'ar' ? placeholder_ar : placeholder_fr;
 
-    this.newField = {
-      type: 'input',
-      key: 'key1',
-      templateOptions: {
-        label: textLabel,
-        label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
-        label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
-        required: false,
-        placeholder_fr: this.form.get('placeholder_fr').value,
-        placeholder_ar: this.form.get('placeholder_ar').value,
-        placeholder: placeholderText,
-        disabled: inputDisabled,
-        custom_css: this.form.get('custom_css').value,
-        error_label: this.form.get('error_label').value,
-        custom_error_message: this.form.get('custom_error_message').value,
-        labelPosition: this.form.get('label_position').value
-      },
-      hide: inputHidden,
-      expressionProperties: {
-        'templateOptions.hideLabel_fr': () => labelFrHidden,
-        'templateOptions.hideLabel_ar': () => labelArHidden
-      },
-      validators: {
-        minLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const minLength = this.form.get('minLength').value || 0;
-            return !value || value.length >= minLength;
-          }
+      this.newField = {
+        type: 'iframe',
+        key: 'key1',
+        templateOptions: {
+          label: textLabel,
+          label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
+          label_ar: labelArHidden ? null : this.form.get('label_ar').value,
+          link_iframe: this.form.get('link_iframe').value,
+          type: 'iframe',
+          required: false,
+          custom_css: this.form.get('custom_css').value,
+          error_label: this.form.get('error_label').value,
+          custom_error_message: this.form.get('custom_error_message').value,
+          labelPosition: this.form.get('label_position').value
         },
-        maxLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const maxLength = this.form.get('maxLength').value || Infinity;
-            return !value || value.length <= maxLength;
-          }
-        }
-      },
-    };
+        hide: inputHidden,
+        expressionProperties: {
+          'templateOptions.hideLabel_fr': () => labelFrHidden,
+          'templateOptions.hideLabel_ar': () => labelArHidden
+        },
+      };
     });
   }
-
 
 
 }

@@ -27,7 +27,6 @@ import { SelectCustomizeDialogComponent } from './components/fields-dialog/selec
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
 import { AddressCustomizeDialogComponent } from './components/fields-dialog/address-customize-dialog/address-customize-dialog.component';
-
 import { FormPreviewComponent } from './components/form-preview/form-preview.component';
 import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
@@ -37,11 +36,20 @@ import { ListFormsComponent } from './components/list-forms/list-forms.component
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
+import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
 import { PanelDialogComponent } from './components/fields-dialog/panel-dialog/panel-dialog.component';
 import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/panel-field-wrapper.component';
+import { HtmlDialogComponent } from './components/fields-dialog/html-dialog/html-dialog.component';
+import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-field-html.component';
+import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
+import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
+import { SafeUrlPipe } from './safe-url.pipe';
+
 
 @NgModule({
   declarations: [
@@ -72,6 +80,11 @@ import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/pan
     TableWrapperComponent,
     PanelDialogComponent,
     PanelFieldWrapperComponent
+    HtmlDialogComponent,
+    FormlyFieldHtmlComponent,
+    IFrameDialogComponent,
+    FormlyFieldIframeComponent,
+    SafeUrlPipe
   ],
   imports: [
     BrowserModule,
@@ -85,8 +98,10 @@ import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/pan
     ReactiveFormsModule,
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'address-wrapper', component: AddressWrapperComponent },
-        { name: 'table', component: TableWrapperComponent },
+                 {name: 'html', component: FormlyFieldHtmlComponent},
+                 {name: 'iframe', component: FormlyFieldIframeComponent},
+                 { name: 'address-wrapper', component: AddressWrapperComponent },
+                 { name: 'table', component: TableWrapperComponent },
 
       ],
       types: [
@@ -94,16 +109,21 @@ import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/pan
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
         { name: 'table', component: TableWrapperComponent },
-
-          { name: 'panel', component: PanelFieldWrapperComponent },
-
+        { name: 'panel', component: PanelFieldWrapperComponent },
+         {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
+        {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
 
       ],
     }),
     FormlyModule.forChild({
-      wrappers: [{ name: 'row', component: RowWrapperComponent }],
+      wrappers: [{name: 'row', component: RowWrapperComponent}],
       types: [
-        { name: 'row', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { row: true } } },
+        {
+          name: 'row',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {row: true}}
+        },
       ],
     }),
     FormlyBootstrapModule,
@@ -112,8 +132,9 @@ import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/pan
     NgbModule,
     HttpClientModule,
     FormsModule,
-
-
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

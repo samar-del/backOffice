@@ -1,16 +1,17 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {Subscription} from "rxjs";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {TranslationService} from "../../../services/translation.service";
-import {ShareService} from '../../../services/share.service';
-import {Subscription} from 'rxjs';
+import {ShareService} from "../../../services/share.service";
+
 @Component({
-  selector: 'app-form-dialog',
-  templateUrl: './form-dialog.component.html',
-  styleUrls: ['./form-dialog.component.css']
+  selector: 'app-html-dialog',
+  templateUrl: './html-dialog.component.html',
+  styleUrls: ['./html-dialog.component.css']
 })
-export class FormDialogComponent implements OnInit {
+export class HtmlDialogComponent implements OnInit {
 
   form: FormGroup;
   previewForm: FormGroup;
@@ -25,7 +26,7 @@ export class FormDialogComponent implements OnInit {
   private fieldsListSub: Subscription;
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<FormDialogComponent>,
+    public dialogRef: MatDialogRef<HtmlDialogComponent>,
     private translationService: TranslationService,
     private shareService: ShareService,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -41,8 +42,8 @@ export class FormDialogComponent implements OnInit {
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
-      placeholder_fr: [this.data.placeholder_fr],
-      placeholder_ar: [this.data.placeholder_ar],
+      html_tag: [this.data.html_tag],
+      html_content: [this.data.html_tag],
       minLength: [this.data.minLength, Validators.min(0)],
       maxLength: [this.data.maxLength, Validators.min(0)],
       label_position: [this.data.label_position || 'top'],
@@ -59,6 +60,7 @@ export class FormDialogComponent implements OnInit {
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
+      htmlElement:[this.data.htmlElement]
     });
 
     // Subscribe to label changes to update property name
@@ -136,53 +138,53 @@ export class FormDialogComponent implements OnInit {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
-      const placeholder_ar = this.form.get('placeholder_ar').value;
-      const placeholder_fr = this.form.get('placeholder_fr').value;
-      const placeholderText = currentLanguage === 'ar' ? placeholder_ar : placeholder_fr;
-
-    this.newField = {
-      type: 'input',
-      key: 'key1',
-      templateOptions: {
-        label: textLabel,
-        label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
-        label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
-        required: false,
-        placeholder_fr: this.form.get('placeholder_fr').value,
-        placeholder_ar: this.form.get('placeholder_ar').value,
-        placeholder: placeholderText,
-        disabled: inputDisabled,
-        custom_css: this.form.get('custom_css').value,
-        error_label: this.form.get('error_label').value,
-        custom_error_message: this.form.get('custom_error_message').value,
-        labelPosition: this.form.get('label_position').value
-      },
-      hide: inputHidden,
-      expressionProperties: {
-        'templateOptions.hideLabel_fr': () => labelFrHidden,
-        'templateOptions.hideLabel_ar': () => labelArHidden
-      },
-      validators: {
-        minLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const minLength = this.form.get('minLength').value || 0;
-            return !value || value.length >= minLength;
+      const html_tag = this.form.get('html_tag').value;
+      const html_content = this.form.get('html_content').value;
+      const htmlElement = `<${html_tag}>${html_content}</${html_tag}>`;
+      console.log(htmlElement);
+      this.data.htmlElement = htmlElement;
+      this.newField = {
+        type: 'html',
+        key: 'key1',
+        templateOptions: {
+          label: textLabel,
+          label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
+          label_ar: labelArHidden ? null : this.form.get('label_ar').value,
+          html_tag: html_tag,
+          html_content: html_content,
+          htmlElement: htmlElement,
+          type: 'html',
+          required: false,
+          disabled: inputDisabled,
+          custom_css: this.form.get('custom_css').value,
+          error_label: this.form.get('error_label').value,
+          custom_error_message: this.form.get('custom_error_message').value,
+          labelPosition: this.form.get('label_position').value
+        },
+        hide: inputHidden,
+        expressionProperties: {
+          'templateOptions.hideLabel_fr': () => labelFrHidden,
+          'templateOptions.hideLabel_ar': () => labelArHidden
+        },
+        validators: {
+          minLength: {
+            expression: (control: any) => {
+              const value = control.value;
+              const minLength = this.form.get('minLength').value || 0;
+              return !value || value.length >= minLength;
+            }
+          },
+          maxLength: {
+            expression: (control: any) => {
+              const value = control.value;
+              const maxLength = this.form.get('maxLength').value || Infinity;
+              return !value || value.length <= maxLength;
+            }
           }
         },
-        maxLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const maxLength = this.form.get('maxLength').value || Infinity;
-            return !value || value.length <= maxLength;
-          }
-        }
-      },
-    };
+      };
     });
   }
-
 
 
 }

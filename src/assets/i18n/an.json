@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "name": "Basics",
+      "items": ["Text", "Number", "radio", "checkbox",  "select", "button"]
+    },
+    {
+      "name": "Advanced",
+      "items": ["Email", "Phone Number", "Address", "Url", "Date / Time", "Day", "File", "Select Multiple", "autocomplete", "HTML Element","IFrame"]
+    },
+    {
+      "name": "Layout",
+      "items": ["Columns"]
+    }
+  ],
+  "translations": {
+    "label_fr": "Label in french",
+    "label_ar": "Label in arabic",
+    "placeholder_fr": "Placeholder in french",
+    "placeholder_ar": "Placeholder in arabic",
+    "cancel": "Cancel",
+    "save": "Save"
+  }
+}

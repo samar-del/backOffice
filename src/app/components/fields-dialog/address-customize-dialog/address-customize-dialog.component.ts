@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {TranslationService} from "../../../services/translation.service";
 
 @Component({
   selector: 'app-address-customize-dialog',
@@ -17,7 +18,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
   options: FormlyFormOptions = {};
   model: any = {};
   selectedTabIndex = 0; // Default tab index
-
+  translations: any = {};
 
   showTable = false; // Variable to store the state of the checkbox
   NumberOptions = 0 ;
@@ -26,13 +27,15 @@ export class AddressCustomizeDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<AddressCustomizeDialogComponent>,
+    private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private cdr: ChangeDetectorRef
   ) {}
   // tslint:disable-next-line:typedef
   ngOnInit() {
     this.form = this.fb.group({
-      label: [this.data.label, Validators.required],
+      label_fr: [this.data.label_fr, Validators.required],
+      label_ar: [this.data.label_ar, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
       custom_css: [this.data.custom_css],
@@ -45,10 +48,16 @@ export class AddressCustomizeDialogComponent implements OnInit {
     });
 
     // Subscribe to label changes to update property name
-    this.form.get('label').valueChanges.subscribe((label: string) => {
+    this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
       propertyNameControl.setValue(this.generatePropertyName(label));
     });
+
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+
+    this.loadTranslations();
 
     this. toggleTableVisibility();
     this.form.valueChanges.subscribe(() => {
@@ -123,17 +132,34 @@ export class AddressCustomizeDialogComponent implements OnInit {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);
   }
+
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
+  }
+
   updateFields(): void {
     const labelHidden = this.form.get('hide_label').value;
     const inputHidden = this.form.get('hidden').value;
     const inputDisabled = this.form.get('disabled').value;
+
+    this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
+      const label_fr = this.form.get('label_fr').value;
+      const label_ar = this.form.get('label_ar').value;
+      const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
 
     if ( this.NumberOptions === 0) {
       this.newField = {
         key: 'key',
         type: 'input',
         templateOptions: {
-          label: labelHidden ? null : this.form.get('label').value,
+          label:textLabel,
+          label_fr: this.form.get('label_fr').value,
+          label_ar: this.form.get('label_ar').value,
           options: this.form.get('tableRows').value,
           custom_css: this.form.get('custom_css').value,
           disabled: inputDisabled,
@@ -156,7 +182,9 @@ export class AddressCustomizeDialogComponent implements OnInit {
           key: 'key',
           type: 'input',
           templateOptions: {
-            label: this.form.get('label').value,
+            label:textLabel,
+            label_fr: this.form.get('label_fr').value,
+            label_ar: this.form.get('label_ar').value,
             placeholder: this.form.get('placeholder').value,
             custom_css: this.form.get('custom_css').value,
             disabled: inputDisabled,
@@ -173,5 +201,6 @@ export class AddressCustomizeDialogComponent implements OnInit {
       });
     }
     }
+    });
   }
 }
