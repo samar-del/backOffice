@@ -47,7 +47,7 @@ export class ColumnWrapperComponent extends FieldWrapper{
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
       const droppedItem = event.previousContainer.data[event.previousIndex];
-      this.addFieldToColumn(droppedItem);
+      this.addFieldToColumn(droppedItem, event.currentIndex);
     }
 
     transferArrayItem(
@@ -59,21 +59,21 @@ export class ColumnWrapperComponent extends FieldWrapper{
   }
 
   // tslint:disable-next-line:typedef
-  private addFieldToColumn(droppedItem: string) {
+  private addFieldToColumn(droppedItem: string, position: number) {
     if (!this.contentComponent) {
       console.error('Content component is not initialized.');
       return;
     }
     if (droppedItem === 'input') {
-      this.contentComponent.addField('input');
+      this.contentComponent.addField('input', position);
     } else if (droppedItem === 'radio') {
-      this.contentComponent.addField('radio');
+      this.contentComponent.addField('radio', position);
     } else if (droppedItem === 'checkbox') {
-      this.contentComponent.addField('checkbox');
+      this.contentComponent.addField('checkbox', position);
     } else if (droppedItem === 'button') {
-      this.contentComponent.addField('button');
+      this.contentComponent.addField('button', position);
     } else if (droppedItem === 'select') {
-      this.contentComponent.addField('select');
+      this.contentComponent.addField('select', position);
 
       // Ensure the form is updated with new fields
       this.form = this.formlyForm.form;

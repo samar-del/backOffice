@@ -29,7 +29,8 @@ export class SidebarComponent implements OnInit {
   categories = [
     { name: 'Basics', items: ['Text', 'Number', 'radio', 'checkbox',  'select', 'button'] },
     { name: 'Advanced', items: ['Email', 'Phone Number', 'Address', 'Url', 'Date / Time', 'Day', 'File', 'Select Multiple', 'autocomplete', 'HTML Element','IFrame'] },
-    { name: 'Layout', items: ['Columns'] }
+    { name: 'Layout', items: ['Columns','Table', 'panel'] }
+
      // Add more categories as needed
   ];
   containers: [] = [];
@@ -80,7 +81,7 @@ export class SidebarComponent implements OnInit {
     console.log(currentPosition);
     // tslint:disable-next-line:prefer-const
     let position: number;
-    this.contentComponent.drop(event, droppedItem , position );
+    this.contentComponent.drop(event, droppedItem);
   }
   onDragEntered() {
     // Add a CSS class when an element is dragged over the container

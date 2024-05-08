@@ -21,6 +21,10 @@ export class TemplateOptions {
   property_name ?:string;
   error_label ?: string;
   custom_error_message ?: string;
+  rows ?: number;
+  columns ?: number;
+  theme ?: string;
+  collapsible?: string;
   langue ?: string;
   label_fr ?: string;
   label_ar ?: string;
