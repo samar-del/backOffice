@@ -11,7 +11,7 @@ export class ShareService {
   recentFieldsList = new BehaviorSubject<any[]>([]);
   fieldsList$ = this.recentFieldsList.asObservable();
 
-  private urlSource = new BehaviorSubject<string>(''); // Default value is an empty string
+  urlSource = new BehaviorSubject<string>(''); // Default value is an empty string
   currentUrl = this.urlSource.asObservable();
 
   constructor() { }

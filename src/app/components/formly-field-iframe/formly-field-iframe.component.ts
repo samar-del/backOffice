@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import {FieldType} from "@ngx-formly/core";
+import {ShareService} from "../../services/share.service";
 
 @Component({
   selector: 'app-formly-field-iframe',
@@ -6,8 +8,13 @@ import { Component, Input } from '@angular/core';
     <iframe [src]="link_iframe | safeUrl" width="100%" height="100%" frameborder="0"></iframe>
   `,
 })
-export class FormlyFieldIframeComponent {
-  @Input() link_iframe: string;
+export class FormlyFieldIframeComponent extends FieldType{
+  link_iframe: string;
 
-  constructor() { }
+  constructor(private shareS: ShareService) {
+    super();
+    this.shareS.urlSource.subscribe(data => {
+      this.link_iframe = data;
+    });
+  }
 }

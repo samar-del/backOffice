@@ -7,7 +7,8 @@ import {DomSanitizer} from "@angular/platform-browser";
 export class SafeUrlPipe implements PipeTransform {
 
   constructor(private sanitizer: DomSanitizer) { }
-  transform(link_iframe: any) {
+
+  transform(link_iframe) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(link_iframe);
   }
 

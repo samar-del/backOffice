@@ -381,6 +381,9 @@ export class ContentComponent implements OnInit {
       (language === 'fr' && type === 'IFrame') ||
       (language === 'ar' && type === 'IFrame')) {
       const customizationData = await this.openIFrameDialog();
+      const link_iframe =customizationData.link_iframe
+      this.shareService.changeUrl(link_iframe);
+
       // @ts-ignore
       if (customizationData) {
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
@@ -395,6 +398,7 @@ export class ContentComponent implements OnInit {
             label_fr: label_fr,
             label_ar: label_ar,
             type: 'iframe',
+            link_iframe: customizationData.link_iframe,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             hidden: customizationData.hidden,

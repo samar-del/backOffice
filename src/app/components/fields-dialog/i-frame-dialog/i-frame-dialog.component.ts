@@ -79,9 +79,6 @@ export class IFrameDialogComponent implements OnInit {
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;
   }
-  setUrl(link_iframe: string) {
-    this.shareService.changeUrl(link_iframe);
-  }
   onNoClick(): void {
     this.dialogRef.close();
   }
