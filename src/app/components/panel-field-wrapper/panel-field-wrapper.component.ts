@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FieldWrapper, FormlyFieldConfig } from '@ngx-formly/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ShareService } from 'src/app/services/share.service';
@@ -21,6 +21,9 @@ export class PanelFieldWrapperComponent extends FieldWrapper implements OnInit {
   @Input() collapsible: boolean = false;
   @Input() initiallyCollapsed: boolean = false;
   @Input() hideHeader: boolean = false;
+
+  @ViewChild('formlyForm') formlyForm: any;
+
 
   isCollapsed: boolean = false;
 
