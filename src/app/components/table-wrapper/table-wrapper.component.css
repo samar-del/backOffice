@@ -1,5 +1,25 @@
-.table-wrapper {
-  border: 2px dotted #ccc; /* Define border properties */
-  padding: 10px; /* Optional: Add padding for better appearance */
-  border-radius: 10px;
+/* table-wrapper.component.css */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.table th, .table td {
+  border: 1px solid #dddddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table tbody tr:hover {
+  background-color: #ddd;
 }

@@ -5,7 +5,7 @@ import { FieldType } from '@ngx-formly/core';
   selector: 'app-tabs-wrapper',
   template: `
   <mat-tab-group>
-  <mat-tab *ngFor="let tab of tabs" [label]="tab.label">
+  <mat-tab label="test">
     <div class="tabs">
       <div class="tab" *ngFor="let tab of tabs" [class.active]="tab.active">
         <a [routerLink]="[tab.route]" routerLinkActive="active">{{ tab.label }}</a>

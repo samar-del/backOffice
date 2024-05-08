@@ -640,7 +640,7 @@ export class ContentComponent implements OnInit {
             templateOptions: {
               label: customizationData.label,
             },
-           // wrappers: ['column'],
+            wrappers: ['column'],
 
            // wrappers: ['well-container'], // Use the wrapper name here
           }];
