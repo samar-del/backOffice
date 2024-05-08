@@ -27,7 +27,6 @@ import { SelectCustomizeDialogComponent } from './components/fields-dialog/selec
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
 import { AddressCustomizeDialogComponent } from './components/fields-dialog/address-customize-dialog/address-customize-dialog.component';
-
 import { FormPreviewComponent } from './components/form-preview/form-preview.component';
 import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
@@ -41,7 +40,11 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
-
+import { HtmlDialogComponent } from './components/fields-dialog/html-dialog/html-dialog.component';
+import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-field-html.component';
+import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
+import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
+import { SafeUrlPipe } from './safe-url.pipe';
 
 
 @NgModule({
@@ -68,7 +71,12 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     HomeComponent,
     FormlyFieldFileComponent,
     FileValueAccessorDirective,
-    AddressWrapperComponent
+    AddressWrapperComponent,
+    HtmlDialogComponent,
+    FormlyFieldHtmlComponent,
+    IFrameDialogComponent,
+    FormlyFieldIframeComponent,
+    SafeUrlPipe
   ],
   imports: [
     BrowserModule,
@@ -82,7 +90,8 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     ReactiveFormsModule,
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'address-wrapper', component: AddressWrapperComponent }
+        { name: 'address-wrapper', component: AddressWrapperComponent }, {name: 'html', component: FormlyFieldHtmlComponent},
+        {name: 'iframe', component: FormlyFieldIframeComponent},
       ],
       types: [
         {
@@ -92,7 +101,9 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
           defaultOptions: {templateOptions: {column: true}}
         },
         {name: 'columnSize', component: ColumnSizeComponent},
-        {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']}
+        {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
+        {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
+        {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
       ],
     }),
     FormlyModule.forChild({
@@ -114,7 +125,7 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatOptionModule
+    MatOptionModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
