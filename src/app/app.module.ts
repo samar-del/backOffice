@@ -1,4 +1,4 @@
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabBody, MatTabBodyPortal, MatTabsModule, _MatTabBodyBase } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, Component } from '@angular/core';
 
@@ -42,6 +42,9 @@ import { FormTableComponent } from './components/fields-dialog/form-table/form-t
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
 import { TabsWrapperComponent } from './components/tabs-wrapper/tabs-wrapper.component';
 import { TabsDialogComponent } from './components/fields-dialog/tabs-dialog/tabs-dialog.component';
+import { WellDialogComponent } from './components/fields-dialog/well-dialog/well-dialog.component';
+import { WellWrapperComponent } from './components/well-wrapper/well-wrapper.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -71,7 +74,9 @@ import { TabsDialogComponent } from './components/fields-dialog/tabs-dialog/tabs
     FormTableComponent,
     TableWrapperComponent,
     TabsWrapperComponent,
-    TabsDialogComponent
+    TabsDialogComponent,
+    WellDialogComponent,
+    WellWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -86,21 +91,19 @@ import { TabsDialogComponent } from './components/fields-dialog/tabs-dialog/tabs
     FormlyModule.forRoot({
       wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'address-wrapper', component: AddressWrapperComponent },
-        { name: 'container', component: TableWrapperComponent },
-        { name: 'nav', component: TabsWrapperComponent }
+        { name: 'table', component: TableWrapperComponent },
+        { name: 'tabs', component: TabsWrapperComponent },
+        { name: 'card', component: WellWrapperComponent }
       ],
       types: [
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
         {
-          name: 'container',
-          extends: 'formly-group',
-          wrappers: ['form-field'],
-          defaultOptions: {
-            templateOptions: {table:true}
-          }},
-          { name: 'nav', component: TabsWrapperComponent }
+          name: 'table',
+          component: TableWrapperComponent         },
+          { name: 'tabs', component: TabsWrapperComponent },
+          { name: 'card', component: WellWrapperComponent, wrappers: ['form-field'], defaultOptions: { templateOptions: { well: true } } }
 
       ],
     }),
@@ -115,9 +118,8 @@ import { TabsDialogComponent } from './components/fields-dialog/tabs-dialog/tabs
     NgbModule,
     HttpClientModule,
     FormsModule,
-    MatTabsModule
-
-
+    MatTabsModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

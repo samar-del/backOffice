@@ -4,19 +4,23 @@ import { FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-table-wrapper',
   template: `
-  <div class="container">
-  <div class="row">
-    <div class="col-sm">
-      One of three columns
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <!-- Entêtes des colonnes -->
+            <th *ngFor="let header of headers">{{ header }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Itération sur les lignes -->
+          <tr *ngFor="let row of rows">
+            <!-- Itération sur les colonnes -->
+            <td *ngFor="let cell of row">{{ cell }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <div class="col-sm">
-      One of three columns
-    </div>
-    <div class="col-sm">
-      One of three columns
-    </div>
-  </div>
-</div>
   `,
 })
 export class TableWrapperComponent {

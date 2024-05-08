@@ -1,0 +1,66 @@
+<div class="dialog-field">
+  <div class="form-tab">
+    <h3 mat-dialog-title>Customize Well</h3>
+    <hr>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
+        <form [formGroup]="form">
+
+          <div mat-dialog-content>
+            <div class="form-group">
+              <label for="label">Label</label>
+              <input id="label" formControlName="label" class="form-control" />
+            </div>
+
+
+            <div class="form-group">
+              <label for="custom_css">Custom CSS</label>
+              <input id="custom_css" formControlName="custom_css" class="form-control" />
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+              <label class="form-check-label" for="hidden">
+                Hidden
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
+              <label class="form-check-label" for="disabled">
+                Disabled
+              </label>
+            </div>
+          </div>
+          <div mat-dialog-actions>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+          </div>
+        </form>
+      </mat-tab>
+      <mat-tab label="conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+
+
+      </mat-tab>
+      <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="property_name">Property Name</label>
+            <input id="property_name" formControlName="property_name" type="text" class="form-control" />
+          </div>
+            <div class="form-group">
+              <label for="field_tags">Field Tags</label>
+              <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+              <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+            </div>
+          </form>
+      </mat-tab>
+      <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div class="preview-tab">
+    <h4>Preview input</h4>
+    <hr>
+    <div class="formly-form-container">
+    </div>
+  </div>
+</div>

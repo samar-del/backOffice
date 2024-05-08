@@ -25,6 +25,7 @@ import {ShareService} from '../../services/share.service';
 import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
 import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
+import { WellDialogComponent } from '../fields-dialog/well-dialog/well-dialog.component';
 
 
 
@@ -613,18 +614,43 @@ export class ContentComponent implements OnInit {
       else if (type === 'tabs') {
         const customizationData = await this.openTabsDialog();
         if (customizationData) {
-          // Process customization data as needed
-          const tabs = customizationData.tabs; // Récupérez les onglets personnalisés depuis les données de personnalisation
+          newField = [
+            {
+              key: customizationData.property_name,
+              type: 'tabs',
+              templateOptions: {
+                label: customizationData.label,
+                custom_css: customizationData.custom_css,
+                tabContents: customizationData.tableRows // Ajouter les données des onglets
+              },
+              wrappers: ['column'],
+            },
+          ];
+        }
+        this.form = this.fb.group({});
+      }
 
-          // Mettez à jour les onglets ou effectuez d'autres opérations en fonction des données personnalisées
-          // Par exemple, vous pouvez mettre à jour l'affichage des onglets ou effectuer d'autres actions nécessaires
+      else if (type === 'well') {
+        const customizationData = await this.openWellDialog();
 
-          console.log('Customized tabs:', tabs);
+        if (customizationData) {
+          newField = [{
+            key: 'well', // Key of the wrapper component for well
+            type: 'card',
+            templateOptions: {
+              label: customizationData.label,
+            },
+           // wrappers: ['column'],
+
+           // wrappers: ['well-container'], // Use the wrapper name here
+          }];
+
+          console.log(newField);
+          this.form = this.fb.group({});
         }
       }
 
-
-    else {
+        else {
     //  this.openRadioDialog();
     }
 
@@ -660,6 +686,22 @@ export class ContentComponent implements OnInit {
     return tableFields;
   }
 
+  async openWellDialog() {
+    const dialogRef = this.dialog.open(WellDialogComponent, {
+      width: '1400px',
+      data:{
+        label:''
+      }
+     });
+
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
 
   async openTabsDialog() {
     const dialogRef = this.dialog.open(TabsDialogComponent, {
@@ -676,6 +718,7 @@ export class ContentComponent implements OnInit {
       return null;
     }
   }
+
   async openTableDialog() {
     const dialogRef = this.dialog.open(FormTableComponent, {
       width: '1400px',
