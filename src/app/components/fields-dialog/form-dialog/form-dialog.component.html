@@ -121,8 +121,8 @@
         </div>
         <div class="form-group">
           <label for="whenShouldDisplay">When the form component:</label>
-          <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay" *ngFor="let f of fieldsList">
-            <option value="{{f}}">{{f}}</option>
+          <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay" >
+            <option *ngFor="let f of fieldsList" value="{{f}}">{{f}}</option>
           </select>
         </div>
         <div class="form-group">

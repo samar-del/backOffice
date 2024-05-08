@@ -1,4 +1,14 @@
-import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input, NgZone,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
@@ -11,7 +21,7 @@ import {FormCreationService} from '../../services/form-creation.service';
 import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin, Observable, Subscription} from 'rxjs';
 import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import {TelFormDialogComponent} from '../fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import {FieldService} from '../../services/field.service';
@@ -22,7 +32,7 @@ import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layo
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
-import {TranslationService} from "../../services/translation.service";
+import {TranslationService} from '../../services/translation.service';
 
 
 
@@ -33,13 +43,24 @@ import {TranslationService} from "../../services/translation.service";
   styleUrls: ['./content.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ContentComponent implements OnInit {
+export class ContentComponent implements OnInit, OnChanges {
+  // tslint:disable-next-line:max-line-length
+  constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
+              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
+              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
+    this.form = this.fb.group({});
+    this.previewForm = this.fb.group({});
+    this.subscribeToFormChanges(this.form);
+    this.subscribeToFormChanges(this.previewForm);
+  }
+
   previewForm: FormGroup;
  fields: FormlyFieldConfig[] = [];
   previewfields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
   model: any = {};
+  previewmodel: any = {};
   options: FormlyFormOptions = {};
   containerDraggedOver = false;
   columnSize: any [ ] = [];
@@ -49,16 +70,18 @@ export class ContentComponent implements OnInit {
     { name: 'Category 2', fields: [] },
     // Add more categories if needed
   ];
-  // tslint:disable-next-line:max-line-length
-  constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
-              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService, private translationService: TranslationService) {
-    this.form = this.fb.group({});
-    this.previewForm = this.fb.group({});
+      ngOnInit(): void {
+    this.previewForm.valueChanges.subscribe((value) => {
+    });
   }
-  ngOnInit(): void {
+  // tslint:disable-next-line:typedef
+  subscribeToFormChanges(form: FormGroup) {
+    // Subscribe to form value changes
+    form.valueChanges.subscribe((value) => {
+      console.log(' Form Value:', value);
+      this.ngZone.run(() => {});
+    });
   }
-
   // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
     if (event.previousContainer === event.container) {
@@ -75,9 +98,24 @@ export class ContentComponent implements OnInit {
     }
     this.containerDraggedOver = false;
   }
+  // tslint:disable-next-line:typedef
+  ngOnChanges(changes) {
+    console.log(changes);
+    this.subscribeToFormChanges(this.form);
+    this.subscribeToFormChanges(this.previewForm);
 
-
-
+    this.previewForm.valueChanges.subscribe( () => {
+      console.log(' changes', changes);
+      this.cdr.detectChanges();
+    });
+  }
+  // tslint:disable-next-line:typedef
+  handleInputChange(fieldName: string, event: any) {
+    const newValue = event.target.value;
+    console.log('Contenu du champ (previewForm)', fieldName, ':', newValue);
+    // Run change detection manually
+    this.ngZone.run(() => {});
+  }
   // tslint:disable-next-line:typedef
   async addField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
@@ -96,18 +134,17 @@ export class ContentComponent implements OnInit {
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
         const placeholder_ar = customizationData.placeholder_ar;
-
         newField = [{
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'text',
             placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr: placeholder_fr,
-            placeholder_ar: placeholder_ar,
+            placeholder_fr,
+            placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             required: customizationData.required,
@@ -136,38 +173,20 @@ export class ContentComponent implements OnInit {
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
             },
+            'templateOptions.hidden': (model: any, formState: any) => {
+              if (!customizationData.condi_whenShouldDisplay) {
+                return false;
+              }
+              const fieldValue = model[customizationData.condi_whenShouldDisplay];
+              return fieldValue !== customizationData.condi_value;
+            }
           },
         }];
-        if (customizationData.condi_shouldDisplay && customizationData.condi_shouldDisplay){
-          if (customizationData.condi_shouldDisplay === true){
-            this.fields.forEach(el => {
-              if (el.key === customizationData.condi_shouldDisplay){
-                if (el.model === customizationData.condi_value ){
-                  newField.map(field => {
-                    field.hide = false ;
-                    this.previewfields.push(field);
-                  });
-                }
-              }
-            });
-          }else {
-            this.fields.forEach(el => {
-            if (el.key === customizationData.condi_shouldDisplay){
-              if (el.model === customizationData.condi_value ){
-                newField.map(field => {
-                  field.hide = true ;
-                  this.previewfields.push(field);
-                });
-              }
-            }
-          }); }
-        }
-
       }
     }
     if ((language === 'an' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
-      (language === 'ar' && type === 'العنوان')){
+      (language === 'ar' && type === 'العنوان')) {
       const customizationData = await this.openAddressDialog();
       let field: FormlyFieldConfig = {};
       const listFieldAddress = customizationData.tableRows;
@@ -181,8 +200,8 @@ export class ContentComponent implements OnInit {
             key: customizationData.property_name,
             templateOptions: {
               label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-              label_fr: label_fr,
-              label_ar: label_ar,
+              label_fr,
+              label_ar,
               minLength: customizationData.minLength,
               maxLength: customizationData.maxLength,
               required: customizationData.required,
@@ -196,31 +215,31 @@ export class ContentComponent implements OnInit {
               custom_error_message: customizationData.custom_error_message
             },
             wrappers: ['column'],
-            fieldGroup: [ ],
+            fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
             const Key = this.generateRandomId();
             const fieldGroupElem = {
-                  type: 'input',
-                  wrappers: ['address-wrapper'],
-                  key: customizationData.property_name,
-                  templateOptions: {
-                    label : el.label,
-                    placeholder: el.placeholder,
-                    disabled: el.disabled,
-                    hidden: el.hidden,
-                    custom_css: el.custom_css,
-                    hide_label: el.hide_label,
-                    property_name: el.property_name,
-                    field_tags: el.field_tags,
-                    error_label: el.error_label,
-                    custom_error_message: el.custom_error_message
-                  },
-                };
+              type: 'input',
+              wrappers: ['address-wrapper'],
+              key: customizationData.property_name,
+              templateOptions: {
+                label: el.label,
+                placeholder: el.placeholder,
+                disabled: el.disabled,
+                hidden: el.hidden,
+                custom_css: el.custom_css,
+                hide_label: el.hide_label,
+                property_name: el.property_name,
+                field_tags: el.field_tags,
+                error_label: el.error_label,
+                custom_error_message: el.custom_error_message
+              },
+            };
             field.fieldGroup.push(fieldGroupElem);
-            });
+          });
           newField.push(field);
-        }else {
+        } else {
           field = {
             fieldGroupClassName: 'display-flex',
             wrappers: ['column'],
@@ -230,8 +249,8 @@ export class ContentComponent implements OnInit {
                 key: customizationData.property_name,
                 templateOptions: {
                   label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-                  label_fr: label_fr,
-                  label_ar: label_ar,
+                  label_fr,
+                  label_ar,
                   placeholder: customizationData.placeholder,
                   disabled: customizationData.disabled,
                   hidden: customizationData.hidden,
@@ -247,7 +266,8 @@ export class ContentComponent implements OnInit {
           };
           newField.push(field);
         }
-    }}
+      }
+    }
     if ((language === 'an' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
@@ -265,12 +285,12 @@ export class ContentComponent implements OnInit {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'email',
             placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr: placeholder_fr,
-            placeholder_ar: placeholder_ar,
+            placeholder_fr,
+            placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
@@ -316,12 +336,12 @@ export class ContentComponent implements OnInit {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'url',
             placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr: placeholder_fr,
-            placeholder_ar: placeholder_ar,
+            placeholder_fr,
+            placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
@@ -367,12 +387,12 @@ export class ContentComponent implements OnInit {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'tel',
             placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr: placeholder_fr,
-            placeholder_ar: placeholder_ar,
+            placeholder_fr,
+            placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             custom_css: customizationData.custom_css,
@@ -417,8 +437,8 @@ export class ContentComponent implements OnInit {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'datetime-local',
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -453,14 +473,15 @@ export class ContentComponent implements OnInit {
       // @ts-ignore
       if (customizationData) {
         const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;        newField = [{
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
+        newField = [{
           type: 'input',
           key: customizationData.property_name,
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'date',
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -487,8 +508,7 @@ export class ContentComponent implements OnInit {
           },
         }];
       }
-    }
-    else if ((language === 'an' && type === 'Number') ||
+    } else if ((language === 'an' && type === 'Number') ||
       (language === 'fr' && type === 'Nombre') ||
       (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
@@ -505,12 +525,12 @@ export class ContentComponent implements OnInit {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'number',
             placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr: placeholder_fr,
-            placeholder_ar: placeholder_ar,
+            placeholder_fr,
+            placeholder_ar,
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
             disabled: customizationData.disabled,
@@ -537,11 +557,9 @@ export class ContentComponent implements OnInit {
           },
         }];
       }
-    }
-
-    else if ((language === 'an' && type === 'radio') ||
+    } else if ((language === 'an' && type === 'radio') ||
       (language === 'fr' && type === 'radio') ||
-      (language === 'ar' && type === 'راديو')){
+      (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
       if (customizationData) {
         newField = [{
@@ -552,7 +570,7 @@ export class ContentComponent implements OnInit {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            options : customizationData.tableRows ,
+            options: customizationData.tableRows,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             custom_css: customizationData.custom_css,
@@ -563,10 +581,9 @@ export class ContentComponent implements OnInit {
           },
         }];
       }
-    }
-    else if ((language === 'an' && type === 'select') ||
+    } else if ((language === 'an' && type === 'select') ||
       (language === 'fr' && type === 'select') ||
-      (language === 'ar' && type === 'اختيار')){
+      (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
@@ -574,40 +591,12 @@ export class ContentComponent implements OnInit {
           key: customizationData.property_name,
           type: 'select',
           wrappers: ['column'],
-          templateOptions : {
+          templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            options : customizationData.tableRows,
+            options: customizationData.tableRows,
             custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
-        },
-      }]; }
-    }
-    else if ((language === 'an' && type === 'Select Multiple') ||
-      (language === 'fr' && type === 'Sélection multiple') ||
-      (language === 'ar' && type === 'اختيار متعدد')){
-      const customizationData = await this.openSelectDialog();
-      console.log(customizationData);
-      if (customizationData) {
-        newField = [{
-          key: customizationData.property_name,
-          wrappers: ['column'],
-          type: 'select',
-          templateOptions : {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: customizationData.label_fr,
-            label_ar: customizationData.label_ar,
-            custom_css: customizationData.custom_css,
-            multiple : true,
-            options : customizationData.tableRows,
             required: customizationData.required,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -617,9 +606,37 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-        }]; }
-    }
-    else if ((language === 'an' && type === 'checkbox') ||
+        }];
+      }
+    } else if ((language === 'an' && type === 'Select Multiple') ||
+      (language === 'fr' && type === 'Sélection multiple') ||
+      (language === 'ar' && type === 'اختيار متعدد')) {
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = [{
+          key: customizationData.property_name,
+          wrappers: ['column'],
+          type: 'select',
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            custom_css: customizationData.custom_css,
+            multiple: true,
+            options: customizationData.tableRows,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+        }];
+      }
+    } else if ((language === 'an' && type === 'checkbox') ||
       (language === 'fr' && type === 'checkbox') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
@@ -633,8 +650,8 @@ export class ContentComponent implements OnInit {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr:label_fr,
-            label_ar:label_ar,
+            label_fr,
+            label_ar,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -649,17 +666,16 @@ export class ContentComponent implements OnInit {
         }];
       }
 
-    } else if (type === 'File'){
+    } else if (type === 'File') {
       newField = [{
         key: 'file',
         type: 'file',
       }];
-    }
-    else if (type === 'Columns') {
+    } else if (type === 'Columns') {
       const customizationData = await this.openColumnDialog();
       if (customizationData) {
-        let columnSizess  = [{size: '', width: ''}] ;
-        columnSizess = customizationData.tableRows ;
+        let columnSizess = [{size: '', width: ''}];
+        columnSizess = customizationData.tableRows;
         this.shareService.emitNumberColumn(columnSizess);
         console.log(columnSizess);
         newField = [
@@ -678,22 +694,57 @@ export class ContentComponent implements OnInit {
       }
       console.log(newField);
       this.form = this.fb.group({});
-    //  this.formlyForm.resetForm({ model: this.model });
-      }
-    else {
-    //  this.openRadioDialog();
+      //  this.formlyForm.resetForm({ model: this.model });
+    } else {
+      //  this.openRadioDialog();
     }
 
     if (newField.length > 0) {
       console.log(newField);
       newField.forEach(el => {
+        this.ngZone.run(() => {});
         this.fields.push(el);
+        // this.previewfields.push(el);
         this.recentListFields.push(el.key);
-        this.shareService.emitListFields(this.recentListFields); });
+        this.shareService.emitListFields(this.recentListFields);
+        const previewField: FormlyFieldConfig = {};
+        let previousExpression: {};
+        previewField.key = el.key;
+        previewField.templateOptions = el.templateOptions;
+        previewField.type = el.type;
+        previousExpression = el.expressionProperties;
+        console.log(previousExpression);
+        if (el.templateOptions.condi_shouldDisplay && el.templateOptions.condi_whenShouldDisplay) {
+          const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
+          // if (fieldToCheck.model.value === el.templateOptions.condi_value){
+            // tslint:disable-next-line:no-unused-expression
+          previewField.hideExpression = (model) => !((model.fieldToCheck === previewField.templateOptions.condi_value));
+          // }else {
+          //   previewField.expressionProperties = {
+          //     'templateOptions.hidden': 'true',
+          //   };
+          // }
+          this.previewfields.push(previewField);
+          this.previewForm.addControl(previewField.key.toString(), this.fb.control(''));
+          this.previewForm.get(previewField.key.toString()).valueChanges.subscribe((value) => {
+            console.log('Contenu du champ', previewField.key.toString() , ':', value);
+            this.cdr.detectChanges();
+          });
+          console.log('Contenu du previewField   est ', previewField);
+          console.log('Contenu du list previewField   est ', this.previewfields);
+          // this.previewfields.forEach( prField => {
+          //   this.previewmodel.prField.value.valueChanges.subscribe((value) => {
+          //     console.log('Contenu du champ nom est ', value);
+          //   });
+          // });
 
-      // Check if formlyForm is defined before calling resetForm
+        } else {
+          this.previewfields.push(el);
+        }
+      });
       if (this.formlyForm) {
-        this.formlyForm.resetForm({ model: this.model });
+
+        // this.formlyForm.resetForm({ model: this.model });
       }
       // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
@@ -704,7 +755,7 @@ export class ContentComponent implements OnInit {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
-        label_fr: '' ,// Default label value
+        label_fr: '' , // Default label value
         label_ar: ''
       }
     });
@@ -742,7 +793,7 @@ export class ContentComponent implements OnInit {
   async openDateDialog() {
     const dialogRef = this.dialog.open(DateFormDialogComponent, {
       width: '1400px',
-      data: {label_fr: '',label_ar: '', placeholder: ''},
+      data: {label_fr: '', label_ar: '', placeholder: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -756,7 +807,7 @@ export class ContentComponent implements OnInit {
   async openPhoneDialog() {
     const dialogRef = this.dialog.open(TelFormDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar:'', placeholder_fr: '',placeholder_ar: ''},
+      data: {label_fr: '', label_ar: '', placeholder_fr: '', placeholder_ar: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -785,7 +836,7 @@ export class ContentComponent implements OnInit {
   async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar:'', placeholder: '', tableRows: [{label : '', value: ''}]},
+      data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label : '', value: ''}]},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -798,7 +849,7 @@ export class ContentComponent implements OnInit {
   async openSelectDialog() {
     const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
       width: '1400px',
-      data: {label_fr: '',label_ar: '', placeholder: '', tableRows: [{label : '', value: ''}]},
+      data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label : '', value: ''}]},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -878,7 +929,7 @@ export class ContentComponent implements OnInit {
                const fieldGroupId = await this.saveFieldsGroupWithTemplateOptions(fieldGroup, fieldOptions);
                fieldsGroupId.push(fieldGroupId);
             }
-            //field.fieldGroup = fieldsGroupId;
+            // field.fieldGroup = fieldsGroupId;
           }
           fieldOptions = await this.saveFieldOptions(field);
           fieldId = await this.saveFieldWithTemplateOptions(field, fieldOptions, fieldsGroupId);
@@ -929,13 +980,13 @@ export class ContentComponent implements OnInit {
       type: field.templateOptions.type,
       required: field.templateOptions.required,
       hidden: field.templateOptions.hidden,
-      hide_label_fr:field.templateOptions.hide_label_fr,
-      hide_label_ar:field.templateOptions.hide_label_ar,
-      custom_css:field.templateOptions.custom_css,
-      property_name:field.templateOptions.property_name,
-      field_tags:field.templateOptions.field_tags,
-      error_label:field.templateOptions.error_label,
-      custom_error_message:field.templateOptions.custom_error_message,
+      hide_label_fr: field.templateOptions.hide_label_fr,
+      hide_label_ar: field.templateOptions.hide_label_ar,
+      custom_css: field.templateOptions.custom_css,
+      property_name: field.templateOptions.property_name,
+      field_tags: field.templateOptions.field_tags,
+      error_label: field.templateOptions.error_label,
+      custom_error_message: field.templateOptions.custom_error_message,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };
