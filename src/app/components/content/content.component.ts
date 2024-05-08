@@ -23,6 +23,8 @@ import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customiz
 import {error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
 import {TranslationService} from "../../services/translation.service";
+import {HtmlDialogComponent} from "../fields-dialog/html-dialog/html-dialog.component";
+import {IFrameDialogComponent} from "../fields-dialog/i-frame-dialog/i-frame-dialog.component";
 
 
 
@@ -165,6 +167,81 @@ export class ContentComponent implements OnInit {
 
       }
     }
+
+    if ((language === 'an' && type === 'HTML Element') ||
+      (language === 'fr' && type === 'Element HTML') ||
+      (language === 'ar' && type === 'عنصر HTML')) {
+      const customizationData = await this.openHTMLDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const htmlElement = customizationData.htmlElement;
+        console.log(htmlElement);
+        newField = [{
+          type: 'html',
+          key: customizationData.property_name,
+          templateOptions: {
+            html_tag:customizationData.html_tag,
+            html_content:customizationData.html_content,
+            htmlElement:htmlElement,
+            type: 'html',
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            custom_css: customizationData.custom_css,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          wrappers: ['column'],
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+        if (customizationData.condi_shouldDisplay && customizationData.condi_shouldDisplay){
+          if (customizationData.condi_shouldDisplay === true){
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay){
+                if (el.model === customizationData.condi_value ){
+                  newField.map(field => {
+                    field.hide = false ;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            });
+          }else {
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay){
+                if (el.model === customizationData.condi_value ){
+                  newField.map(field => {
+                    field.hide = true ;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            }); }
+        }
+
+      }
+    }
     if ((language === 'an' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')){
@@ -294,6 +371,48 @@ export class ContentComponent implements OnInit {
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'an' && type === 'IFrame') ||
+      (language === 'fr' && type === 'IFrame') ||
+      (language === 'ar' && type === 'IFrame')) {
+      const customizationData = await this.openIFrameDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+
+        newField = [{
+          type: 'iframe',
+          key: customizationData.property_name,
+          wrappers: ['column'],
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
+            type: 'iframe',
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              return value;
             },
           },
           // Customize other properties as needed
@@ -711,6 +830,36 @@ export class ContentComponent implements OnInit {
 
     return dialogRef.afterClosed();
   }
+
+  async openHTMLDialog() {
+    const dialogRef = this.dialog.open(HtmlDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', html_tag:'', html_content:'', htmlElement:'', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      customizationData.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openIFrameDialog() {
+    const dialogRef = this.dialog.open(IFrameDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '' ,link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1400px',

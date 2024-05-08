@@ -10,6 +10,10 @@ export class ShareService {
   addressOptions =  new BehaviorSubject<any[]>([]);
   recentFieldsList = new BehaviorSubject<any[]>([]);
   fieldsList$ = this.recentFieldsList.asObservable();
+
+  private urlSource = new BehaviorSubject<string>(''); // Default value is an empty string
+  currentUrl = this.urlSource.asObservable();
+
   constructor() { }
   emitListFields(list: {}[]){
     this.recentFieldsList.next(list);
@@ -21,5 +25,8 @@ export class ShareService {
   }
   emitAddressOptions(values: {}[]){
     this.addressOptions.next(values);
+  }
+  changeUrl(link_iframe: string) {
+    this.urlSource.next(link_iframe);
   }
 }
