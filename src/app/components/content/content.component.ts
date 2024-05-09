@@ -903,7 +903,7 @@ export class ContentComponent implements OnInit {
 
       // Check if formlyForm is defined before calling resetForm
       if (this.formlyForm) {
-        this.formlyForm.resetForm({ model: this.model });
+       // this.formlyForm.resetForm({ model: this.model });
       }
       // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
@@ -1234,7 +1234,7 @@ export class ContentComponent implements OnInit {
       columns: field.templateOptions.rows,
       theme: field.templateOptions.theme,
       collapsible: field.templateOptions.collapsible,
-    
+
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };

@@ -79,7 +79,7 @@ import { SafeUrlPipe } from './safe-url.pipe';
     FormTableComponent,
     TableWrapperComponent,
     PanelDialogComponent,
-    PanelFieldWrapperComponent
+    PanelFieldWrapperComponent,
     HtmlDialogComponent,
     FormlyFieldHtmlComponent,
     IFrameDialogComponent,
