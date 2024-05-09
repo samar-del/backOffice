@@ -1,8 +1,6 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
-import { FormDialogComponent } from '../form-dialog/form-dialog.component';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-tabs-dialog',
@@ -10,81 +8,58 @@ import { FormDialogComponent } from '../form-dialog/form-dialog.component';
   styleUrls: ['./tabs-dialog.component.css']
 })
 export class TabsDialogComponent implements OnInit {
-
   form: FormGroup;
-  previewForm: FormGroup;
-  newField: FormlyFieldConfig;
-  @ViewChild('formlyForm') formlyForm: any;
-  options: FormlyFormOptions = {};
-  model: any = {};
-  selectedTabIndex = 0; // Default tab index
+  selectedTabIndex = 0;
+  tabs = ['tab1'];
 
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<FormDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+    public dialogRef: MatDialogRef<TabsDialogComponent>
+  ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      label: [this.data.label],
-      custom_css: [this.data.custom_css],
-      hidden: [this.data.hidden],
-      hide_label: [this.data.hide_label],
-      disabled: [this.data.disabled],
-      tableRows: this.fb.array([]) // Initialize form array for table rows
+      label: [''],
+      custom_css: [''],
+      hidden: [false],
+      disabled: [false],
+      tableRows: this.fb.array([])
     });
-    if (this.data.tableRows) {
-      this.data.tableRows.forEach(row => this.addTabRow(row.label, row.key)); // Corrected method name
+    this.addTabRow('tab1', 'tab1');
+  }
+
+  addTabRow(label: string, key: string): void {
+    const row = this.fb.group({
+      label: [label],
+      key: [key]
+    });
+    this.tableRows.push(row);
+  }
+
+  get tableRows(): FormArray {
+    return this.form.get('tableRows') as FormArray;
+  }
+
+  onTabChange(event): void {
+    this.selectedTabIndex = event.index;
+    if (this.selectedTabIndex === 0) {
+      this.tableRows.clear();
+      this.addTabRow('tab1', 'tab1');
     }
   }
 
-  addTab() {
-    this.addTabRow('', ''); // Default values for label and key
-  }
-
-  removeTab(index: number) {
-    this.tableRows.removeAt(index); // Corrected property name
-  }
-
-  addTabRow(label: string, key: string) {
-    this.tableRows.push(this.fb.group({
-      label: [label, Validators.required],
-      key: [key, Validators.required]
-    }));
-  }
-
-  // Remove a table row
   removeTableRow(index: number) {
     this.tableRows.removeAt(index);
   }
 
-  // Getters for form array
-  get tableRows() {
-    return this.form.get('tableRows') as FormArray;
-  }
-
-  onTabChange(event: any): void {
-    this.selectedTabIndex = event.index;
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-  getLabelStyles(): any {
-    const customCss = this.form.get('custom_css').value;
-    return customCss ? { cssText: customCss } : {};
-  }
-
-  savetab() {
-    const tablayout = {
-      label: this.form.value.label,
-      tableRows: this.form.value.tableRows
-    };
-    this.dialogRef.close(tablayout);
-  }
   cancel() {
     this.dialogRef.close();
+  }
+
+  addLink() {
+    const newTabNumber = this.tabs.length + 1;
+    const newTabLabel = `tab ${newTabNumber}`;
+    this.tabs.push(newTabLabel);
+    this.addTabRow(newTabLabel, newTabLabel);
   }
 }

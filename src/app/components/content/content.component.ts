@@ -77,16 +77,8 @@ export class ContentComponent implements OnInit {
 
   calculatePosition(event: CdkDragDrop<string[]>): number {
 
-    // Calculate the position based on the cursor's position
-    // You may need to implement your own logic here based on your requirements
-    // For example, you can calculate the position based on the Y coordinate of the cursor
-
-    // Get the Y coordinate of the cursor relative to the content-container
-    const offsetY = event.distance.y - event.container.element.nativeElement.getBoundingClientRect().top;
-
-    // Calculate the position based on offsetY
-    // Example: dividing the container's height into equal segments and determining the segment based on the cursor's position
-    // This is just a placeholder; you'll need to adjust it based on your specific layout and requirements
+  const offsetY = event.distance.y - event.container.element.nativeElement.getBoundingClientRect().top;
+  // This is just a placeholder; you'll need to adjust it based on your specific layout and requirements
     const containerHeight = event.container.element.nativeElement.clientHeight;
     const totalSegments = this.fields.length + 1; // Total segments including existing fields
     const segmentHeight = containerHeight / totalSegments;
@@ -621,13 +613,15 @@ export class ContentComponent implements OnInit {
               templateOptions: {
                 label: customizationData.label,
                 custom_css: customizationData.custom_css,
-                tabContents: customizationData.tableRows // Ajouter les données des onglets
+                tableRows: customizationData.tableRows // Ajouter les données des onglets
               },
               wrappers: ['column'],
             },
           ];
-        }
+
+        console.log(newField);
         this.form = this.fb.group({});
+      }
       }
 
       else if (type === 'well') {
@@ -659,11 +653,9 @@ export class ContentComponent implements OnInit {
       newField.forEach(el => {
         this.fields.push(el); });
 
-      // Check if formlyForm is defined before calling resetForm
       if (this.formlyForm) {
         this.formlyForm.resetForm({ model: this.model });
       }
-      // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
     }
   }
@@ -971,6 +963,7 @@ export class ContentComponent implements OnInit {
       custom_error_message: field.templateOptions.custom_error_message,
       rows: field.templateOptions.rows,
       columns: field.templateOptions.rows,
+      tableRows: field.templateOptions.tableRows,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId()
     };

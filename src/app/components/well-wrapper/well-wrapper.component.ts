@@ -13,11 +13,9 @@ import { ContentComponent } from '../content/content.component';
 @Component({
   selector: 'app-well-wrapper',
   template: `
-    <div class="card grey-background" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+    <div class="card grey-background">
       <div class="card-body">
-        <!-- Content goes here -->
-        <!-- Display dropped fields here -->
-        <ng-container *ngFor="let field of droppedFields">
+       <ng-container *ngFor="let field of droppedFields">
           <formly-field [field]="field"></formly-field>
         </ng-container>
       </div>
