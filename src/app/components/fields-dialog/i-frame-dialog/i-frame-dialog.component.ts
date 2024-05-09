@@ -55,7 +55,7 @@ export class IFrameDialogComponent implements OnInit {
       link_iframe: [this.data.link_iframe, Validators.required],
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
-      condi_value: [this.data.condi_value],
+      condi_value: [this.data.condi_value]
     });
 
     // Subscribe to label changes to update property name

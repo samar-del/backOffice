@@ -24,4 +24,6 @@ export class TemplateOptions {
   langue ?: string;
   label_fr ?: string;
   label_ar ?: string;
+  link_iframe ?: string;
+  htmlElement ?: string;
 }

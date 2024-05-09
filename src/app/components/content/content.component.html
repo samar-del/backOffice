@@ -4,23 +4,23 @@
 
     <div class="row align-items-center">
       <ng-container *ngFor="let field of fields; let i = index">
-        <div class="col-10" >
+        <div class="col-12" >
           <!-- Render the input field here -->
           <div class="formly-form-container">
             <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form" >
               <formly-field *ngIf="field.templateOptions.custom_css"[ngStyle]="{ 'cssText': field.templateOptions.custom_css }" ></formly-field>
             </formly-form>
           </div>
-        </div>
-        <div class="col-2" *ngIf="field.type" >
-          <!-- Edit and delete buttons -->
-          <div class="button-container" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
-            <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button class="btn btn-sm btn-outline-danger" (click)="deleteField(field.key)">
-              <mat-icon>delete</mat-icon>
-            </button>
+          <div *ngIf="field.type" >
+            <!-- Edit and delete buttons -->
+            <div class="button-container" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
+              <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon" (click)="openCustomizationDialog(field.key)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon" (click)="deleteField(field.key)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
         </div>
       </ng-container>

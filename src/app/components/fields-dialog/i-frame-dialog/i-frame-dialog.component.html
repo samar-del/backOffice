@@ -18,17 +18,39 @@
                 <input id="label_ar" formControlName="label_ar" class="form-control" />
               </div>
             </div>
-            <div class="col form-group">
+            <div class="form-group">
               <label for="link_iframe">Link</label>
               <input id="link_iframe" formControlName="link_iframe" class="form-control" />
             </div>
-            <label for="label_position">Label Position</label>
-            <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
-              <option [value]="'top'">Top</option>
-              <option [value]="'left'">Left</option>
-              <option [value]="'right'">Right</option>
-              <option [value]="'bottom'">Bottom</option>
-            </select>
+            <!--<div class="row">
+              <div class="col form-group">
+                <label for="width_iframe">Width</label>
+                <div class="input-group mb-3">
+                  <input id="width_iframe" formControlName="width_iframe" class="form-control" />
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="width_percent">%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col form-group">
+                <label for="length_iframe">Length</label>
+                <div class="input-group mb-3">
+                  <input id="length_iframe" formControlName="length_iframe" class="form-control" />
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="length_percent">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>-->
+            <div class="form-group">
+              <label for="label_position">Label Position</label>
+              <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
+                <option [value]="'top'">Top</option>
+                <option [value]="'left'">Left</option>
+                <option [value]="'right'">Right</option>
+                <option [value]="'bottom'">Bottom</option>
+              </select>
+            </div>
             <div class="form-group">
               <label for="custom_css">Custom CSS</label>
               <input id="custom_css" formControlName="custom_css" class="form-control" />

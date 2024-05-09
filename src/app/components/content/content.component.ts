@@ -383,7 +383,6 @@ export class ContentComponent implements OnInit {
       const customizationData = await this.openIFrameDialog();
       const link_iframe =customizationData.link_iframe
       this.shareService.changeUrl(link_iframe);
-
       // @ts-ignore
       if (customizationData) {
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
@@ -1089,11 +1088,14 @@ export class ContentComponent implements OnInit {
       field_tags:field.templateOptions.field_tags,
       error_label:field.templateOptions.error_label,
       custom_error_message:field.templateOptions.custom_error_message,
+      link_iframe:field.templateOptions.link_iframe,
+      htmlElement:field.templateOptions.htmlElement,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };
 
     await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();
+    console.log('Iframe data:', field.templateOptions.link_iframe, field.templateOptions.width_iframe, field.templateOptions.length_iframe);
     return templateOptions;
   }
   async saveFieldsGroupWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions): Promise<string> {
