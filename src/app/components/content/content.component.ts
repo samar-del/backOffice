@@ -841,33 +841,57 @@ export class ContentComponent implements OnInit {
       this.form = this.fb.group({});
     //  this.formlyForm.resetForm({ model: this.model });
       }
-      else if (type === 'Table') {
-        const customizationData = await this.openTableDialog();
-        if (customizationData) {
-          // Extract customization data
-          const { rows, columns, cloneRowComponents, cellAlignment, striped, bordered, hover, condensed } = customizationData;
 
-          // Logic for cloning row components
-          // Implement logic to clone components in a cell of one column to all other cells of that column if `cloneRowComponents` is true
+    else if ((language === 'an' && type === 'Table') ||
+      (language === 'fr' && type === 'Tableau') ||
+      (language === 'ar' && type === 'جدول')) {
+      const customizationData = await this.openTableDialog();
+      if (customizationData) {
+        const tableRows: FormlyFieldConfig[] = [];
 
-          // Generate table fields dynamically
-          const tableFields = this.generateTableFields(rows, columns);
-
-          // Create a form group for the dynamic form fields
-          const dynamicForm = this.fb.group({});
-
-          // Add the table fields to the form group
-          tableFields.forEach(field => {
-            dynamicForm.addControl(field.key, this.fb.control('')); // Adjust control value as needed
+        // Generate table rows with the specified number of rows and columns
+        for (let i = 0; i < customizationData.number_columns; i++) {
+          const tableRow: FormlyFieldConfig[] = [];
+          for (let j = 0; j < customizationData.number_rows; j++) {
+            const newField: FormlyFieldConfig = {
+              key: `row_${j}_col_${i}`,
+              type: 'input', // You can change this to the appropriate field type
+              templateOptions: {
+                label: `Row ${j + 1} - Column ${i + 1}`,
+              },
+            };
+            tableRow.push(newField);
+            console.log(newField);
+          }
+          tableRows.push({
+            fieldGroup: tableRow,
           });
-
-          // Replace this.form with the newly created form group
-          this.form = dynamicForm;
         }
+
+        newField = [{
+          type: 'table',
+          fieldGroup: tableRows,
+          key: customizationData.property_name,
+          templateOptions: {
+            type: 'table',
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            number_rows: customizationData.number_rows,
+            number_columns: customizationData.number_columns,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+          },
+          wrappers: ['column'],
+        }];
+        console.log(newField);
       }
+    }
 
-
-      else if (type === 'panel') {
+    else if (type === 'panel') {
         const customizationData = await this.openPanelDialog();
         if (customizationData) {
           newField = [{
@@ -949,8 +973,8 @@ export class ContentComponent implements OnInit {
     const dialogRef = this.dialog.open(FormTableComponent, {
       width: '1400px',
       data: {
-        label:''
-      } // Vous pouvez passer des données supplémentaires au composant de personnalisation du tableau si nécessaire
+        label_fr:'',label_ar:'', number_rows:'',number_columns:''
+      },
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -1222,7 +1246,6 @@ export class ContentComponent implements OnInit {
       type: field.templateOptions.type,
       required: field.templateOptions.required,
       hidden: field.templateOptions.hidden,
-
       hide_label_fr:field.templateOptions.hide_label_fr,
       hide_label_ar:field.templateOptions.hide_label_ar,
       custom_css:field.templateOptions.custom_css,
@@ -1230,8 +1253,8 @@ export class ContentComponent implements OnInit {
       field_tags:field.templateOptions.field_tags,
       error_label:field.templateOptions.error_label,
       custom_error_message:field.templateOptions.custom_error_message,
-      rows: field.templateOptions.rows,
-      columns: field.templateOptions.rows,
+      number_rows: field.templateOptions.number_rows,
+      number_columns: field.templateOptions.number_columns,
       theme: field.templateOptions.theme,
       collapsible: field.templateOptions.collapsible,
 
