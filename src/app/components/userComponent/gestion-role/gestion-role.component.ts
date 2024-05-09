@@ -1,3 +1,4 @@
+import { Permission } from './../../../models/permission';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Role } from 'src/app/models/role';
 import { RoleServiceService } from 'src/app/services/role-service.service';
@@ -18,10 +19,11 @@ export class GestionRoleComponent implements OnInit {
     roleType: '',
     permissions: [] // Initialiser à un tableau vide
   };
+  roleForUpdate: Role;
   roles: Role[] = [];
   newRole: Role = {};
   listroles: any;
-  listPermission!:Permission[];
+  listpermissionRole!:Permission[];
   constructor( private roleService: RoleServiceService) { }
 
   ngOnInit(): void {
@@ -95,9 +97,20 @@ addRoleWithPermissions(role: Role): void {
 permissionRole(id:number){
   alert("salut")
   this.roleService.getListPermissionByIdRole(id).subscribe(
-    data => {this.listPermission = data},
-    error => {alert("erreur recuperation list priviléges de ce role")}
+    data => {this.listpermissionRole = data},
+    error => {alert("erreur recuperation list permission de ce role")}
   );
+}
+
+togglePermissionSelection(Permission: any, isChecked: boolean) {
+  if (isChecked) {
+    this.roleForUpdate.permissions.push(Permission);
+  } else {
+    const index = this.roleForUpdate.Permission.findIndex(p => p.idPermission === Permission.idPrivilege);
+    if (index >= 0) {
+      this.roleForUpdate.permissions.splice(index, 1);
+    }
+  }
 }
 
 }
