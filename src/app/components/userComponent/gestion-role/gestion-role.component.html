@@ -1,0 +1,18 @@
+<app-confirmation-dialog></app-confirmation-dialog>
+<div class="container">
+  <h2>Gestion des rôles</h2>
+
+  <!-- Ajouter un nouveau rôle -->
+  <div>
+    <label>Nouveau rôle :</label>
+    <input type="text" [(ngModel)]="newRole.roleType" placeholder="Type de rôle">
+    <button (click)="addRole()">Ajouter</button>
+  </div>
+
+  <ul>
+    <li *ngFor="let role of roles">
+      <span>{{ role.roleType }}</span>
+      <button (click)="deleteRole(role)">Supprimer</button>
+    </li>
+  </ul>
+</div>

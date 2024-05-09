@@ -49,6 +49,10 @@ import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-
 import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
+import { GestionRoleComponent } from './components/userComponent/gestion-role/gestion-role.component';
+import { ConfirmationDialogComponent } from './components/userComponent/confirmation-dialog/confirmation-dialog.component';
+import { CommonModule } from '@angular/common';
+import { GestionPermissionComponent } from './components/userComponent/gestion-permission/gestion-permission.component';
 
 
 @NgModule({
@@ -84,7 +88,10 @@ import { SafeUrlPipe } from './safe-url.pipe';
     FormlyFieldHtmlComponent,
     IFrameDialogComponent,
     FormlyFieldIframeComponent,
-    SafeUrlPipe
+    SafeUrlPipe,
+    GestionRoleComponent,
+    ConfirmationDialogComponent,
+    GestionPermissionComponent
   ],
   imports: [
     BrowserModule,
@@ -135,6 +142,8 @@ import { SafeUrlPipe } from './safe-url.pipe';
     MatFormFieldModule,
     MatSelectModule,
     MatOptionModule,
+    CommonModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]
