@@ -62,4 +62,7 @@ export class TabsDialogComponent implements OnInit {
     this.tabs.push(newTabLabel);
     this.addTabRow(newTabLabel, newTabLabel);
   }
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
 }

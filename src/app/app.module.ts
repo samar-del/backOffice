@@ -99,8 +99,8 @@ import { CommonModule } from '@angular/common';
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
-        { name: 'table', component: TableWrapperComponent},
-        { name: 'tabs', component: TabsWrapperComponent },
+        { name: 'table', component: TableWrapperComponent, wrappers:['form-field']},
+        { name: 'tabs', component: TabsWrapperComponent, wrappers:['form-field'] },
 
           { name: 'card', component: WellWrapperComponent, wrappers: ['form-field'], defaultOptions: { templateOptions: { well: true } } }
 

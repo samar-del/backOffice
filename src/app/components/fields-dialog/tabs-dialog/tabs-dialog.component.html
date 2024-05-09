@@ -1,6 +1,6 @@
 <div class="dialog-field">
   <div class="form-tab">
-    <h3 mat-dialog-title>Customize Tabs</h3>
+    <h3 mat-dialog-title>Tabs</h3>
     <hr>
     <mat-tab-group (selectedTabChange)="onTabChange($event)">
       <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
@@ -55,10 +55,15 @@
             </div>
             <button type="button" (click)="addLink()" class="btn btn-success">Add Tab</button>
           </div>
-
+         <div mat-dialog-actions>
+          <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
+          <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+        </div>
 
         </form>
       </mat-tab>
+
+      
       <mat-tab label="Api" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }"></mat-tab>
       <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
         <form [formGroup]="form">
