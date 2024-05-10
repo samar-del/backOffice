@@ -108,7 +108,7 @@ import { SafeUrlPipe } from './safe-url.pipe';
         { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
         { name: 'columnSize', component: ColumnSizeComponent },
         { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
-        { name: 'table', component: TableWrapperComponent },
+        { name: 'table', component: TableWrapperComponent, wrappers: ['form-field'] },
         { name: 'panel', component: PanelFieldWrapperComponent },
          {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
         {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},

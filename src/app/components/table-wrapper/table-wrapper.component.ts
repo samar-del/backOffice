@@ -5,19 +5,12 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
   selector: 'app-table-wrapper',
   template: `
     <div class="table-layout-wrapper">
-      <table class="table">
-        <thead>
-          <tr>
-            <th *ngFor="let column of to.columns">{{ column }}</th>
-          </tr>
-        </thead>
-        <tbody>
+      <table class="table table-bordered">
           <tr>
             <td *ngFor="let f of field.fieldGroup" [ngClass]="f.className">
               <formly-field [field]="f"></formly-field>
             </td>
           </tr>
-        </tbody>
       </table>
     </div>
   `,
