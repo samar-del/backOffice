@@ -1,11 +1,11 @@
 import { ColumnSizeComponent } from './../column-size/column-size.component';
-import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
 import {FormCreationService} from '../../services/form-creation.service';
 import {Field} from '../../models/Field';
@@ -28,6 +28,7 @@ import { PanelDialogComponent } from '../fields-dialog/panel-dialog/panel-dialog
 import {TranslationService} from "../../services/translation.service";
 import {HtmlDialogComponent} from "../fields-dialog/html-dialog/html-dialog.component";
 import {IFrameDialogComponent} from "../fields-dialog/i-frame-dialog/i-frame-dialog.component";
+import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
 
 
 
@@ -60,7 +61,7 @@ export class ContentComponent implements OnInit {
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService, private translationService: TranslationService) {
+              private shareService: ShareService, private translationService: TranslationService, private cdRef: ChangeDetectorRef) {
     this.form = this.fb.group({});
     this.previewForm = this.fb.group({});
   }
@@ -112,6 +113,7 @@ export class ContentComponent implements OnInit {
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
+      console.log(customizationData);
       if (customizationData) {
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
@@ -752,7 +754,6 @@ export class ContentComponent implements OnInit {
       console.log(customizationData);
       if (customizationData) {
         newField = [{
-
           key: customizationData.property_name,
           type: 'select',
           templateOptions : {
@@ -891,6 +892,71 @@ export class ContentComponent implements OnInit {
       }
     }
 
+    else if (
+      (language === 'an' && type === 'Tabs') ||
+      (language === 'fr' && type === 'Onglets') ||
+      (language === 'ar' && type === 'نوافذ التبويب')
+    ) {
+      const customizationData = await this.openTabDialog();
+      if (customizationData) {
+        const tabs: FormlyFieldConfig[] = [];
+
+        customizationData.tabLabels.forEach((tabLabel: any[], tabIndex: number) => {
+          if (Array.isArray(tabLabel)) { // Check if tabLabel is an array
+            const tabFields: FormlyFieldConfig[] = [];
+
+            tabLabel.forEach((labelValue: any, fieldIndex: number) => {
+              const field: FormlyFieldConfig = {
+                key: `tab_${tabIndex}_field_${fieldIndex}`,
+                type: 'input', // Adjust the type as needed
+                templateOptions: {
+                  label: labelValue.label,
+                  placeholder: labelValue.value,
+                },
+              };
+              tabFields.push(field);
+            });
+
+            const tab: FormlyFieldConfig = {
+              key: `tab_${tabIndex}`,
+              type: 'tab',
+              templateOptions: {
+                title: `Tab ${tabIndex + 1}`,
+                fields: tabFields,
+              },
+            };
+
+            tabs.push(tab);
+          }
+        });
+
+        newField = [
+          {
+            type: 'tab',
+            fieldGroup: tabs,
+            key: customizationData.property_name,
+            templateOptions: {
+              type: 'tab',
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
+              number_tabs: customizationData.tabLabels.length,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,
+              tabLabels: customizationData.tabLabels,
+            },
+            wrappers: ['column'],
+          },
+        ];
+        console.log(newField);
+      }
+    }
+
+
+
     else if (type === 'panel') {
         const customizationData = await this.openPanelDialog();
         if (customizationData) {
@@ -923,8 +989,8 @@ export class ContentComponent implements OnInit {
       newField.forEach(el => {
         this.fields.push(el);
         this.recentListFields.push(el.key);
-        this.shareService.emitListFields(this.recentListFields); });
-
+        this.shareService.emitListFields(this.recentListFields);
+      });
       // Check if formlyForm is defined before calling resetForm
       if (this.formlyForm) {
        // this.formlyForm.resetForm({ model: this.model });
@@ -932,25 +998,9 @@ export class ContentComponent implements OnInit {
       // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
     }
+    console.log(newField);
   }
 
-  generateTableFields(rows: number, columns: number): any[] {
-    const tableFields = [];
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < columns; j++) {
-        const key = `row${i}_column${j}`;
-        const field = {
-          key: key,
-          type: 'input', // You can adjust the type as needed
-          templateOptions: {
-            label: `Row ${i + 1} - Column ${j + 1}` // Adjust the label as needed
-          }
-        };
-        tableFields.push(field);
-      }
-    }
-    return tableFields;
-  }
 
   async openPanelDialog() {
     const dialogRef = this.dialog.open(PanelDialogComponent, {
@@ -985,7 +1035,21 @@ export class ContentComponent implements OnInit {
     }
   }
 
-
+  async openTabDialog() {
+    const dialogRef = this.dialog.open(TabDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr:'',label_ar:''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
 
   openCheckboxDialog():Observable<any> {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
@@ -1031,7 +1095,14 @@ export class ContentComponent implements OnInit {
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar: '', placeholder_fr: '', placeholder_ar: '' , condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+      data: {
+        label_fr: '',
+        label_ar: '',
+        placeholder_fr: '',
+        placeholder_ar: '' ,
+        condi_whenShouldDisplay: '',
+        condi_shouldDisplay: '',
+        condi_value: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -1180,6 +1251,7 @@ export class ContentComponent implements OnInit {
       this.formlyForm.resetForm({ model: this.model, fields: this.fields });
     }
   }
+
   // tslint:disable-next-line:typedef
    async addFormTemplate() {
     if (this.form.valid) {

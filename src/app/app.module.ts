@@ -49,6 +49,8 @@ import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-
 import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
+import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
+import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
 
 
 @NgModule({
@@ -84,7 +86,9 @@ import { SafeUrlPipe } from './safe-url.pipe';
     FormlyFieldHtmlComponent,
     IFrameDialogComponent,
     FormlyFieldIframeComponent,
-    SafeUrlPipe
+    SafeUrlPipe,
+    TabFieldWrapperComponent,
+    TabDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -97,11 +101,13 @@ import { SafeUrlPipe } from './safe-url.pipe';
     DragDropModule,
     ReactiveFormsModule,
     FormlyModule.forRoot({
-      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
+      wrappers: [{ name: 'column', component: ColumnWrapperComponent },
+                { name: 'columnSize', component: ColumnSizeComponent },
                  {name: 'html', component: FormlyFieldHtmlComponent},
                  {name: 'iframe', component: FormlyFieldIframeComponent},
                  { name: 'address-wrapper', component: AddressWrapperComponent },
                  { name: 'table', component: TableWrapperComponent },
+                {name:'tab', component: TabFieldWrapperComponent},
 
       ],
       types: [
@@ -112,6 +118,7 @@ import { SafeUrlPipe } from './safe-url.pipe';
         { name: 'panel', component: PanelFieldWrapperComponent },
          {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
         {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
+        {name:'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
 
       ],
     }),

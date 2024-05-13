@@ -10,7 +10,7 @@ import {ShareService} from '../../services/share.service';
   selector: 'app-column-wrapper',
   styleUrls: ['./column-wrapper.component.css'],
   template: `
-    <div class="row"  (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (cdkDropListDropped)="drop($event)">
+    <div class="row" style="margin-bottom: 50px" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (cdkDropListDropped)="drop($event)">
       <ng-container *ngFor="let columnSize of columns">
         <div class="col-{{columnSize.size}}-{{columnSize.widh}}">
           <ng-container #fieldComponent></ng-container>
