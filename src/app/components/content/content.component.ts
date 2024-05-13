@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectorRef,
   Component, DoCheck, NgZone,
@@ -5,19 +6,21 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
+import { ColumnSizeComponent } from './../column-size/column-size.component';
+import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {FormTemplate} from '../../models/FormTemplate';
 import {FormCreationService} from '../../services/form-creation.service';
 import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
 import {forkJoin, Observable, Subscription} from 'rxjs';
+import { Observable} from 'rxjs';
 import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import {TelFormDialogComponent} from '../fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import {FieldService} from '../../services/field.service';
@@ -27,8 +30,14 @@ import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-fo
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error, promise} from 'protractor';
-import {ShareService} from '../../services/share.service';
-import {TranslationService} from '../../services/translation.service';
+import {ShareService} from '../../services/share.service'
+import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
+import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
+import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
+import { PanelDialogComponent } from '../fields-dialog/panel-dialog/panel-dialog.component';
+import {TranslationService} from "../../services/translation.service";
+import {HtmlDialogComponent} from "../fields-dialog/html-dialog/html-dialog.component";
+import {IFrameDialogComponent} from "../fields-dialog/i-frame-dialog/i-frame-dialog.component";
 
 
 
@@ -40,6 +49,8 @@ import {TranslationService} from '../../services/translation.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class ContentComponent implements OnInit, DoCheck {
+
+  @ViewChild('tableWrapper') tableWrapper: TableWrapperComponent;
   previewForm: FormGroup;
  fields: FormlyFieldConfig[] = [];
   previewfields: FormlyFieldConfig[] = [];
@@ -54,9 +65,11 @@ export class ContentComponent implements OnInit, DoCheck {
   categories: { name: string, fields: FormlyFieldConfig[] }[] = [
     { name: 'Category 1', fields: [] },
     { name: 'Category 2', fields: [] },
-    // Add more categories if needed
+
   ];
   private previousPreviewFields: FormlyFieldConfig[] = [];
+
+  // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
               private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
@@ -103,25 +116,40 @@ export class ContentComponent implements OnInit, DoCheck {
     console.log('this.previewmodel', this.previewModel);
     console.log('this.fields.values()', this.fields.values());
 
-  }
-  // tslint:disable-next-line:typedef
-  drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
-    if (event.previousContainer === event.container) {
-      this.addField(droppedItem);
-    //  moveItemInArray(this.fields, event.previousIndex, position);
-    }
-    else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
+
+  drop(event: CdkDragDrop<string[]>, droppedItem: string) {
+    // Calculate the position based on the cursor position
+    const position = this.calculatePosition(event);
+
+    // Insert the dropped item at the calculated position
+    this.addField(droppedItem, position);
+
+
     this.containerDraggedOver = false;
   }
+
+  calculatePosition(event: CdkDragDrop<string[]>): number {
+
+    // Calculate the position based on the cursor's position
+    // You may need to implement your own logic here based on your requirements
+    // For example, you can calculate the position based on the Y coordinate of the cursor
+
+    // Get the Y coordinate of the cursor relative to the content-container
+    const offsetY = event.distance.y - event.container.element.nativeElement.getBoundingClientRect().top;
+
+    // Calculate the position based on offsetY
+    // Example: dividing the container's height into equal segments and determining the segment based on the cursor's position
+    // This is just a placeholder; you'll need to adjust it based on your specific layout and requirements
+    const containerHeight = event.container.element.nativeElement.clientHeight;
+    const totalSegments = this.fields.length + 1; // Total segments including existing fields
+    const segmentHeight = containerHeight / totalSegments;
+    const position = Math.floor(offsetY / segmentHeight);
+
+    return position;
+  }
+
   // tslint:disable-next-line:typedef
-  async addField(type: string) {
+  async addField(type: string, position: number) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     let language: string;
     // Subscribe to get the current language
@@ -140,6 +168,7 @@ export class ContentComponent implements OnInit, DoCheck {
         const placeholder_fr = customizationData.placeholder_fr;
         const placeholder_ar = customizationData.placeholder_ar;
         newField = [{
+
           type: 'input',
           key: customizationData.property_name,
           templateOptions: {
@@ -173,10 +202,9 @@ export class ContentComponent implements OnInit, DoCheck {
           wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
               const value = model[uniqueKey];
               if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
+                return false;
               }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
@@ -191,6 +219,80 @@ export class ContentComponent implements OnInit, DoCheck {
             }
           },
         }];
+      }
+    }
+    if ((language === 'an' && type === 'HTML Element') ||
+      (language === 'fr' && type === 'Element HTML') ||
+      (language === 'ar' && type === 'عنصر HTML')) {
+      const customizationData = await this.openHTMLDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const htmlElement = customizationData.htmlElement;
+        console.log(htmlElement);
+        newField = [{
+          type: 'html',
+          key: customizationData.property_name,
+          templateOptions: {
+            html_tag:customizationData.html_tag,
+            html_content:customizationData.html_content,
+            htmlElement:htmlElement,
+            type: 'html',
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            custom_css: customizationData.custom_css,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          wrappers: ['column'],
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+        if (customizationData.condi_shouldDisplay && customizationData.condi_shouldDisplay){
+          if (customizationData.condi_shouldDisplay === true){
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay){
+                if (el.model === customizationData.condi_value ){
+                  newField.map(field => {
+                    field.hide = false ;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            });
+          }else {
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay){
+                if (el.model === customizationData.condi_value ){
+                  newField.map(field => {
+                    field.hide = true ;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            }); }
+        }
+
       }
     }
     if ((language === 'an' && type === 'Address') ||
@@ -229,29 +331,29 @@ export class ContentComponent implements OnInit, DoCheck {
           listFieldAddress.forEach(el => {
             const Key = this.generateRandomId();
             const fieldGroupElem = {
-              type: 'input',
-              wrappers: ['address-wrapper'],
-              key: customizationData.property_name,
-              templateOptions: {
-                label: el.label,
-                placeholder: el.placeholder,
-                disabled: el.disabled,
-                hidden: el.hidden,
-                custom_css: el.custom_css,
-                hide_label: el.hide_label,
-                property_name: el.property_name,
-                field_tags: el.field_tags,
-                error_label: el.error_label,
-                custom_error_message: el.custom_error_message
-              },
-            };
+                  type: 'input',
+                  wrappers: ['address-wrapper'],
+                  key: customizationData.property_name,
+                  templateOptions: {
+
+                    label : el.label,
+                    placeholder: el.placeholder,
+                    disabled: el.disabled,
+                    hidden: el.hidden,
+                    custom_css: el.custom_css,
+                    hide_label: el.hide_label,
+                    property_name: el.property_name,
+                    field_tags: el.field_tags,
+                    error_label: el.error_label,
+                    custom_error_message: el.custom_error_message
+                  },
+                };
             field.fieldGroup.push(fieldGroupElem);
           });
           newField.push(field);
         } else {
           field = {
             fieldGroupClassName: 'display-flex',
-            wrappers: ['column'],
             fieldGroup: [
               {
                 type: 'input',
@@ -270,6 +372,8 @@ export class ContentComponent implements OnInit, DoCheck {
                   error_label: customizationData.error_label,
                   custom_error_message: customizationData.custom_error_message
                 },
+                wrappers: ['column'],
+
               },
             ],
           };
@@ -291,7 +395,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -311,8 +414,12 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+
           },
+          wrappers: ['column'],
+
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -323,6 +430,52 @@ export class ContentComponent implements OnInit, DoCheck {
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
               return value.length < minLength || value.length > maxLength;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'an' && type === 'IFrame') ||
+      (language === 'fr' && type === 'IFrame') ||
+      (language === 'ar' && type === 'IFrame')) {
+      const customizationData = await this.openIFrameDialog();
+      const link_iframe =customizationData.link_iframe
+      this.shareService.changeUrl(link_iframe);
+
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+
+        newField = [{
+          type: 'iframe',
+          key: customizationData.property_name,
+          wrappers: ['column'],
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: label_fr,
+            label_ar: label_ar,
+            type: 'iframe',
+            link_iframe: customizationData.link_iframe,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              return value;
             },
           },
           // Customize other properties as needed
@@ -342,7 +495,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -364,6 +516,8 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -393,7 +547,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -415,6 +568,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -443,7 +598,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -460,6 +614,8 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -486,7 +642,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -503,6 +658,8 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -531,7 +688,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'input',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -552,6 +708,8 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -574,7 +732,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'radio',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
@@ -588,6 +745,8 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
         }];
       }
     } else if ((language === 'an' && type === 'select') ||
@@ -599,8 +758,7 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           key: customizationData.property_name,
           type: 'select',
-          wrappers: ['column'],
-          templateOptions: {
+          templateOptions : {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
@@ -614,18 +772,21 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
-          },
-        }];
-      }
-    } else if ((language === 'an' && type === 'Select Multiple') ||
+
+        },
+        wrappers: ['column'],
+
+      }]; }
+    }
+    else if ((language === 'an' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
         newField = [{
+
           key: customizationData.property_name,
-          wrappers: ['column'],
           type: 'select',
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
@@ -643,9 +804,12 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+
         }];
-      }
-    } else if ((language === 'an' && type === 'checkbox') ||
+       }
+
+    }
+    else if ((language === 'an' && type === 'checkbox') ||
       (language === 'fr' && type === 'checkbox') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
@@ -656,7 +820,6 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'checkbox',
           key: customizationData.property_name,
-          wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -671,6 +834,8 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
+          wrappers: ['column'],
+
           defaultValue: false,
         }];
       }
@@ -680,7 +845,9 @@ export class ContentComponent implements OnInit, DoCheck {
         key: 'file',
         type: 'file',
       }];
-    } else if (type === 'Columns') {
+    }
+   else if (type === 'Columns') {
+
       const customizationData = await this.openColumnDialog();
       if (customizationData) {
         let columnSizess = [{size: '', width: ''}];
@@ -689,23 +856,100 @@ export class ContentComponent implements OnInit, DoCheck {
         console.log(columnSizess);
         newField = [
           {
+
             key: customizationData.property_name, // Key of the wrapper component for columns
             type: 'row',
             fieldArray: {
               type: 'columnSize',
               fieldGroup: [],
             },
-            wrappers: ['columnSize'],
+            wrappers: ['column'],
+
           },
         ];
+
         this.columnSize = customizationData.tableRows;
         this.shareService.emitNumberColumn(this.columnSize);
       }
       console.log(newField);
       this.form = this.fb.group({});
-      //  this.formlyForm.resetForm({ model: this.model });
-    } else {
-      //  this.openRadioDialog();
+    //  this.formlyForm.resetForm({ model: this.model });
+      }
+
+    else if ((language === 'an' && type === 'Table') ||
+      (language === 'fr' && type === 'Tableau') ||
+      (language === 'ar' && type === 'جدول')) {
+      const customizationData = await this.openTableDialog();
+      if (customizationData) {
+        const tableRows: FormlyFieldConfig[] = [];
+
+        // Generate table rows with the specified number of rows and columns
+        for (let i = 0; i < customizationData.number_columns; i++) {
+          const tableRow: FormlyFieldConfig[] = [];
+          for (let j = 0; j < customizationData.number_rows; j++) {
+            const newField: FormlyFieldConfig = {
+              key: `row_${j}_col_${i}`,
+              type: 'input', // You can change this to the appropriate field type
+              templateOptions: {
+                label: `Row ${j + 1} - Column ${i + 1}`,
+              },
+            };
+            tableRow.push(newField);
+            console.log(newField);
+          }
+          tableRows.push({
+            fieldGroup: tableRow,
+          });
+        }
+
+        newField = [{
+          type: 'table',
+          fieldGroup: tableRows,
+          key: customizationData.property_name,
+          templateOptions: {
+            type: 'table',
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            number_rows: customizationData.number_rows,
+            number_columns: customizationData.number_columns,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+          },
+          wrappers: ['column'],
+        }];
+        console.log(newField);
+      }
+    }
+
+    else if (type === 'panel') {
+        const customizationData = await this.openPanelDialog();
+        if (customizationData) {
+          newField = [{
+            type: 'panel',
+            key: customizationData.property_name,
+            templateOptions: {
+              label: customizationData.label,
+              theme: customizationData.theme,
+              disabled: customizationData.disabled,
+              hidden: customizationData.hidden,
+              hide_label: customizationData.hide_label,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            collapsible: customizationData.collapsible
+              // Add any other template options as needed
+            },
+            wrappers: ['column'],
+
+          }];
+        }
+      }
+    else {
+    //  this.openRadioDialog();
     }
 
     if (newField.length > 0) {
@@ -737,8 +981,8 @@ export class ContentComponent implements OnInit, DoCheck {
         console.log(this.model);
       });
       if (this.formlyForm) {
-
         // this.formlyForm.resetForm({ model: this.model });
+
       }
       // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
@@ -746,7 +990,60 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-  openCheckboxDialog(): Observable<any> {
+  generateTableFields(rows: number, columns: number): any[] {
+    const tableFields = [];
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        const key = `row${i}_column${j}`;
+        const field = {
+          key: key,
+          type: 'input', // You can adjust the type as needed
+          templateOptions: {
+            label: `Row ${i + 1} - Column ${j + 1}` // Adjust the label as needed
+          }
+        };
+        tableFields.push(field);
+      }
+    }
+    return tableFields;
+  }
+
+  async openPanelDialog() {
+    const dialogRef = this.dialog.open(PanelDialogComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label: '' // You can pass additional data to the panel customization component if needed
+      }
+    });
+
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openTableDialog() {
+    const dialogRef = this.dialog.open(FormTableComponent, {
+      width: '1400px',
+      data: {
+        label_fr:'',label_ar:'', number_rows:'',number_columns:''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+
+
+  openCheckboxDialog():Observable<any> {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
@@ -757,6 +1054,36 @@ export class ContentComponent implements OnInit, DoCheck {
 
     return dialogRef.afterClosed();
   }
+
+  async openHTMLDialog() {
+    const dialogRef = this.dialog.open(HtmlDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', html_tag:'', html_content:'', htmlElement:'', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      customizationData.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openIFrameDialog() {
+    const dialogRef = this.dialog.open(IFrameDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '' ,link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1400px',
@@ -975,13 +1302,17 @@ export class ContentComponent implements OnInit, DoCheck {
       type: field.templateOptions.type,
       required: field.templateOptions.required,
       hidden: field.templateOptions.hidden,
-      hide_label_fr: field.templateOptions.hide_label_fr,
-      hide_label_ar: field.templateOptions.hide_label_ar,
-      custom_css: field.templateOptions.custom_css,
-      property_name: field.templateOptions.property_name,
-      field_tags: field.templateOptions.field_tags,
-      error_label: field.templateOptions.error_label,
-      custom_error_message: field.templateOptions.custom_error_message,
+      hide_label_fr:field.templateOptions.hide_label_fr,
+      hide_label_ar:field.templateOptions.hide_label_ar,
+      custom_css:field.templateOptions.custom_css,
+      property_name:field.templateOptions.property_name,
+      field_tags:field.templateOptions.field_tags,
+      error_label:field.templateOptions.error_label,
+      custom_error_message:field.templateOptions.custom_error_message,
+      number_rows: field.templateOptions.number_rows,
+      number_columns: field.templateOptions.number_columns,
+      theme: field.templateOptions.theme,
+      collapsible: field.templateOptions.collapsible,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };

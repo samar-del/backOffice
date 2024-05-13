@@ -6,11 +6,11 @@
     },
     {
       "name": "Advanced",
-      "items": ["Email", "Phone Number", "Address", "Url", "Date / Time", "Day", "File", "Select Multiple", "autocomplete"]
+      "items": ["Email", "Phone Number", "Address", "Url", "Date / Time", "Day", "File", "Select Multiple", "autocomplete", "HTML Element","IFrame"]
     },
     {
       "name": "Layout",
-      "items": ["Columns"]
+      "items": ["Columns", "Table", "panel"]
     }
   ],
   "translations": {

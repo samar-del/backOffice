@@ -1,38 +1,32 @@
-<div cdkDropList class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+<div class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
-    <!-- Iterate over fields to render input fields with edit and delete buttons -->
-
-    <div class="row align-items-center">
-      <ng-container *ngFor="let field of fields; let i = index">
-        <div class="col-10" >
-          <!-- Render the input field here -->
+    <ng-container *ngFor="let field of fields; let i = index">
+      <div class="row align-items-center" cdkDrag> <!-- Add cdkDrag directive here to make the row draggable -->
+        <div class="col-12">
           <div class="formly-form-container">
-            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form" >
-              <formly-field *ngIf="field.templateOptions.custom_css"[ngStyle]="{ 'cssText': field.templateOptions.custom_css }" ></formly-field>
+            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form">
+              <formly-field *ngIf="field.templateOptions.custom_css" [field]="field"></formly-field>
             </formly-form>
           </div>
-        </div>
-        <div class="col-2" *ngIf="field.type" >
-          <!-- Edit and delete buttons -->
-          <div class="button-container" *ngIf="i === fields.length - 1 || !field.templateOptions.inSameRow">
-            <button mat-icon-button class="btn btn-sm btn-outline-primary" (click)="openCustomizationDialog(field.key)">
+          <div class="button-container">
+            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon" (click)="openCustomizationDialog(field.key)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="btn btn-sm btn-outline-danger" (click)="deleteField(field.key)">
+            <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon" (click)="deleteField(field.key)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
         </div>
-      </ng-container>
-    </div>
+      </div>
+    </ng-container>
     <div class="submit-button-container">
       <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
       <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
     </div>
+
   </form>
-
-
 </div>
+
 <app-list-forms></app-list-forms>
 <!--<div class="preview-tab">-->
 <!--  <h4>Preview Form</h4>-->
