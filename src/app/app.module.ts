@@ -40,6 +40,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
 import { PanelDialogComponent } from './components/fields-dialog/panel-dialog/panel-dialog.component';
@@ -76,6 +77,7 @@ import { SafeUrlPipe } from './safe-url.pipe';
     FormlyFieldFileComponent,
     FileValueAccessorDirective,
     AddressWrapperComponent,
+    FormPreviewCreationComponent
     FormTableComponent,
     TableWrapperComponent,
     PanelDialogComponent,

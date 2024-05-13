@@ -6,6 +6,8 @@ import {BehaviorSubject} from 'rxjs';
 })
 export class ShareService {
   private nomberOfColumns = new BehaviorSubject<any[]>([]);
+  previewFieldsElm = new BehaviorSubject<any[]>([]);
+  fieldsPreviewList$ = this.previewFieldsElm.asObservable();
   currentNomberOfColumns = this.nomberOfColumns.asObservable();
   addressOptions =  new BehaviorSubject<any[]>([]);
   recentFieldsList = new BehaviorSubject<any[]>([]);
@@ -25,6 +27,9 @@ export class ShareService {
   }
   emitAddressOptions(values: {}[]){
     this.addressOptions.next(values);
+  }
+  emitPreviewFieldList(message: {}[]){
+    this.previewFieldsElm.next(message);
   }
   changeUrl(link_iframe: string) {
     this.urlSource.next(link_iframe);

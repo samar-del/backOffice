@@ -121,13 +121,32 @@
         </div>
         <div class="form-group">
           <label for="whenShouldDisplay">When the form component:</label>
-          <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay" *ngFor="let f of fieldsList">
-            <option value="{{f}}">{{f}}</option>
+          <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay"  >
+            <option *ngFor="let f of fieldsList" [value]="f">{{f}}</option>
           </select>
         </div>
         <div class="form-group">
           <label for="condi-value">Has the value:</label>
           <input id="condi-value" formControlName="condi_value" type="text" class="form-control" />
+        </div>
+        <div class="form-group" formArrayName="tableRows">
+          <table>
+            <thead>
+            <tr>
+              <th>When the form component</th>
+              <th>Has the value</th>
+              <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let row of tableRows.controls; let i = index" [formGroupName]="i">
+              <td><input type="text" class="form-control" formControlName="keyCondition"></td>
+              <td><input type="text" class="form-control" formControlName="valueCondition" ></td>
+              <td><button type="button" class="btn btn-light" (click)="removeRow(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
+            </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-light" (click)="addRow()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
         </div>
       </form>
     </mat-tab>
