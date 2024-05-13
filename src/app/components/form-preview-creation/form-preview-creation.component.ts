@@ -80,7 +80,7 @@ export class FormPreviewCreationComponent implements DoCheck {
       // fieldToUpdate.templateOptions.change;
       console.log(fieldToUpdate);
       this.cdRef.detectChanges();
-      //this.previewForm = this.fb.group({});
+      this.previewForm = this.fb.group({});
   }
   arePreviewFieldsChanged(): boolean {
     if (this.field.length !== this.previewfields.length) {

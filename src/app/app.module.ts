@@ -77,7 +77,7 @@ import { SafeUrlPipe } from './safe-url.pipe';
     FormlyFieldFileComponent,
     FileValueAccessorDirective,
     AddressWrapperComponent,
-    FormPreviewCreationComponent
+    FormPreviewCreationComponent,
     FormTableComponent,
     TableWrapperComponent,
     PanelDialogComponent,
