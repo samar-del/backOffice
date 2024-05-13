@@ -49,10 +49,11 @@ import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-
 import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
-import { GestionRoleComponent } from './components/userComponent/gestion-role/gestion-role.component';
-import { ConfirmationDialogComponent } from './components/userComponent/confirmation-dialog/confirmation-dialog.component';
 import { CommonModule } from '@angular/common';
 import { GestionPermissionComponent } from './components/userComponent/gestion-permission/gestion-permission.component';
+import { ToastrModule } from 'ngx-toastr';
+import { GestionRoleComponent } from './components/userComponent/gestion-role/gestion-role.component';
+import { ConfirmationDialogComponent } from './components/userComponent/confirmation-dialog/confirmation-dialog.component';
 
 
 @NgModule({
@@ -89,9 +90,9 @@ import { GestionPermissionComponent } from './components/userComponent/gestion-p
     IFrameDialogComponent,
     FormlyFieldIframeComponent,
     SafeUrlPipe,
-    GestionRoleComponent,
     ConfirmationDialogComponent,
-    GestionPermissionComponent
+    GestionPermissionComponent,
+    GestionRoleComponent
   ],
   imports: [
     BrowserModule,
@@ -142,7 +143,8 @@ import { GestionPermissionComponent } from './components/userComponent/gestion-p
     MatFormFieldModule,
     MatSelectModule,
     MatOptionModule,
-    CommonModule
+    CommonModule,
+    ToastrModule.forRoot()
 
   ],
   providers: [],

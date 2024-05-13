@@ -1,1 +1,25 @@
-<p>gestion-permission works!</p>
+<form #formAddPermission="ngForm" (ngSubmit)="addPermission()">
+  <div class="form-group">
+    <label for="permissionName">Permission Name:</label>
+    <input type="text" id="permissionName" name="permissionName" class="form-control" [(ngModel)]="newPermission.permissionName" required>
+    <label for="permissionName">Permission Type:</label>
+    <input type="text" id="permissionType" name="permissionType" class="form-control" [(ngModel)]="newPermission.permissionType" required>
+  </div>
+  <!-- You can add more fields here if needed -->
+
+  <button type="submit" class="btn btn-primary">Add Permission</button>
+</form>
+<form #formUpdatePermission="ngForm" (ngSubmit)="updatePermission()">
+  <div class="form-group">
+    <label for="permissionId">Permission ID:</label>
+    <input type="text" id="permissionId" name="permissionId" class="form-control" [(ngModel)]="permissionForUpdate.idPermission" required>
+    <label for="permissionName">Permission Name:</label>
+    <input type="text" id="permissionName" name="permissionName" class="form-control" [(ngModel)]="permissionForUpdate.permissionName" required>
+    <label for="permissionType">Permission Type:</label>
+    <input type="text" id="permissionType" name="permissionType" class="form-control" [(ngModel)]="permissionForUpdate.permissionType" required>
+  </div>
+  <!-- You can add more fields here if needed -->
+
+  <button type="submit" class="btn btn-primary">Update Permission</button>
+</form>
+

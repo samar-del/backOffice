@@ -1,18 +1,22 @@
-<div class="container">
+<div>
   <h2>Gestion des rôles</h2>
-
-  <!-- Ajouter un nouveau rôle -->
   <div>
-    <label>Nouveau rôle :</label>
-    <input type="text" [(ngModel)]="newRole.roleType" placeholder="Type de rôle">
-    <button (click)="addRole()">Ajouter</button>
+    <h3>Roles:</h3>
+    <ul>
+      <li *ngFor="let role of roles" (click)="onSelectRole(role)">
+        {{ role.roleType }}
+      </li>
+    </ul>
   </div>
-
-  <ul>
-    <li *ngFor="let role of roles">
-      <span>{{ role.roleType }}</span>
-      <button (click)="deleteRole(role)">Supprimer</button>
-    </li>
-  </ul>
-
+  <div *ngIf="selectedRole">
+    <h3>{{ selectedRole.roleType }}</h3>
+    <h4>Permissions:</h4>
+    <div *ngFor="let permission of permissions">
+      <label>
+        <input type="checkbox" [checked]="isSelectedPermission(permission)" (change)="togglePermission(permission)">
+        {{ permission.permissionName }}
+      </label>
+    </div>
+    <button (click)="savePermissions()">Save Permissions</button>
+  </div>
 </div>

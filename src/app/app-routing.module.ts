@@ -4,6 +4,7 @@ import {ListFormsComponent} from './components/list-forms/list-forms.component';
 import {HomeComponent} from './components/home/home.component';
 import {SidebarComponent} from './components/sidebar/sidebar.component';
 import { GestionRoleComponent } from './components/userComponent/gestion-role/gestion-role.component';
+import { GestionPermissionComponent } from './components/userComponent/gestion-permission/gestion-permission.component';
 
 const routes: Routes = [
   {
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'listForms' , component: ListFormsComponent},
   {path: 'home' , component: HomeComponent},
   {path: 'createForm' , component: SidebarComponent},
-  {path:'gestionRole', component: GestionRoleComponent}
+  {path:'gestionRole', component: GestionRoleComponent},
+  {path: 'gestionPermission', component: GestionPermissionComponent}
 ];
 
 @NgModule({

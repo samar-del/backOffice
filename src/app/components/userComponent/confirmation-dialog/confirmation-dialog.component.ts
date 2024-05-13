@@ -33,8 +33,12 @@ export class ConfirmationDialogComponent  {
   @Output() confirmed = new EventEmitter<boolean>();
 
   visibleAnimate = false;
+  message: string;
 
-  show(): Observable<boolean> {
+
+  show(message: string): Observable<boolean> {
+    this.message = message;
+
     this.visibleAnimate = true;
     return new Observable<boolean>(observer => {
       this.confirmed.subscribe(confirmed => {
