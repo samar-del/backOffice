@@ -1,0 +1,52 @@
+/* Style for the Add Role section */
+.add-role-container {
+  margin-bottom: 20px;
+}
+
+.add-role-container label {
+  margin-right: 10px;
+}
+
+.add-role-container input[type="text"] {
+  width: 200px;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.add-role-container select {
+  width: 200px;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.add-role-container button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.add-role-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Style for the Roles table */
+.roles-table-container {
+  margin-top: 20px;
+}
+
+.roles-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roles-table-container th, .roles-table-container td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.roles-table-container th {
+  background-color: #f2f2f2;
+}

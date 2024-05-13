@@ -1,0 +1,29 @@
+<div *ngIf="roles && permissions">
+  <h2>Add Role</h2>
+  <label>Type:</label>
+  <input type="text" [(ngModel)]="newRole.roleType">
+  <label>Permissions:</label>
+  <select multiple #permissionSelect (change)="assignPermissions(getSelectedPermissionIds(permissionSelect.options))">
+    <option *ngFor="let permission of permissions" [value]="permission.permissionId">{{ permission.permissionName }}</option>
+  </select>
+
+  <button (click)="addRoleWithPermissions()">Add Role</button>
+
+  <hr>
+
+  <h2>Roles</h2>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Permissions</th>
+    </tr>
+    <tr *ngFor="let role of roles">
+      <td>{{ role.roleType }}</td>
+      <td>
+        <ul>
+          <li *ngFor="let permission of role.permissions">{{ permission.permissionName }}</li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+</div>

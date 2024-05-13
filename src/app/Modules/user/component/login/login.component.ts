@@ -35,14 +35,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
- /* signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
-      this.user = user;
-      // Vous pouvez maintenant utiliser les informations de l'utilisateur, telles que user.id, user.name, user.email, etc.
-    }).catch(error => {
-      console.log('Erreur de connexion Google : ', error);
-    });
-  }*/
+ 
 
   handleLogin() {
     if (this.form.valid) {

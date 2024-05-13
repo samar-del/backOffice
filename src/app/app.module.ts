@@ -30,6 +30,9 @@ import { SignupComponent } from './Modules/user/component/signup/signup.componen
 import { LoginComponent } from './Modules/user/component/login/login.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
+import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
+import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
+import { GestionPermissionComponent } from './Modules/Gestion/gestion-permission/gestion-permission.component';
 //import { GoogleLoginProvider } from 'angularx-social-login';
 
 
@@ -50,7 +53,10 @@ import { ResetPasswordComponent } from './Modules/user/component/reset-password/
     FormDialogCheckboxComponent,
     RadioCustomizeDialogComponent,
     TelFormDialogComponent,
-    DateFormDialogComponent
+    DateFormDialogComponent,
+    GestionUserComponent,
+    GestionRoleComponent,
+    GestionPermissionComponent
   ],
   imports: [
     BrowserModule,
