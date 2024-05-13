@@ -5,7 +5,9 @@ import { SignupComponent } from './Modules/user/component/signup/signup.componen
 import { ContentComponent } from './components/content/content.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
-
+import {ListFormsComponent} from './components/list-forms/list-forms.component';
+import {HomeComponent} from './components/home/home.component';
+import {SidebarComponent} from './components/sidebar/sidebar.component';
 const routes: Routes = [
   { path: 'login',
       component: LoginComponent
@@ -34,6 +36,14 @@ const routes: Routes = [
     path:'**',
     component:LoginComponent
   },
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
+  },
+  {path: 'listForms' , component: ListFormsComponent},
+  {path: 'home' , component: HomeComponent},
+  {path: 'createForm' , component: SidebarComponent}
 
 ];
 

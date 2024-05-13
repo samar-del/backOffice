@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,8 +13,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
 import {MatIconModule} from "@angular/material/icon";
-import {MatTabsModule} from "@angular/material/tabs";
-import {MatDialogModule} from "@angular/material/dialog";
+import { MatTabsModule} from "@angular/material/tabs";
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FormlyModule} from "@ngx-formly/core";
@@ -30,7 +30,30 @@ import { SignupComponent } from './Modules/user/component/signup/signup.componen
 import { LoginComponent } from './Modules/user/component/login/login.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
-//import { GoogleLoginProvider } from 'angularx-social-login';
+import { AddressCustomizeDialogComponent } from './components/fields-dialog/address-customize-dialog/address-customize-dialog.component';
+import { FormPreviewComponent } from './components/form-preview/form-preview.component';
+import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
+import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
+import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
+import { ColumnSizeComponent } from './components/column-size/column-size.component';
+import { ListFormsComponent } from './components/list-forms/list-forms.component';
+import { HomeComponent } from './components/home/home.component';
+import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
+import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
+import {MatOptionModule} from "@angular/material/core";
+import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
+import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
+import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
+import { PanelDialogComponent } from './components/fields-dialog/panel-dialog/panel-dialog.component';
+import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/panel-field-wrapper.component';
+import { HtmlDialogComponent } from './components/fields-dialog/html-dialog/html-dialog.component';
+import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-field-html.component';
+import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
+import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
+import { SafeUrlPipe } from './safe-url.pipe';
 
 
 @NgModule({
@@ -50,7 +73,28 @@ import { ResetPasswordComponent } from './Modules/user/component/reset-password/
     FormDialogCheckboxComponent,
     RadioCustomizeDialogComponent,
     TelFormDialogComponent,
-    DateFormDialogComponent
+    DateFormDialogComponent,
+    AddressCustomizeDialogComponent,
+    FormPreviewComponent,
+    FormColumnLayoutDialogComponent,
+    ColumnWrapperComponent,
+    RowWrapperComponent,
+    ColumnSizeComponent,
+    ListFormsComponent,
+    HomeComponent,
+    FormlyFieldFileComponent,
+    FileValueAccessorDirective,
+    AddressWrapperComponent,
+    FormPreviewCreationComponent,
+    FormTableComponent,
+    TableWrapperComponent,
+    PanelDialogComponent,
+    PanelFieldWrapperComponent,
+    HtmlDialogComponent,
+    FormlyFieldHtmlComponent,
+    IFrameDialogComponent,
+    FormlyFieldIframeComponent,
+    SafeUrlPipe
   ],
   imports: [
     BrowserModule,
@@ -62,7 +106,36 @@ import { ResetPasswordComponent } from './Modules/user/component/reset-password/
     MatToolbarModule,
     DragDropModule,
     ReactiveFormsModule,
-    FormlyModule.forRoot(),
+    FormlyModule.forRoot({
+      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
+                 {name: 'html', component: FormlyFieldHtmlComponent},
+                 {name: 'iframe', component: FormlyFieldIframeComponent},
+                 { name: 'address-wrapper', component: AddressWrapperComponent },
+                 { name: 'table', component: TableWrapperComponent },
+
+      ],
+      types: [
+        { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
+        { name: 'columnSize', component: ColumnSizeComponent },
+        { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
+        { name: 'table', component: TableWrapperComponent, wrappers: ['form-field'] },
+        { name: 'panel', component: PanelFieldWrapperComponent },
+         {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
+        {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
+
+      ],
+    }),
+    FormlyModule.forChild({
+      wrappers: [{name: 'row', component: RowWrapperComponent}],
+      types: [
+        {
+          name: 'row',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {row: true}}
+        },
+      ],
+    }),
     FormlyBootstrapModule,
     MatTabsModule,
     MatDialogModule,
@@ -71,6 +144,10 @@ import { ResetPasswordComponent } from './Modules/user/component/reset-password/
     FormsModule
   ],
   providers: [
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
   ],
   bootstrap: [AppComponent]
 })
