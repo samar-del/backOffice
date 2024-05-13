@@ -1,11 +1,7 @@
 import {
   ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Input, NgZone,
-  OnChanges,
+  Component, DoCheck, NgZone,
   OnInit,
-  SimpleChanges,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -43,24 +39,14 @@ import {TranslationService} from '../../services/translation.service';
   styleUrls: ['./content.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ContentComponent implements OnInit, OnChanges {
-  // tslint:disable-next-line:max-line-length
-  constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
-              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
-    this.form = this.fb.group({});
-    this.previewForm = this.fb.group({});
-    this.subscribeToFormChanges(this.form);
-    this.subscribeToFormChanges(this.previewForm);
-  }
-
+export class ContentComponent implements OnInit, DoCheck {
   previewForm: FormGroup;
  fields: FormlyFieldConfig[] = [];
   previewfields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   form: FormGroup;
   model: any = {};
-  previewmodel: any = {};
+  previewModel: any = {};
   options: FormlyFormOptions = {};
   containerDraggedOver = false;
   columnSize: any [ ] = [];
@@ -70,17 +56,53 @@ export class ContentComponent implements OnInit, OnChanges {
     { name: 'Category 2', fields: [] },
     // Add more categories if needed
   ];
-      ngOnInit(): void {
-    this.previewForm.valueChanges.subscribe((value) => {
+  private previousPreviewFields: FormlyFieldConfig[] = [];
+  constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
+              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
+              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
+    this.form = this.fb.group({});
+    //this.previewForm = this.fb.group({});
+  }
+  ngOnInit(): void {
+  }
+  ngDoCheck(): void {
+    // if (this.arePreviewFieldsChanged()) {
+    //   console.log('Preview fields were changed');
+    //   console.log('this.model', this.model);
+    // //  console.log('this.previewmodel', this.previewModel);
+    //   this.updatePreviewFields();
+    // }
+    this.shareService.emitPreviewFieldList(this.previewfields);
+  }
+  updatePreviewFields() {
+    this.previewfields.forEach(field => {
+      const fieldTocheck = this.fields.find(el => el.key === field.templateOptions.condi_whenShouldDispaly);
+      if (fieldTocheck && this.previewModel[fieldTocheck.key.toString()] !== field.templateOptions.condi_value) {
+        field.templateOptions.hidden = true;
+      } else if (typeof field.expressionProperties === 'object' && typeof field.expressionProperties['templateOptions.hidden'] === 'function') {
+        const expressionFunction = field.expressionProperties['templateOptions.hidden'];
+        field.templateOptions.hidden = expressionFunction(this.previewModel, null, field);
+      }
     });
   }
-  // tslint:disable-next-line:typedef
-  subscribeToFormChanges(form: FormGroup) {
-    // Subscribe to form value changes
-    form.valueChanges.subscribe((value) => {
-      console.log(' Form Value:', value);
-      this.ngZone.run(() => {});
-    });
+  arePreviewFieldsChanged(): boolean {
+    if (this.previousPreviewFields.length !== this.previewfields.length) {
+      return true;
+    }
+
+    for (let i = 0; i < this.previewfields.length; i++) {
+      console.log(this.fields[i].model);
+      if (JSON.stringify(this.previewfields[i].model) !== JSON.stringify(this.previousPreviewFields[i].model)) {
+        return true;
+      }
+    }
+    return false;
+    console.log('this.fields.values()', this.fields.values());
+    console.log('this.model', this.model);
+    console.log('this.previewfields.values()', this.previewfields.values());
+    console.log('this.previewmodel', this.previewModel);
+    console.log('this.fields.values()', this.fields.values());
+
   }
   // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>, droppedItem: string , position: number) {
@@ -99,24 +121,6 @@ export class ContentComponent implements OnInit, OnChanges {
     this.containerDraggedOver = false;
   }
   // tslint:disable-next-line:typedef
-  ngOnChanges(changes) {
-    console.log(changes);
-    this.subscribeToFormChanges(this.form);
-    this.subscribeToFormChanges(this.previewForm);
-
-    this.previewForm.valueChanges.subscribe( () => {
-      console.log(' changes', changes);
-      this.cdr.detectChanges();
-    });
-  }
-  // tslint:disable-next-line:typedef
-  handleInputChange(fieldName: string, event: any) {
-    const newValue = event.target.value;
-    console.log('Contenu du champ (previewForm)', fieldName, ':', newValue);
-    // Run change detection manually
-    this.ngZone.run(() => {});
-  }
-  // tslint:disable-next-line:typedef
   async addField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     let language: string;
@@ -129,6 +133,7 @@ export class ContentComponent implements OnInit, OnChanges {
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
+      const listeCondition = customizationData.tableRows;
       if (customizationData) {
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
@@ -159,7 +164,11 @@ export class ContentComponent implements OnInit, OnChanges {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            condition: listeCondition.forEach(el => {
+              const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
+              return conditionValues;
+            })
           },
           wrappers: ['column'],
           expressionProperties: {
@@ -702,45 +711,30 @@ export class ContentComponent implements OnInit, OnChanges {
     if (newField.length > 0) {
       console.log(newField);
       newField.forEach(el => {
-        this.ngZone.run(() => {});
         this.fields.push(el);
-        // this.previewfields.push(el);
         this.recentListFields.push(el.key);
         this.shareService.emitListFields(this.recentListFields);
         const previewField: FormlyFieldConfig = {};
-        let previousExpression: {};
         previewField.key = el.key;
         previewField.templateOptions = el.templateOptions;
         previewField.type = el.type;
-        previousExpression = el.expressionProperties;
-        console.log(previousExpression);
-        if (el.templateOptions.condi_shouldDisplay && el.templateOptions.condi_whenShouldDisplay) {
-          const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
-          // if (fieldToCheck.model.value === el.templateOptions.condi_value){
-            // tslint:disable-next-line:no-unused-expression
-          previewField.hideExpression = (model) => !((model.fieldToCheck === previewField.templateOptions.condi_value));
-          // }else {
-          //   previewField.expressionProperties = {
-          //     'templateOptions.hidden': 'true',
-          //   };
-          // }
-          this.previewfields.push(previewField);
-          this.previewForm.addControl(previewField.key.toString(), this.fb.control(''));
-          this.previewForm.get(previewField.key.toString()).valueChanges.subscribe((value) => {
-            console.log('Contenu du champ', previewField.key.toString() , ':', value);
-            this.cdr.detectChanges();
-          });
-          console.log('Contenu du previewField   est ', previewField);
-          console.log('Contenu du list previewField   est ', this.previewfields);
-          // this.previewfields.forEach( prField => {
-          //   this.previewmodel.prField.value.valueChanges.subscribe((value) => {
-          //     console.log('Contenu du champ nom est ', value);
-          //   });
-          // });
-
-        } else {
+        const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
+        if (fieldToCheck){
+            if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value){
+              previewField.templateOptions.hidden = true ;
+            } else {
+              previewField.templateOptions.hidden = false ;
+            }
+            this.previewfields.push(previewField);
+          } else {
           this.previewfields.push(el);
         }
+
+      });
+      this.form.valueChanges.subscribe((value) => {
+         this.model = { ...value };
+         console.log('preview fields',this.previewfields);
+        console.log(this.model);
       });
       if (this.formlyForm) {
 
@@ -748,6 +742,7 @@ export class ContentComponent implements OnInit, OnChanges {
       }
       // Rebuild the form group with the updated fields
       this.form = this.fb.group({});
+      this.previewForm = this.newfb.group({});
     }
   }
 

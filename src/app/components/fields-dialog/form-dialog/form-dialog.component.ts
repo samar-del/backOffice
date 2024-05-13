@@ -23,6 +23,8 @@ export class FormDialogComponent implements OnInit {
   translations: any = {};
   fieldsList: any[] = [];
   private fieldsListSub: Subscription;
+  NumberOptions = 0 ;
+  showTable = false;
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -59,6 +61,7 @@ export class FormDialogComponent implements OnInit {
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
+      tableRows: this.fb.array([])
     });
 
     // Subscribe to label changes to update property name
@@ -78,6 +81,25 @@ export class FormDialogComponent implements OnInit {
     });
 
     this.updateFields();
+  }
+  addRow(): void {
+    const tableRowsArray = this.form.get('tableRows') as FormArray;
+    tableRowsArray.push(this.createRow());
+    this.NumberOptions++ ;
+  }
+  createRow(): FormGroup {
+    const row = this.fb.group({
+      keyCondition: [''],
+      valueCondition: [''],
+    });
+    return row;
+  }
+  removeRow(index: number): void {
+    this.tableRows.removeAt(index);
+    this.NumberOptions--;
+  }
+  get tableRows(): FormArray {
+    return this.form.get('tableRows') as FormArray;
   }
   onTabChange(event: any): void {
     this.selectedTabIndex = event.index;

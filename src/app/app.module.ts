@@ -41,6 +41,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
 
 
 
@@ -68,7 +69,8 @@ import { AddressWrapperComponent } from './components/address-wrapper/address-wr
     HomeComponent,
     FormlyFieldFileComponent,
     FileValueAccessorDirective,
-    AddressWrapperComponent
+    AddressWrapperComponent,
+    FormPreviewCreationComponent
   ],
   imports: [
     BrowserModule,
