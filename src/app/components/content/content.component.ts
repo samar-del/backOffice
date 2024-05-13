@@ -6,8 +6,6 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import { ColumnSizeComponent } from './../column-size/column-size.component';
-import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
@@ -20,7 +18,6 @@ import {Field} from '../../models/Field';
 import {TemplateOptions} from '../../models/TemplateOptions';
 import {Options} from '../../models/Options';
 import {forkJoin, Observable, Subscription} from 'rxjs';
-import { Observable} from 'rxjs';
 import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import {TelFormDialogComponent} from '../fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import {FieldService} from '../../services/field.service';
@@ -115,7 +112,7 @@ export class ContentComponent implements OnInit, DoCheck {
     console.log('this.previewfields.values()', this.previewfields.values());
     console.log('this.previewmodel', this.previewModel);
     console.log('this.fields.values()', this.fields.values());
-
+  }
 
   drop(event: CdkDragDrop<string[]>, droppedItem: string) {
     // Calculate the position based on the cursor position
