@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component,  OnInit, ViewChild } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormDialogCheckboxComponent} from "../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component";
@@ -22,6 +22,7 @@ import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Modules/user/services/auth.service';
 import { CommonModule } from '@angular/common';
+
 
 
 @Component({

@@ -1,16 +1,2 @@
 <p>gestion-user works!</p>
-<div>
-  <label for="idUser">Sélectionner un utilisateur :</label>
-  <select id="idUser" [(ngModel)]="selectedUserId">
-    <option *ngFor="let user of users" [value]="user.id">{{ user.username }}</option>
-  </select>
-</div>
 
-<div>
-  <label for="idRole">Sélectionner un rôle :</label>
-  <select id="idRole" [(ngModel)]="selectedRoleId">
-    <option *ngFor="let role of roles" [value]="role.id">{{ role.username }}</option>
-  </select>
-</div>
-
-<button (click)="affecterUserRole(selectedUserId, selectedRoleId)">Affecter le rôle à l'utilisateur</button>

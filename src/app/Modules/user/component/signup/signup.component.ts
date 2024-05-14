@@ -3,6 +3,7 @@ import { SignupService } from './../../services/signup.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { signupRequest } from 'src/app/models/signupRequest';
+import {  ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -21,11 +22,13 @@ export class SignupComponent {
 
   constructor(private formBuilder: FormBuilder,
               private signupService: SignupService,
-              private router: Router) {
+              private router: Router,
+              private toastr:ToastrService ) {
                       this.signupForm = this.formBuilder.group({
                       userName: ['', Validators.required],
-                      password: ['', [Validators.required, Validators.minLength(8)]],
-                      email: ['', [Validators.required, Validators.email]]
+                      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")]],
+                      email: ['', [Validators.required, Validators.email]],
+                      roles:['',[Validators.required]]
                     });
   }
 
@@ -38,22 +41,20 @@ export class SignupComponent {
 
       this.signupService.signup(request).subscribe(
         (result) => {
-          this.invalidSignup = false;
-          this.signupSuccess = true;
+          this.toastr.success('Inscription réussie !', 'Succès');
           // Rediriger vers la page de connexion après une inscription réussie
           this.router.navigateByUrl('/login');
         },
         (error) => {
-          this.invalidSignup = true;
-          this.signupSuccess = false;
+          this.toastr.error('Échec de l\'inscription. Veuillez réessayer.', 'Erreur');
           console.error("Signup failed:", error);
         }
       );
-    }
-      else {
-        Object.values(this.signupForm.controls).forEach(control => {
-          control.markAsTouched();
-        });
+    } else {
+      this.toastr.error('Veuillez remplir correctement le formulaire.', 'Erreur de formulaire');
+      Object.values(this.signupForm.controls).forEach(control => {
+        control.markAsTouched();
+      });
     }
   }
 }
