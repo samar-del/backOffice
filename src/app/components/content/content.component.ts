@@ -20,6 +20,8 @@ import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from "../fields-dialog/date-form-dialog/date-form-dialog.component";
 import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/Modules/user/services/auth.service';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
@@ -36,25 +38,46 @@ export class ContentComponent implements OnInit {
   formTemplate = new FormTemplate();
   fieldsOptions: any;
   templateOption: string [];
+
+  roles="";
   constructor(private fb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
               private loginService : LoginService,
-              private router : Router) {
+              private router : Router,
+              private authService:AuthService) {
     this.form = this.fb.group({});
+    this.authService.getUserRoles();
   }
   ngOnInit(): void {
-  }
+    this.chacklogedInUser();
+
+   }
+
+ chacklogedInUser(){
+  this.isLoggedIn= this.authService.isLoggedIn();
+  this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
+
+ }
+
+ handleLogout() {
+  this.loginService.logout();
+      this.router.navigate(['/login']);
+      this.isLoggedIn = false; // Par exemple, mettez à jour isLoggedIn à false
+      // Redirection vers la page de connexion après déconnexion
+}
+
   // tslint:disable-next-line:typedef
   onItemDropped(item: string) {
     this.addField(item);
   }
+  isLoggedIn: boolean = false;
 
 
-  handleLogout() {
-    this.loginService.logout();
-        this.router.navigate(['/login']); // Redirection vers la page de connexion après déconnexion
+  //username:string=this.authService.getUsername()??"";
 
-  }
+
+
+
   // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {

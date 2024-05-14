@@ -6,6 +6,9 @@ import { ContentComponent } from './components/content/content.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
 import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
+import { DashboardComponent } from './Modules/user/component/dashboard/dashboard.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { AuthGuard } from './Modules/user/services/auth.guard';
 
 const routes: Routes = [
   { path: 'login',
@@ -17,12 +20,13 @@ const routes: Routes = [
   },
   {
     path:'',
-    redirectTo:'login',
+    redirectTo:'content',
     pathMatch:'full'
   },
+
   {
     path:'content',
-    component: ContentComponent
+    component: ContentComponent , canActivate:[AuthGuard]
   },
   {
     path:'forgotPassword',
@@ -32,8 +36,18 @@ const routes: Routes = [
     component: ResetPasswordComponent
   },
   {
+    path:'dashboard',
+    component: DashboardComponent,
+    canActivate:[AuthGuard]
+
+  },
+  {
     path:'gestionRole',
     component: GestionRoleComponent
+  },
+  {
+    path:'side',
+    component:SidebarComponent, canActivate:[AuthGuard]
   },
   {
     path:'**',

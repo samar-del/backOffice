@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { loginRequest } from 'src/app/models/loginRequest';
 //import {SocialAuthService, GoogleLoginProvider,SocialUser} from 'angularx-social-login';
 import { from } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -24,7 +25,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private loginService: LoginService,
-              private router: Router
+              private router: Router,
+              private authService:AuthService
            // private authService:SocialAuthService
           ) { }
 
@@ -35,7 +37,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
- 
+
 
   handleLogin() {
     if (this.form.valid) {
@@ -44,14 +46,14 @@ export class LoginComponent implements OnInit {
 
       this.loginService.signin(request).subscribe(
         (response) => {
-         /* if(response && response.token){
-            localStorage.setItem('accessToken',response.token);
-          }*/
 
+          this.authService.addAccessToken(response.token);
+        
           this.invalidLogin = false;
           this.loginSuccess = true;
+
           console.log('Login successful:', response);
-          this.router.navigate(['/content']);
+          this.router.navigate(['/dashboard']);
         },
         (error) => {
           this.invalidLogin = true;

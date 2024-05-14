@@ -14,6 +14,7 @@ export class LoginService {
   constructor(private http: HttpClient,
                 private router: Router) { }
 
+                
                 signin(request: loginRequest) {
                   return this.http.post<any>(`${baseUrl}/auth/signin`, request).pipe(
                     map(response => {
@@ -30,6 +31,7 @@ export class LoginService {
                     })
                   );
                 }
+
 
                 generateToken(request:loginRequest) {
                   return this.http.post<any>(`${baseUrl}/auth/generateToken`, request);

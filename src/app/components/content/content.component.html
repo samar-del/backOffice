@@ -1,4 +1,5 @@
-<div cdkDropList class="content-container" (cdkDropListDropped)="drop($event)">
+<div cdkDropList class="content-container" (cdkDropListDropped)="drop($event)"
+(activate)="chacklogedInUser()">
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
     <!-- Iterate over fields to render input fields with edit and delete buttons -->
     <div *ngFor="let field of fields" class="row align-items-center">
@@ -25,8 +26,30 @@
 
       <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
       <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
-      <button (click)="handleLogout()">Logout</button>
+      <div>
+        <nav *ngIf="isLoggedIn">
+          <div class="logoContainer">
+              Movie Store
+          </div>
 
+          <ul>
+              <li *ngIf="roles=='ADMIN'">
+                  <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+              </li>
+
+              <li>
+                  <a routerLink="/side" routerLinkActive="active">User Page</a>
+              </li>
+
+             <li>
+                  <a (click)="handleLogout()" style="cursor:pointer">Logout</a>
+              </li>
+
+          </ul>
+        </nav>
+      </div>
     </div>
   </form>
-</div>
+
+
+</div >

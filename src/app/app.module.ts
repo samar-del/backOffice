@@ -22,7 +22,7 @@ import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
@@ -33,6 +33,11 @@ import { ResetPasswordComponent } from './Modules/user/component/reset-password/
 import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
 import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
 import { GestionPermissionComponent } from './Modules/Gestion/gestion-permission/gestion-permission.component';
+import { AdminPageComponent } from './Modules/Gestion/admin-page/admin-page.component';
+import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
+import { SuperAdminPageComponent } from './Modules/Gestion/super-admin-page/super-admin-page.component';
+import { CommonModule } from '@angular/common';
+import { InterceptorService } from './Modules/user/services/interceptor.service';
 //import { GoogleLoginProvider } from 'angularx-social-login';
 
 
@@ -56,7 +61,10 @@ import { GestionPermissionComponent } from './Modules/Gestion/gestion-permission
     DateFormDialogComponent,
     GestionUserComponent,
     GestionRoleComponent,
-    GestionPermissionComponent
+    GestionPermissionComponent,
+    AdminPageComponent,
+    UserPageComponent,
+    SuperAdminPageComponent
   ],
   imports: [
     BrowserModule,
@@ -74,7 +82,8 @@ import { GestionPermissionComponent } from './Modules/Gestion/gestion-permission
     MatDialogModule,
     NgbModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    CommonModule
   ],
   providers: [
   ],
