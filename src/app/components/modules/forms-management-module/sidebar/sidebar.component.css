@@ -1,5 +1,9 @@
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
 .example-container {
   height:60rem;
+  width:180%;
   background-color: #FFFFFF;
 }
 .example-sidenav {
@@ -49,4 +53,19 @@
 
 .content-container.drag-over {
   background-color: #f0f0f0; /* Darker background color when dragged over */
+}
+
+.categoryItem{
+  text-align: center;
+  border-radius: 20px;
+  background-image: linear-gradient(-89deg, #00B8FF 0%, #00719D 100%);
+  color: white;
+  margin-top: 0.3rem;
+  padding: 5px;
+}
+.categoryItem:hover{
+  color: #1d253b;
+}
+select{
+  background-color: #f0f0f0;
 }

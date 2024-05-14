@@ -36,3 +36,13 @@ select:hover{
 img{
   width: 70%;
 }
+i{
+  color: #00719D;
+}
+option:hover{
+  background-color: #00719D !important;
+}
+/*.input-group{*/
+/*  width: 150%;*/
+/*}*/
+

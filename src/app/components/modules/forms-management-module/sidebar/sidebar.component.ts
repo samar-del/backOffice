@@ -1,9 +1,9 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ContentComponent } from '../content/content.component';
+import { ContentComponent } from '../../../content/content.component';
 import {animate, style, transition, trigger} from '@angular/animations';
-import {TranslationService} from "../../services/translation.service";
+import {TranslationService} from '../../../../services/translation.service';
 
 @Component({
   selector: 'app-sidebar',
