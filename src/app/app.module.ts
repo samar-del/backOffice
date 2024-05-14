@@ -43,6 +43,7 @@ import { PanelFieldWrapperComponent } from './components/panel-field-wrapper/pan
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
 import { CommonModule } from '@angular/common';
+import { FormlyMaterialModule } from '@ngx-formly/material';
 //import { GoogleLoginProvider } from 'angularx-social-login';
 
 
@@ -112,7 +113,8 @@ import { CommonModule } from '@angular/common';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    FormlyMaterialModule
   ],
   providers: [
     FormsModule,
