@@ -1,5 +1,5 @@
 .example-container {
-  height: 500px;
+  height:60rem;
   background-color: #FFFFFF;
 }
 .example-sidenav {
@@ -21,11 +21,32 @@
 .submenu {
   overflow-y: hidden;
   transition: transform 300ms ease;
-  transform: scaleY(0);
+  transform: scaleY(1);
   transform-origin: top;
   padding-left: 15px;
   padding-right: 15px;
+  display: none; /* Hide the submenu by default */
 }
+
 .submenu.expanded {
   transform: scaleY(1);
+  display: block; /* Show the submenu when expanded */
+}
+.cdk-drag-preview {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.5;
+}
+.content-container {
+  /* Original container styles */
+  border: 1px solid #ccc;
+  padding: 20px;
+  transition: background-color 0.3s; /* Add transition for smooth color change */
+}
+
+.content-container.drag-over {
+  background-color: #f0f0f0; /* Darker background color when dragged over */
 }

@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "name": "Basique",
+      "items": ["Texte", "Nombre", "radio", "case à cocher",  "sélectionner", "bouton"]
+    },
+    {
+      "name": "Advancé",
+      "items": ["E-mail", "Numéro de téléphone", "Adresse", "URL", "Date / Heure", "Jour", "Fichier", "Sélection multiple", "autocomplétion", "Element HTML","IFrame"]
+    },
+    {
+      "name": "Mise en page",
+      "items": ["Colonnes", "Tableau", "panel"]
+    }
+  ],
+  "translations": {
+    "label_fr": "Label en français",
+    "label_ar": "Label en arabe",
+    "placeholder_fr": "Placeholder en français",
+    "placeholder_ar": "Placeholder en arabe",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  }
+}
