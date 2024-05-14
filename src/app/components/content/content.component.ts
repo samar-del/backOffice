@@ -89,12 +89,8 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
 
-  handleLogout() {
-    this.loginService.logout();
-        this.router.navigate(['/login']); // Redirection vers la page de connexion après déconnexion
+ 
 
-  }
-  
   updatePreviewFields() {
     this.previewfields.forEach(field => {
       const fieldTocheck = this.fields.find(el => el.key === field.templateOptions.condi_whenShouldDispaly);
