@@ -1,0 +1,83 @@
+.example-container {
+  height: 50rem;
+  background-color: transparent;
+  display: flex;
+  width: 100%;
+}
+.mat-nav-list .mat-list-item {
+  height: auto;
+  padding: 10px 0;
+  font-size: 15px;
+}
+.example-sidenav {
+  user-select: none;
+  margin:1% ;
+  border-radius: 20px;
+  border-color: rgba(255, 255, 255, 0);
+  height: auto;
+  background:linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+  width: 100%;
+}
+.full-width {
+  width: 100%;
+  color: #ddf4fc;
+}
+mat-icon{
+  color: #ddf4fc;
+}
+.menu-button {
+  transition: 300ms ease-in-out;
+  transform: rotate(0deg);
+  color: #ddf4fc;
+}
+.menu-button.rotated {
+  transform: rotate(180deg);
+}
+.submenu {
+  overflow-y: hidden;
+  transition: transform 300ms ease;
+  transform: scaleY(1);
+  transform-origin: top;
+  padding-left: 15px;
+  padding-right: 15px;
+  display: none; /* Hide the submenu by default */
+}
+.submenuItem{
+  color: #ddf4fc;
+  border-radius: 20px;
+}
+.submenuItem:hover{
+  color : #00719D;
+  background-color: #ddf4fc;
+}
+.submenu.expanded {
+  transform: scaleY(1);
+  display: block; /* Show the submenu when expanded */
+}
+.cdk-drag-preview {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.5;
+}
+
+
+.content-container.drag-over {
+  background-color: #f0f0f0; /* Darker background color when dragged over */
+}
+.content-container{
+  margin-top: 1%;
+  margin-left: 2%;
+  border-radius: 20px;
+  background-color: rgba(221, 221, 221, 0.29);
+  height: 48rem;
+  border-color: white;
+  flex: 1;
+  width: 75rem;
+}
+.container {
+  display:flex;
+}

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {FormContentService} from '../../services/form-content.service';
+import {FormContentService} from '../../../../services/form-content.service';
 import {forkJoin} from 'rxjs';
 
 @Component({

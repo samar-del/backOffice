@@ -3,11 +3,9 @@ import { NgModule, Component } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {SidebarComponent} from "./components/sidebar/sidebar.component";
 import {MenuItemComponent} from "./components/menu-item/menu-item.component";
 import {FormDialogComponent} from "./components/fields-dialog/form-dialog/form-dialog.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
-import {ContentComponent} from "./components/content/content.component";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
@@ -32,7 +30,7 @@ import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 import { ColumnSizeComponent } from './components/column-size/column-size.component';
-import { ListFormsComponent } from './components/list-forms/list-forms.component';
+import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
@@ -50,14 +48,13 @@ import { FormlyFieldHtmlComponent } from './components/formly-field-html/formly-
 import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog/i-frame-dialog.component';
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
+import { SidebarGenericComponent } from './components/dashbord/sidebar-generic/sidebar-generic.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarComponent,
     MenuItemComponent,
-    ContentComponent,
     ToolbarComponent,
     FormDialogComponent,
     RadioCustomizeDialogComponent,
@@ -72,12 +69,10 @@ import { SafeUrlPipe } from './safe-url.pipe';
     ColumnWrapperComponent,
     RowWrapperComponent,
     ColumnSizeComponent,
-    ListFormsComponent,
     HomeComponent,
     FormlyFieldFileComponent,
     FileValueAccessorDirective,
     AddressWrapperComponent,
-    FormPreviewCreationComponent,
     FormTableComponent,
     TableWrapperComponent,
     PanelDialogComponent,
@@ -86,7 +81,8 @@ import { SafeUrlPipe } from './safe-url.pipe';
     FormlyFieldHtmlComponent,
     IFrameDialogComponent,
     FormlyFieldIframeComponent,
-    SafeUrlPipe
+    SafeUrlPipe,
+    SidebarGenericComponent
   ],
   imports: [
     BrowserModule,

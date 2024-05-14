@@ -27,14 +27,14 @@ import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-fo
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
 import {error, promise} from 'protractor';
-import {ShareService} from '../../services/share.service'
+import {ShareService} from '../../services/share.service';
 import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
 import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 import { PanelDialogComponent } from '../fields-dialog/panel-dialog/panel-dialog.component';
-import {TranslationService} from "../../services/translation.service";
-import {HtmlDialogComponent} from "../fields-dialog/html-dialog/html-dialog.component";
-import {IFrameDialogComponent} from "../fields-dialog/i-frame-dialog/i-frame-dialog.component";
+import {TranslationService} from '../../services/translation.service';
+import {HtmlDialogComponent} from '../fields-dialog/html-dialog/html-dialog.component';
+import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dialog.component';
 
 
 
@@ -71,7 +71,7 @@ export class ContentComponent implements OnInit, DoCheck {
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
               private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
     this.form = this.fb.group({});
-    //this.previewForm = this.fb.group({});
+    // this.previewForm = this.fb.group({});
   }
   ngOnInit(): void {
   }
@@ -232,9 +232,9 @@ export class ContentComponent implements OnInit, DoCheck {
           type: 'html',
           key: customizationData.property_name,
           templateOptions: {
-            html_tag:customizationData.html_tag,
-            html_content:customizationData.html_content,
-            htmlElement:htmlElement,
+            html_tag: customizationData.html_tag,
+            html_content: customizationData.html_content,
+            htmlElement,
             type: 'html',
             minLength: customizationData.minLength,
             maxLength: customizationData.maxLength,
@@ -437,7 +437,7 @@ export class ContentComponent implements OnInit, DoCheck {
       (language === 'fr' && type === 'IFrame') ||
       (language === 'ar' && type === 'IFrame')) {
       const customizationData = await this.openIFrameDialog();
-      const link_iframe =customizationData.link_iframe
+      const link_iframe = customizationData.link_iframe;
       this.shareService.changeUrl(link_iframe);
 
       // @ts-ignore
@@ -451,8 +451,8 @@ export class ContentComponent implements OnInit, DoCheck {
           wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: label_fr,
-            label_ar: label_ar,
+            label_fr,
+            label_ar,
             type: 'iframe',
             link_iframe: customizationData.link_iframe,
             custom_css: customizationData.custom_css,
@@ -974,8 +974,8 @@ export class ContentComponent implements OnInit, DoCheck {
       });
       this.form.valueChanges.subscribe((value) => {
          this.model = { ...value };
-         console.log('preview fields',this.previewfields);
-        console.log(this.model);
+         console.log('preview fields', this.previewfields);
+         console.log(this.model);
       });
       if (this.formlyForm) {
         // this.formlyForm.resetForm({ model: this.model });
@@ -993,7 +993,7 @@ export class ContentComponent implements OnInit, DoCheck {
       for (let j = 0; j < columns; j++) {
         const key = `row${i}_column${j}`;
         const field = {
-          key: key,
+          key,
           type: 'input', // You can adjust the type as needed
           templateOptions: {
             label: `Row ${i + 1} - Column ${j + 1}` // Adjust the label as needed
@@ -1026,7 +1026,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const dialogRef = this.dialog.open(FormTableComponent, {
       width: '1400px',
       data: {
-        label_fr:'',label_ar:'', number_rows:'',number_columns:''
+        label_fr: '', label_ar: '', number_rows: '', number_columns: ''
       },
     });
     try {
@@ -1040,7 +1040,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
 
 
-  openCheckboxDialog():Observable<any> {
+  openCheckboxDialog(): Observable<any> {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
@@ -1055,11 +1055,11 @@ export class ContentComponent implements OnInit, DoCheck {
   async openHTMLDialog() {
     const dialogRef = this.dialog.open(HtmlDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar: '', html_tag:'', html_content:'', htmlElement:'', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+      data: {label_fr: '', label_ar: '', html_tag: '', html_content: '', htmlElement: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
-      customizationData.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`
+      customizationData.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`;
       return customizationData;
     } catch (error) {
       console.error('Error in dialog:', error);
@@ -1070,7 +1070,7 @@ export class ContentComponent implements OnInit, DoCheck {
   async openIFrameDialog() {
     const dialogRef = this.dialog.open(IFrameDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar: '' ,link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+      data: {label_fr: '', label_ar: '' , link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -1299,13 +1299,13 @@ export class ContentComponent implements OnInit, DoCheck {
       type: field.templateOptions.type,
       required: field.templateOptions.required,
       hidden: field.templateOptions.hidden,
-      hide_label_fr:field.templateOptions.hide_label_fr,
-      hide_label_ar:field.templateOptions.hide_label_ar,
-      custom_css:field.templateOptions.custom_css,
-      property_name:field.templateOptions.property_name,
-      field_tags:field.templateOptions.field_tags,
-      error_label:field.templateOptions.error_label,
-      custom_error_message:field.templateOptions.custom_error_message,
+      hide_label_fr: field.templateOptions.hide_label_fr,
+      hide_label_ar: field.templateOptions.hide_label_ar,
+      custom_css: field.templateOptions.custom_css,
+      property_name: field.templateOptions.property_name,
+      field_tags: field.templateOptions.field_tags,
+      error_label: field.templateOptions.error_label,
+      custom_error_message: field.templateOptions.custom_error_message,
       number_rows: field.templateOptions.number_rows,
       number_columns: field.templateOptions.number_columns,
       theme: field.templateOptions.theme,
