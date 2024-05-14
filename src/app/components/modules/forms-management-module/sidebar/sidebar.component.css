@@ -2,16 +2,20 @@
 @import '~bootstrap-icons/font/bootstrap-icons.css';
 
 .example-container {
-  height:60rem;
-  width:180%;
-  background-color: #FFFFFF;
+  height: 100%;
+  width: 100%;
+  display: flex;
 }
 .example-sidenav {
+  -webkit-user-select: none;
   user-select: none;
-  margin: 20px;
+  margin: 20px 20px 20px 0;
   border-radius: 20px;
-  background-color: #FAFBFF;
+  background-color: #f5f5f5;
+  width: 17%;
+  position: relative;
 }
+
 .full-width {
   width: 100%;
 }
@@ -62,6 +66,8 @@
   color: white;
   margin-top: 0.3rem;
   padding: 5px;
+  height: auto;
+  height: auto;
 }
 .categoryItem:hover{
   color: #1d253b;

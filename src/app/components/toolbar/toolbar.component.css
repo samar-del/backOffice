@@ -34,7 +34,7 @@ select:hover{
 }
 
 img{
-  width: 70%;
+  width: 220px !important;
 }
 i{
   color: #00719D;

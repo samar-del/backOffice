@@ -1,7 +1,13 @@
 .example-container {
-  height:50rem;
-  background-color: #FFFFFF;
-  display:inline-flex; width: 20rem;
+  height: 50rem;
+  background-color: transparent;
+  display: flex;
+  width: 100%;
+}
+.mat-nav-list .mat-list-item {
+  height: auto;
+  padding: 10px 0;
+  font-size: 15px;
 }
 .example-sidenav {
   user-select: none;
@@ -11,7 +17,7 @@
   height: auto;
   background:linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
   box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
-
+  width: 100%;
 }
 .full-width {
   width: 100%;
