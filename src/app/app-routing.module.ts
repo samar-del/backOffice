@@ -9,6 +9,7 @@ import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-rol
 import { DashboardComponent } from './Modules/user/component/dashboard/dashboard.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { AuthGuard } from './Modules/user/services/auth.guard';
+import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
 
 const routes: Routes = [
   { path: 'login',
@@ -49,6 +50,7 @@ const routes: Routes = [
     path:'side',
     component:SidebarComponent, canActivate:[AuthGuard]
   },
+  {path:'user', component:GestionUserComponent},
   {
     path:'**',
     component:LoginComponent

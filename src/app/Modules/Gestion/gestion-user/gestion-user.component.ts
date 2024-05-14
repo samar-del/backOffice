@@ -15,8 +15,8 @@ export class GestionUserComponent implements OnInit {
   }
 
 
-  affecterUserRole(userId: string, roleId: string): void {
-    this.userService.affecterUserRole(userId, roleId).subscribe(
+  affecterUserRole(idUser: string, idRole: string): void {
+    this.userService.affecterUserRole(idUser, idRole).subscribe(
       (user: User) => {
         console.log('Rôle affecté avec succès à l\'utilisateur : ', user);
         // Faites quelque chose avec la réponse si nécessaire
