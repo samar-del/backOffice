@@ -2,6 +2,7 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
+import {TranslationService} from "../../../services/translation.service";
 
 @Component({
   selector: 'app-form-table',
@@ -21,18 +22,20 @@ export class FormTableComponent implements OnInit {
   fields: FormlyFieldConfig[] = [];
   model: any = {};
   selectedTabIndex = 0;
+  translations: any = {};
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormTableComponent>,
+    private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
 
   ngOnInit() {
     this.form = this.fb.group({
-      label: [this.data.label, Validators.required],
-      rows: [0, Validators.required],
+      label_fr: [this.data.label_fr, Validators.required],
+      label_ar: [this.data.label_ar, Validators.required],      rows: [0, Validators.required],
       columns: [0, Validators.required],
       custom_css: [this.data.custom_css],
       label_position: [this.data.label_position || 'top'],
@@ -44,10 +47,16 @@ export class FormTableComponent implements OnInit {
 
 
     });
-    this.form.get('label').valueChanges.subscribe((label: string) => {
+    this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
       propertyNameControl.setValue(this.generatePropertyName(label));
     });
+
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+
+    this.loadTranslations();
   }
 
   generatePropertyName(label: string): string {
@@ -71,6 +80,15 @@ export class FormTableComponent implements OnInit {
     });
 
     return propertyName;
+  }
+
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
   }
 
   updateTags(inputValue: string): void {

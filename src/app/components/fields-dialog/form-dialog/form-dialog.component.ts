@@ -139,8 +139,18 @@ export class FormDialogComponent implements OnInit {
       const placeholder_ar = this.form.get('placeholder_ar').value;
       const placeholder_fr = this.form.get('placeholder_fr').value;
       const placeholderText = currentLanguage === 'ar' ? placeholder_ar : placeholder_fr;
+      const label_position = this.form.get('label_position').value;
+      const labelPosition = currentLanguage === 'ar' ? label_position : null;
+      const custom_css = this.form.get('custom_css').value;
+      const customCSS = currentLanguage === 'ar' ? custom_css : null;
+      const hidden = this.form.get('hidden').value;
+      const Hidden = currentLanguage === 'ar' ? hidden : null;
+      const hide_label_fr = this.form.get('hide_label_fr').value;
+      const HideLabelFR = currentLanguage === 'ar' ? hide_label_fr : null;
+      const hide_label_ar = this.form.get('hide_label_fr').value;
+      const HideLabelAR = currentLanguage === 'ar' ? hide_label_ar : null;
 
-    this.newField = {
+        this.newField = {
       type: 'input',
       key: 'key1',
       templateOptions: {
@@ -153,10 +163,13 @@ export class FormDialogComponent implements OnInit {
         placeholder_ar: this.form.get('placeholder_ar').value,
         placeholder: placeholderText,
         disabled: inputDisabled,
-        custom_css: this.form.get('custom_css').value,
+        custom_css: customCSS,
         error_label: this.form.get('error_label').value,
         custom_error_message: this.form.get('custom_error_message').value,
-        labelPosition: this.form.get('label_position').value
+        labelPosition: labelPosition,
+        hidden: Hidden,
+        hide_label_fr : HideLabelFR,
+        hide_label_ar : HideLabelAR
       },
       hide: inputHidden,
       expressionProperties: {

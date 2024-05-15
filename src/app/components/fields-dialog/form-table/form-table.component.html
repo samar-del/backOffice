@@ -9,9 +9,15 @@
       <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
         <form [formGroup]="form">
           <div mat-dialog-content>
-            <div class="form-group">
-              <label for="label">Label</label>
-              <input id="label" formControlName="label" class="form-control" />
+            <div class="row">
+              <div class="col form-group">
+                <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
+                <input id="label_fr" formControlName="label_fr" class="form-control" />
+              </div>
+              <div class="col form-group">
+                <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
+                <input id="label_ar" formControlName="label_ar" class="form-control" />
+              </div>
             </div>
             <div class="form-group">
               <label for="rows">Number of Rows</label>
@@ -23,10 +29,10 @@
             </div>
             <label for="label_position">Label Position</label>
             <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
-              <option [value]="'top'">Top</option>
-              <option [value]="'left'">Left</option>
-              <option [value]="'right'">Right</option>
-              <option [value]="'bottom'">Bottom</option>
+              <option value="right" for="position_right">{{ translations?.translations?.position_right }}</option>
+              <option value="left" for="position_left">{{ translations?.translations?.position_left }}</option>
+              <option value="top" for="position_top">{{ translations?.translations?.position_top }}</option>
+              <option value="bottom" for="position_bottom">{{ translations?.translations?.position_bottom }}</option>
             </select>
             <div class="form-group">
               <label for="custom_css">Custom CSS</label>

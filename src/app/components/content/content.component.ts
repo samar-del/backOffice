@@ -718,7 +718,7 @@ export class ContentComponent implements OnInit {
       }
     }
     else if ((language === 'an' && type === 'select') ||
-      (language === 'fr' && type === 'select') ||
+      (language === 'fr' && type === 'sélectionner') ||
       (language === 'ar' && type === 'اختيار')){
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);

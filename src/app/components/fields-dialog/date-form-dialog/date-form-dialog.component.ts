@@ -43,7 +43,7 @@ export class DateFormDialogComponent implements OnInit {
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
     });
 
     // Subscribe to label changes to update property name
