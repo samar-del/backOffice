@@ -49,6 +49,7 @@ import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { SidebarGenericComponent } from './components/dashbord/sidebar-generic/sidebar-generic.component';
+import {MatMenuModule} from '@angular/material/menu';
 
 
 @NgModule({
@@ -84,56 +85,57 @@ import { SidebarGenericComponent } from './components/dashbord/sidebar-generic/s
     SafeUrlPipe,
     SidebarGenericComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    MatSidenavModule,
-    BrowserAnimationsModule,
-    MatListModule,
-    MatIconModule,
-    MatToolbarModule,
-    DragDropModule,
-    ReactiveFormsModule,
-    FormlyModule.forRoot({
-      wrappers: [{ name: 'column', component: ColumnWrapperComponent },  { name: 'columnSize', component: ColumnSizeComponent },
-                 {name: 'html', component: FormlyFieldHtmlComponent},
-                 {name: 'iframe', component: FormlyFieldIframeComponent},
-                 { name: 'address-wrapper', component: AddressWrapperComponent },
-                 { name: 'table', component: TableWrapperComponent },
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        MatSidenavModule,
+        BrowserAnimationsModule,
+        MatListModule,
+        MatIconModule,
+        MatToolbarModule,
+        DragDropModule,
+        ReactiveFormsModule,
+        FormlyModule.forRoot({
+            wrappers: [{name: 'column', component: ColumnWrapperComponent}, {name: 'columnSize', component: ColumnSizeComponent},
+                {name: 'html', component: FormlyFieldHtmlComponent},
+                {name: 'iframe', component: FormlyFieldIframeComponent},
+                {name: 'address-wrapper', component: AddressWrapperComponent},
+                {name: 'table', component: TableWrapperComponent},
 
-      ],
-      types: [
-        { name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: { templateOptions: { column: true } } },
-        { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field'] },
-        { name: 'table', component: TableWrapperComponent, wrappers: ['form-field'] },
-        { name: 'panel', component: PanelFieldWrapperComponent },
-         {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
-        {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
+            ],
+            types: [
+                {name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: {templateOptions: {column: true}}},
+                {name: 'columnSize', component: ColumnSizeComponent},
+                {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
+                {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
+                {name: 'panel', component: PanelFieldWrapperComponent},
+                {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
+                {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
 
-      ],
-    }),
-    FormlyModule.forChild({
-      wrappers: [{name: 'row', component: RowWrapperComponent}],
-      types: [
-        {
-          name: 'row',
-          extends: 'formly-group',
-          wrappers: ['form-field'],
-          defaultOptions: {templateOptions: {row: true}}
-        },
-      ],
-    }),
-    FormlyBootstrapModule,
-    MatTabsModule,
-    MatDialogModule,
-    NgbModule,
-    HttpClientModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatOptionModule,
-  ],
+            ],
+        }),
+        FormlyModule.forChild({
+            wrappers: [{name: 'row', component: RowWrapperComponent}],
+            types: [
+                {
+                    name: 'row',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {row: true}}
+                },
+            ],
+        }),
+        FormlyBootstrapModule,
+        MatTabsModule,
+        MatDialogModule,
+        NgbModule,
+        HttpClientModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatOptionModule,
+        MatMenuModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

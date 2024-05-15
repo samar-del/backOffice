@@ -9,10 +9,10 @@
   background-color: #FAFBFF;
   border: dotted #ccc 2px;
   flex-direction: column;
-  padding-top:120px;
 }
 .content-container form.ng-untouched.ng-pristine.ng-valid {
   min-height: 280px;
+  padding: 30px;
 }
 .field {
   cursor: pointer;
@@ -47,7 +47,7 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
   display: flex;
   justify-content: space-around;
   position: absolute;
-  top: -35px;
+  top: -15px;
   right: 30px;
   margin: 5px;
 }
@@ -113,3 +113,7 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
 /*  text-align: center;*/
 /*  margin-right: 2px;*/
 /*}*/
+
+form{
+  margin-top: 4rem;
+}

@@ -126,17 +126,8 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
   calculatePosition(event: CdkDragDrop<string[]>): number {
-
-    // Calculate the position based on the cursor's position
-    // You may need to implement your own logic here based on your requirements
-    // For example, you can calculate the position based on the Y coordinate of the cursor
-
-    // Get the Y coordinate of the cursor relative to the content-container
     const offsetY = event.distance.y - event.container.element.nativeElement.getBoundingClientRect().top;
 
-    // Calculate the position based on offsetY
-    // Example: dividing the container's height into equal segments and determining the segment based on the cursor's position
-    // This is just a placeholder; you'll need to adjust it based on your specific layout and requirements
     const containerHeight = event.container.element.nativeElement.clientHeight;
     const totalSegments = this.fields.length + 1; // Total segments including existing fields
     const segmentHeight = containerHeight / totalSegments;
