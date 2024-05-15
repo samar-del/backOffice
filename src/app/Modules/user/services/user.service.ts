@@ -21,4 +21,5 @@ export class UserService {
   updateUser(idUser: string, user:User){
     return this.http.put<User>(`http://localhost:8078/auth/updateUser/${idUser}`,user);
   }
+
 }

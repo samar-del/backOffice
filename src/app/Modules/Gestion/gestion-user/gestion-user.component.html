@@ -1,2 +1,18 @@
-<p>gestion-user works!</p>
+<form [formGroup]="signupForm" (ngSubmit)="UpdateUser()">
+  <div mat-dialog-content>
 
+      <mat-form-field class="example-full-width">
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="roles">
+              <mat-option *ngFor="let item of rolelist" [value]="item.idRole">
+                  {{item.roleType}}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+
+  </div>
+  <div>
+      <button mat-raised-button color="primary">Update</button>
+      <button mat-raised-close mat-raised-button color="accent" mat-dialog-close>Close</button>
+  </div>
+</form>

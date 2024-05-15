@@ -41,6 +41,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 
 //import { GoogleLoginProvider } from 'angularx-social-login';
@@ -93,7 +96,9 @@ import { MatTableModule } from '@angular/material/table';
     MatDialogModule,
     MatTableModule,
     MatCardModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSelectModule
+    //MatFormFieldModule, , MatInputModule,
   ],
   providers: [
   ],
