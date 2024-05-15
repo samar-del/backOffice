@@ -1,0 +1,19 @@
+.full-content{
+  display: flex;
+  flex-wrap: wrap;
+}
+.sidebar {
+  margin-left: 0.5rem;
+  margin-top: 0.7rem;
+  width: 250px;
+}
+.content-container {
+  border: 1px solid #ccc;
+  width: calc(100% - 250px);
+  padding: 1rem;
+  transition: background-color 0.3s;
+  flex: 1;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  margin-top: 0.7rem;
+  display: block;
+}

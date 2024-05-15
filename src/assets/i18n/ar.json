@@ -1,0 +1,60 @@
+{
+  "categories": [
+    {
+      "name": "الأساسيات",
+      "items": ["نص", "عدد", "راديو", "خانة اختيار", "اختيار", "زر"]
+    },
+    {
+      "name": "متقدم",
+      "items": ["البريد الإلكتروني", "رقم الهاتف", "العنوان", "عنوان URL", "تاريخ / وقت", "اليوم", "ملف", "اختيار متعدد","الإكمال التلقائي","عنصر HTML","IFrame"]
+    },
+    {
+      "name": "التخطيط",
+      "items": ["أعمدة","جدول", "مجلس"]
+    }
+  ],
+  "translations": {
+    "label": "التسمية",
+    "label_fr": "التسمية باللغة الفرنسية",
+    "label_ar": "التسمية باللغة العربية",
+    "placeholder_fr": "نص بديل باللغة الفرنسية",
+    "placeholder_ar": "نص بديل باللغة العربية",
+    "label_position": "موقف التسمية",
+    "custom_css": "لغة تنسيق ويب حسب الطلب",
+    "hidden": "مختفي",
+    "hide_label_fr": "إخفاء التسمية الفرنسية",
+    "hide_label_ar": "إخفاء التسمية العربية",
+    "hide_label": "إخفاء التسمية",
+    "disabled" : "عاجز",
+    "required": "مطلوب",
+    "minLength": "الحد الأدنى للطول",
+    "maxLength": "الحد الاقصى للطول",
+    "error_label": "تسمية الخطأ",
+    "custom_error_message": "رسالة خطأ مخصصة",
+    "property_name": "اسم الخاصية",
+    "field_tags": "العلامات الميدانية",
+    "shouldDisplay": "يجب أن يعرض هذا المكون:",
+    "flexCheckDefault": "قيم متعددة",
+    "True": "True",
+    "False": "False",
+    "whenShouldDisplay": "عندما يكون مكون النموذج:",
+    "condi_value": "له القيمة:",
+    "html_tag": "علامة HTML",
+    "html_content": "محتوى",
+    "link_iframe": "صلة",
+    "table_label": "التسمية",
+    "table_value": "القيمة",
+    "table_action": "فعل",
+    "position_right": "على اليمين",
+    "position_left": "على اليسار",
+    "position_top": "فوق",
+    "position_bottom": "تحت",
+    "number_rows": "عدد الخطوط",
+    "number_columns": "عدد الأعمدة",
+    "table_when_condi": "عندما يكون مكون النموذج",
+    "table_has_value": "بالقيمة",
+    "cancel": "إلغاء",
+    "save": "حفظ"
+  }
+
+}

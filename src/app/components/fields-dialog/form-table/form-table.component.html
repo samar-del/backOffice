@@ -1,0 +1,94 @@
+<!-- customize-dialog.component.html -->
+
+<div class="dialog-field">
+  <div class="form-tab">
+    <h3 mat-dialog-title>Customize Table</h3>
+    <hr>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <!-- Display Tab -->
+      <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
+        <form [formGroup]="form">
+          <div mat-dialog-content>
+            <div class="row">
+              <div class="col form-group" [hidden]="form.get('hide_label_fr').value">
+                <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
+                <input id="label_fr" formControlName="label_fr" class="form-control" />
+              </div>
+              <div class="col form-group" [hidden]="form.get('hide_label_ar').value">
+                <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
+                <input id="label_ar" formControlName="label_ar" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="number_rows">{{ translations?.translations?.number_rows }}</label>
+              <input id="number_rows" formControlName="number_rows" type="number" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label for="number_columns">{{ translations?.translations?.number_columns }}</label>
+              <input id="number_columns" formControlName="number_columns" type="number" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="custom_css">{{ translations?.translations?.custom_css }}</label>
+              <input id="custom_css" formControlName="custom_css" class="form-control" />
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+              <label class="form-check-label" for="hidden">
+                {{ translations?.translations?.hidden }}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
+              <label class="form-check-label" for="hide_label_fr">
+                {{ translations?.translations?.hide_label_fr }}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
+              <label class="form-check-label" for="hide_label_ar">
+                {{ translations?.translations?.hide_label_ar }}
+              </label>
+            </div>
+          </div>
+          <div mat-dialog-actions>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">{{ translations?.translations?.cancel }}</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>{{ translations?.translations?.save }}</button>
+          </div>
+        </form>
+      </mat-tab>
+      <!-- API Tab -->
+      <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="property_name">{{ translations?.translations?.property_name }}</label>
+            <input id="property_name" formControlName="property_name" type="text" class="form-control" />
+          </div>
+            <div class="form-group">
+              <label for="field_tags">{{ translations?.translations?.field_tags }}</label>
+              <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+              <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+            </div>
+          </form>
+      </mat-tab>
+      <!-- Conditional Tab -->
+      <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+        <!-- Leave this tab empty -->
+      </mat-tab>
+      <!-- Layout Tab -->
+      <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">
+        <!-- Leave this tab empty -->
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div class="preview-tab">
+    <h4>Preview input</h4>
+    <hr>
+    <div class="formly-form-container">
+      <formly-form #formlyForm [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()" ></formly-form>
+    </div>
+
+  </div>
+</div>
+

@@ -11,6 +11,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { AuthGuard } from './Modules/user/services/auth.guard';
 import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
 import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
+import { HomeComponent } from './components/home/home.component';
+import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
 
 const routes: Routes = [
   { path: 'login',
@@ -56,7 +58,29 @@ const routes: Routes = [
     path:'**',
     component:LoginComponent
   },
-
+  {
+    path: 'formsManagement',
+    loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
+      .then(m => m.FormsManagementModuleModule)
+  },
+  {
+    path: 'admin',
+    component: HomeComponent,
+    children: [
+      {
+        path: 'formsManagement',
+        loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
+          .then(m => m.FormsManagementModuleModule)
+      }
+    ]
+  },
+  {path: 'listForms' , component: ListFormsComponent},
+  // {path: 'home' , component: HomeComponent,
+  //   children: [
+  //     {path: 'createForm' , component: SidebarComponent}
+  //   ]
+  // },
+  {path: 'createForm' , component: SidebarComponent}
 
 ];
 

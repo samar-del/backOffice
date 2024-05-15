@@ -1,0 +1,59 @@
+{
+  "categories": [
+    {
+      "name": "Basics",
+      "items": ["Text", "Number", "Radio button", "Checkbox",  "Select", "Button"]
+    },
+    {
+      "name": "Advanced",
+      "items": ["Email", "Phone Number", "Address", "Url", "Date / Time", "Day", "File", "Select Multiple", "Autocomplete", "HTML Element","IFrame"]
+    },
+    {
+      "name": "Layout",
+      "items": ["Columns", "Table", "Panel"]
+    }
+  ],
+  "translations": {
+    "label": "Label",
+    "label_fr": "Label in french",
+    "label_ar": "Label in arabic",
+    "placeholder_fr": "Placeholder in french",
+    "placeholder_ar": "Placeholder in arabic",
+    "label_position": "Label position",
+    "custom_css": "Custom CSS",
+    "hidden": "Hidden",
+    "hide_label_fr": "Hide label fr",
+    "hide_label_ar": "Hide label ar",
+    "hide_label": "Hide Label",
+    "disabled" : "Disabled",
+    "required": "Required",
+    "minLength": "Min length",
+    "maxLength": "Max length",
+    "error_label": "Error label",
+    "custom_error_message": "Custom error message",
+    "property_name": "Property name",
+    "field_tags": "Field tags",
+    "shouldDisplay": "This component should Display:",
+    "flexCheckDefault": "Multiple values",
+    "True": "True",
+    "False": "False",
+    "whenShouldDisplay": "When the form component:",
+    "condi_value": "Has the value:",
+    "html_tag": "HTML Tag",
+    "html_content": "Content",
+    "link_iframe": "Link",
+    "table_label": "Label",
+    "table_value": "Value",
+    "table_action": "Action",
+    "position_right": "Right",
+    "position_left": "Left",
+    "position_top": "Top",
+    "position_bottom": "Bottom",
+    "number_rows": "Number of rows",
+    "number_columns": "Number of columns",
+    "table_when_condi": "When the form component",
+    "table_has_value": "Has the value",
+    "cancel": "Cancel",
+    "save": "Save"
+  }
+}

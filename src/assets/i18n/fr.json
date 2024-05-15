@@ -1,0 +1,60 @@
+{
+  "categories": [
+    {
+      "name": "Basique",
+      "items": ["Texte", "Nombre", "Bouton radio", "Case à cocher",  "Sélectionner", "Bouton"]
+    },
+    {
+      "name": "Advancé",
+      "items": ["E-mail", "Numéro de téléphone", "Adresse", "URL", "Date / Heure", "Jour", "Fichier", "Sélection multiple", "Autocomplétion", "Element HTML","IFrame"]
+    },
+    {
+      "name": "Mise en page",
+      "items": ["Colonnes", "Tableau", "Panel"]
+    }
+  ],
+  "translations": {
+    "label": "Label",
+    "label_fr": "Label en français",
+    "label_ar": "Label en arabe",
+    "placeholder_fr": "Placeholder en français",
+    "placeholder_ar": "Placeholder en arabe",
+    "label_position": "Position de label",
+    "custom_css": "CSS personnalisé",
+    "hidden": "Cachée",
+    "hide_label_fr": "Masquer label fr",
+    "hide_label_ar": "Masquer label ar",
+    "hide_label": "Masquer label",
+    "disabled" : "Désactivé",
+    "required": "Requis",
+    "minLength": "Longueur minimale",
+    "maxLength": "Longueur maximale",
+    "error_label": "Label d'erreur",
+    "custom_error_message": "Message d'erreur personnalisé",
+    "property_name": "Nom de la propriété",
+    "field_tags": "Balises de champ",
+    "shouldDisplay": "Ce composant doit afficher:",
+    "flexCheckDefault": "Valeurs multiples",
+    "True": "Vrai",
+    "False": "Faux",
+    "whenShouldDisplay": "Lorsque le composant de formulaire:",
+    "condi_value": "A la valeur :",
+    "table_label": "",
+    "html_tag": "Balise html",
+    "html_content": "Contenu",
+    "link_iframe": "Lien",
+    "table_label": "Label",
+    "table_value": "Valeur",
+    "table_action": "Action",
+    "position_right": "A Droite",
+    "position_left": "A Gauch",
+    "position_top": "Haut",
+    "position_bottom": "Bas",
+    "number_rows": "Nombre de ligne",
+    "number_columns": "Nombre de colonne",
+    "table_when_condi": "Lorsque le composant de formulaire",
+    "table_has_value": "A la valeur",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  }
+}
