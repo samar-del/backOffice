@@ -19,25 +19,25 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="custom_css">Custom CSS</label>
+              <label for="custom_css">{{ translations?.translations?.custom_css }}</label>
               <input id="custom_css" formControlName="custom_css" class="form-control" />
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
               <label class="form-check-label" for="hidden">
-                Hidden
+                {{ translations?.translations?.hidden }}
               </label>
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
               <label class="form-check-label" for="disabled">
-                Disabled
+                {{ translations?.translations?.disabled }}
               </label>
             </div>
           </div>
           <div mat-dialog-actions>
-            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
-            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">{{ translations?.translations?.cancel }}</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>{{ translations?.translations?.save }}</button>
           </div>
         </form>
 
@@ -48,15 +48,15 @@
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="required" formControlName="required">
           <label class="form-check-label" for="required">
-            Required
+            {{ translations?.translations?.required }}
           </label>
         </div>
         <div class="form-group">
-          <label for="error_label">Error Label</label>
+          <label for="error_label">{{ translations?.translations?.error_label }}</label>
           <input id="error_label" formControlName="error_label" type="text" class="form-control" />
         </div>
         <div class="form-group">
-          <label for="custom_error_message">Custom Error Message</label>
+          <label for="custom_error_message">{{ translations?.translations?.custom_error_message }}</label>
           <input id="custom_error_message" formControlName="custom_error_message" type="text" class="form-control" />
         </div>
         </form>
@@ -64,17 +64,17 @@
       <mat-tab label="API">
         <form [formGroup]="form">
         <div class="form-group">
-          <label for="property_name">Property Name</label>
+          <label for="property_name">{{ translations?.translations?.property_name }}</label>
           <input id="property_name" formControlName="property_name" type="text" class="form-control" />
         </div>
           <div class="form-group">
-            <label for="field_tags">Field Tags</label>
+            <label for="field_tags">{{ translations?.translations?.field_tags }}</label>
             <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
             <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
           </div>
         </form>
       </mat-tab>
-      <mat-tab label="Layout"> Layout </mat-tab>
+      <mat-tab label="Layout">Layout</mat-tab>
     </mat-tab-group>
   </div>
   <div class="preview-tab">

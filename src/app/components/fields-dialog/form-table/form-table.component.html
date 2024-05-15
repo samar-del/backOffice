@@ -20,40 +20,40 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="number_rows">Number of Rows</label>
+              <label for="number_rows">{{ translations?.translations?.number_rows }}</label>
               <input id="number_rows" formControlName="number_rows" type="number" class="form-control" />
             </div>
             <div class="form-group">
-              <label for="number_columns">Number of Columns</label>
+              <label for="number_columns">{{ translations?.translations?.number_columns }}</label>
               <input id="number_columns" formControlName="number_columns" type="number" class="form-control" />
             </div>
 
             <div class="form-group">
-              <label for="custom_css">Custom CSS</label>
+              <label for="custom_css">{{ translations?.translations?.custom_css }}</label>
               <input id="custom_css" formControlName="custom_css" class="form-control" />
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
               <label class="form-check-label" for="hidden">
-                Hidden
+                {{ translations?.translations?.hidden }}
               </label>
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
               <label class="form-check-label" for="hide_label_fr">
-                Hide label fr
+                {{ translations?.translations?.hide_label_fr }}
               </label>
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
               <label class="form-check-label" for="hide_label_ar">
-                Hide label ar
+                {{ translations?.translations?.hide_label_ar }}
               </label>
             </div>
           </div>
           <div mat-dialog-actions>
-            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
-            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">{{ translations?.translations?.cancel }}</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>{{ translations?.translations?.save }}</button>
           </div>
         </form>
       </mat-tab>
@@ -61,11 +61,11 @@
       <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
         <form [formGroup]="form">
           <div class="form-group">
-            <label for="property_name">Property Name</label>
+            <label for="property_name">{{ translations?.translations?.property_name }}</label>
             <input id="property_name" formControlName="property_name" type="text" class="form-control" />
           </div>
             <div class="form-group">
-              <label for="field_tags">Field Tags</label>
+              <label for="field_tags">{{ translations?.translations?.field_tags }}</label>
               <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
               <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
             </div>

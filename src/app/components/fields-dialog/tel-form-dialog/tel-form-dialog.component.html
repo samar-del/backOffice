@@ -2,111 +2,111 @@
   <div class="form-tab">
     <h3 mat-dialog-title>Customize Phone Number</h3>
     <hr>
-<mat-tab-group (selectedTabChange)="onTabChange($event)">
-  <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
-    <form [formGroup]="form">
-      <div mat-dialog-content>
-        <div class="row">
-          <div class="col form-group" [hidden]="form.get('hide_label_fr').value">
-            <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
-            <input id="label_fr" formControlName="label_fr" class="form-control" />
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
+        <form [formGroup]="form">
+          <div mat-dialog-content>
+            <div class="row">
+              <div class="col form-group" [hidden]="form.get('hide_label_fr').value">
+                <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
+                <input id="label_fr" formControlName="label_fr" class="form-control" />
+              </div>
+              <div class="col form-group" [hidden]="form.get('hide_label_ar').value">
+                <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
+                <input id="label_ar" formControlName="label_ar" class="form-control" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col form-group" [hidden]="form.get('hidden').value">
+                <label for="placeholder_fr">{{ translations?.translations?.placeholder_fr }}</label>
+                <input type="tel" id="placeholder_fr" formControlName="placeholder_fr" class="form-control" />
+              </div>
+              <div class="col form-group" [hidden]="form.get('hidden').value">
+                <label for="placeholder_ar">{{ translations?.translations?.placeholder_ar }}</label>
+                <input type="tel" id="placeholder_ar" formControlName="placeholder_ar" class="form-control" />
+              </div>
+            </div>
+            <label for="label_position">{{ translations?.translations?.label_position }}</label>
+            <select id="label_position" class="form-control" aria-label="Default select position">
+              <option value="right" for="position_right">{{ translations?.translations?.position_right }}</option>
+              <option value="left" for="position_left">{{ translations?.translations?.position_left }}</option>
+              <option value="top" for="position_top">{{ translations?.translations?.position_top }}</option>
+              <option value="bottom" for="position_bottom">{{ translations?.translations?.position_bottom }}</option>
+            </select>
+            <div class="form-group">
+              <label for="custom_css">{{ translations?.translations?.custom_css }}</label>
+              <input id="custom_css" formControlName="custom_css" class="form-control" />
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+              <label class="form-check-label" for="hidden">
+                {{ translations?.translations?.hidden }}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
+              <label class="form-check-label" for="hide_label_fr">
+                {{ translations?.translations?.hide_label_fr }}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
+              <label class="form-check-label" for="hide_label_ar">
+                {{ translations?.translations?.hide_label_ar }}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
+              <label class="form-check-label" for="disabled">
+                {{ translations?.translations?.disabled }}
+              </label>
+            </div>
           </div>
-          <div class="col form-group" [hidden]="form.get('hide_label_ar').value">
-            <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
-            <input id="label_ar" formControlName="label_ar" class="form-control" />
+          <div mat-dialog-actions>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">{{ translations?.translations?.cancel }}</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>{{ translations?.translations?.save }}</button>
           </div>
-        </div>
-        <div class="row">
-          <div class="col form-group" [hidden]="form.get('hidden').value">
-            <label for="placeholder_fr">{{ translations?.translations?.placeholder_fr }}</label>
-            <input type="tel" id="placeholder_fr" formControlName="placeholder_fr" class="form-control" />
+        </form>
+      </mat-tab>
+      <mat-tab label="Validation" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+        <form [formGroup]="form">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="required" formControlName="required">
+            <label class="form-check-label" for="required">
+              {{ translations?.translations?.required }}
+            </label>
           </div>
-          <div class="col form-group" [hidden]="form.get('hidden').value">
-            <label for="placeholder_ar">{{ translations?.translations?.placeholder_ar }}</label>
-            <input type="tel" id="placeholder_ar" formControlName="placeholder_ar" class="form-control" />
+          <div class="form-group">
+            <label for="error_label">{{ translations?.translations?.error_label }}</label>
+            <input id="error_label" formControlName="error_label" type="text" class="form-control" />
           </div>
-        </div>
-        <label for="label_position">Label Position</label>
-        <select id="label_position" class="form-control" aria-label="Default select position">
-          <option selected>Top</option>
-          <option value="1">Left</option>
-          <option value="2">Right</option>
-          <option value="3">Bottom</option>
-        </select>
-        <div class="form-group">
-          <label for="custom_css">Custom CSS</label>
-          <input id="custom_css" formControlName="custom_css" class="form-control" />
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
-          <label class="form-check-label" for="hidden">
-            Hidden
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
-          <label class="form-check-label" for="hide_label_fr">
-            Hide label fr
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
-          <label class="form-check-label" for="hide_label_ar">
-            Hide label ar
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
-          <label class="form-check-label" for="disabled">
-            Disabled
-          </label>
-        </div>
-      </div>
-      <div mat-dialog-actions>
-        <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
-        <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
-      </div>
-    </form>
-  </mat-tab>
-  <mat-tab label="Validation" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
-    <form [formGroup]="form">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="required" formControlName="required">
-        <label class="form-check-label" for="required">
-          Required
-        </label>
-      </div>
-      <div class="form-group">
-        <label for="error_label">Error Label</label>
-        <input id="error_label" formControlName="error_label" type="text" class="form-control" />
-      </div>
-      <div class="form-group">
-        <label for="custom_error_message">Custom Error Message</label>
-        <input id="custom_error_message" formControlName="custom_error_message" type="text" class="form-control" />
-      </div>
-    </form>
-  </mat-tab>
-  <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
-    <form [formGroup]="form">
-    <div class="form-group">
-      <label for="property_name">Property Name</label>
-      <input id="property_name" formControlName="property_name" type="text" class="form-control" />
-    </div>
-      <div class="form-group">
-        <label for="field_tags">Field Tags</label>
-        <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
-        <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
-      </div>
-    </form>
-  </mat-tab>
-  <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
-</mat-tab-group>
-</div>
-<div class="preview-tab">
-  <h4>Preview Phone number</h4>
-  <hr>
-  <div class="formly-form-container">
-    <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
+          <div class="form-group">
+            <label for="custom_error_message">{{ translations?.translations?.custom_error_message }}</label>
+            <input id="custom_error_message" formControlName="custom_error_message" type="text" class="form-control" />
+          </div>
+        </form>
+      </mat-tab>
+      <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="property_name">{{ translations?.translations?.property_name }}</label>
+            <input id="property_name" formControlName="property_name" type="text" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="field_tags">{{ translations?.translations?.field_tags }}</label>
+            <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+            <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+          </div>
+        </form>
+      </mat-tab>
+      <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
+    </mat-tab-group>
   </div>
-</div>
+  <div class="preview-tab">
+    <h4>Preview Phone number</h4>
+    <hr>
+    <div class="formly-form-container">
+      <formly-form [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
+    </div>
+  </div>
 </div>
