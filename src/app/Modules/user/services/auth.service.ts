@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {JwtHelperService} from'@auth0/angular-jwt';
 import { DOCUMENT } from '@angular/common';
+import { Observable } from 'rxjs';
+import { Role } from 'src/app/models/role';
+import { HttpClient } from '@angular/common/http';
 
 
 @Injectable({
@@ -9,7 +12,9 @@ import { DOCUMENT } from '@angular/common';
 })
 export class AuthService {
 
-  constructor(private router: Router  ) { }
+  constructor(private router: Router ,
+    private http:HttpClient
+   ) { }
 
   isLoggedIn(){
     return !!this.getAccessToken() && !this.isTokenExpired()
@@ -37,10 +42,23 @@ export class AuthService {
     return Math.floor((new Date()).getTime() / 1000) >= expiry;
   }
 
-  getUserRoles(): void {
+  getAllRoles(): Observable<Role[]> {
+    return this.http.get<Role[]>('http://localhost:8078/Role/AllRoles');
+  }
+
+  getUserRoles() {
     const helper = new JwtHelperService();
     const decodedToken = helper.decodeToken(this.getAccessToken()??"");
     console.log(decodedToken);
+  }
+
+GetUserRole(roleType:string): Observable<any>{
+      return this.http.get<any>(`http://localhost:8078/Role/roleT/${roleType}`);
+
+}
+
+  getRoleById(idRole: string): Observable<any>{
+    return this.http.get<any>(`http://localhost:8078/Role/unrole/${idRole}`);
   }
 
   logout(): void {
