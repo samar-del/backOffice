@@ -9,10 +9,10 @@
             </formly-form>
           </div>
           <div class="button-container">
-            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon" (click)="openCustomizationDialog(field.key)">
+            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon buttonField" (click)="openCustomizationDialog(field.key)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon" (click)="deleteField(field.key)">
+            <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon buttonField" (click)="deleteField(field.key)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -27,7 +27,7 @@
   </form>
 </div>
 
-<app-list-forms></app-list-forms>
+<!--<app-list-forms></app-list-forms>-->
 <!--<div class="preview-tab">-->
 <!--  <h4>Preview Form</h4>-->
 <!--  <hr>-->

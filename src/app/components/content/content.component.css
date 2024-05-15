@@ -9,6 +9,7 @@
   background-color: #FAFBFF;
   border: dotted #ccc 2px;
   flex-direction: column;
+  padding-top:120px;
 }
 .content-container form.ng-untouched.ng-pristine.ng-valid {
   min-height: 280px;
@@ -46,7 +47,7 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
   display: flex;
   justify-content: space-around;
   position: absolute;
-  top: -48px;
+  top: -35px;
   right: 30px;
   margin: 5px;
 }
@@ -102,3 +103,13 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
 ::ng-deep  formly-field{
   border:1px solid red ;
 }
+/*.small-icon mat-icon {*/
+/*  font-size: 20px;*/
+/*  text-align: center;*/
+/*}*/
+/*.buttonField{*/
+/*  width: 25px;*/
+/*  height: 25px;*/
+/*  text-align: center;*/
+/*  margin-right: 2px;*/
+/*}*/
