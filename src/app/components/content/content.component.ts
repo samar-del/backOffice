@@ -196,7 +196,7 @@ export class ContentComponent implements OnInit, DoCheck {
               return conditionValues;
             })
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               const value = model[uniqueKey];
@@ -251,7 +251,7 @@ export class ContentComponent implements OnInit, DoCheck {
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -322,7 +322,7 @@ export class ContentComponent implements OnInit, DoCheck {
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
             },
-            wrappers: ['column'],
+            //wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
@@ -369,7 +369,7 @@ export class ContentComponent implements OnInit, DoCheck {
                   error_label: customizationData.error_label,
                   custom_error_message: customizationData.custom_error_message
                 },
-                wrappers: ['column'],
+                //wrappers: ['column'],
 
               },
             ],
@@ -414,7 +414,7 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
 
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
 
           expressionProperties: {
@@ -448,7 +448,7 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'iframe',
           key: customizationData.property_name,
-          wrappers: ['column'],
+          //wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -513,7 +513,7 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -565,7 +565,7 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -611,7 +611,7 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -655,7 +655,7 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -705,7 +705,7 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -742,7 +742,7 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
         }];
       }
@@ -771,7 +771,7 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message
 
         },
-        wrappers: ['column'],
+        //wrappers: ['column'],
 
       }]; }
     }
@@ -831,7 +831,7 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
 
           defaultValue: false,
         }];
@@ -860,7 +860,7 @@ export class ContentComponent implements OnInit, DoCheck {
               type: 'columnSize',
               fieldGroup: [],
             },
-            wrappers: ['column'],
+            //wrappers: ['column'],
 
           },
         ];
@@ -916,7 +916,7 @@ export class ContentComponent implements OnInit, DoCheck {
             hide_label_fr: customizationData.hide_label_fr,
             hide_label_ar: customizationData.hide_label_ar,
           },
-          wrappers: ['column'],
+          //wrappers: ['column'],
         }];
         console.log(newField);
       }
@@ -940,7 +940,7 @@ export class ContentComponent implements OnInit, DoCheck {
             collapsible: customizationData.collapsible
               // Add any other template options as needed
             },
-            wrappers: ['column'],
+            //wrappers: ['column'],
 
           }];
         }
