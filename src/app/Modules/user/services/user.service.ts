@@ -10,7 +10,15 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  affecterUserRole(userId: string, roleId: string): Observable<User> {
-    return this.http.post<User>(`/api/users/${userId}/roles/${roleId}`, {});
+  affecterUserRole(idUser: string, idRole: string): Observable<User> {
+    return this.http.post<User>(`/api/users/${idUser}/roles/${idRole}`, {});
+  }
+
+  getAllUSers(): Observable<User>{
+    return this.http.get<User>('http://localhost:8078/auth/allUsers');
+  }
+
+  updateUser(idUser: string, user:User){
+    return this.http.put<User>(`http://localhost:8078/auth/updateUser/${idUser}`,user);
   }
 }

@@ -1,7 +1,8 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild, DoCheck } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ContentComponent } from '../content/content.component';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -24,10 +25,11 @@ export class SidebarComponent implements OnInit {
     // Add more categories as needed
   ];
 
-  constructor() {
+  constructor(private router: Router) {
     // Initialize showSubSubMenu array with false values for each category
     this.categories.forEach(() => this.showSubSubMenu.push(false));
   }
+
 
   ngOnInit(): void {
     this.categories.forEach(() => this.isSubmenuOpen.push(false));

@@ -7,6 +7,7 @@ import { loginRequest } from 'src/app/models/loginRequest';
 //import {SocialAuthService, GoogleLoginProvider,SocialUser} from 'angularx-social-login';
 import { from } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -26,7 +27,8 @@ export class LoginComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private loginService: LoginService,
               private router: Router,
-              private authService:AuthService
+              private authService:AuthService,
+              private toastr: ToastrService
            // private authService:SocialAuthService
           ) { }
 
@@ -46,21 +48,25 @@ export class LoginComponent implements OnInit {
 
       this.loginService.signin(request).subscribe(
         (response) => {
-
           this.authService.addAccessToken(response.token);
-        
+          this.toastr.success('Connexion réussie !', 'Succès');
           this.invalidLogin = false;
           this.loginSuccess = true;
-
           console.log('Login successful:', response);
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/user']);
         },
         (error) => {
+          this.toastr.error('Échec de la connexion. Veuillez réessayer.', 'Erreur');
           this.invalidLogin = true;
           this.loginSuccess = false;
           console.error('Login failed:', error);
         }
       );
+    } else {
+      this.toastr.error('Veuillez remplir correctement le formulaire.', 'Erreur de formulaire');
+      Object.values(this.form.controls).forEach(control => {
+        control.markAsTouched();
+      });
     }
   }
 

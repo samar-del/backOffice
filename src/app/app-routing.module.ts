@@ -10,6 +10,7 @@ import { DashboardComponent } from './Modules/user/component/dashboard/dashboard
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { AuthGuard } from './Modules/user/services/auth.guard';
 import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
+import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
 
 const routes: Routes = [
   { path: 'login',
@@ -48,9 +49,9 @@ const routes: Routes = [
   },
   {
     path:'side',
-    component:SidebarComponent, canActivate:[AuthGuard]
+    component:SidebarComponent
   },
-  {path:'user', component:GestionUserComponent},
+  {path:'user', component:UserPageComponent, canActivate:[AuthGuard]},
   {
     path:'**',
     component:LoginComponent

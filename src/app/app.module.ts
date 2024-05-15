@@ -37,7 +37,12 @@ import { AdminPageComponent } from './Modules/Gestion/admin-page/admin-page.comp
 import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
 import { SuperAdminPageComponent } from './Modules/Gestion/super-admin-page/super-admin-page.component';
 import { CommonModule } from '@angular/common';
-import { InterceptorService } from './Modules/user/services/interceptor.service';
+import { ToastrModule } from 'ngx-toastr';
+import { MatCardModule } from '@angular/material/card';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+
+
 //import { GoogleLoginProvider } from 'angularx-social-login';
 
 
@@ -83,7 +88,12 @@ import { InterceptorService } from './Modules/user/services/interceptor.service'
     NgbModule,
     HttpClientModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    ToastrModule.forRoot(),
+    MatDialogModule,
+    MatTableModule,
+    MatCardModule,
+    MatPaginatorModule
   ],
   providers: [
   ],

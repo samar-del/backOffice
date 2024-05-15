@@ -22,6 +22,11 @@ export class SignupService {
     );
   }
 
+IsLoggedIn(){
+  return sessionStorage.getItem('username')!=null;
+}
 
-
+GetUserRole(){
+  return sessionStorage.getItem('userrole')!=null?sessionStorage.getItem('userrole')?.toString():'';
+}
 }

@@ -1,27 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ProtectedService } from '../../user/services/protected.service';
+import { UserService } from '../../user/services/user.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-user-page',
   templateUrl: './user-page.component.html',
-  styleUrls: ['./user-page.component.css']
+  styleUrls: ['./user-page.component.css'],
 })
-export class UserPageComponent implements OnInit {
-
-  constructor(private protectedServiec: ProtectedService) {
-// we will intercept each request and append httpHeader with accesstoken in each request, with the help of interceptor
+export class UserPageComponent {
+  constructor(private service: UserService) {
+    this.Loaduser();
   }
 
-  ngOnInit(): void {
-   /* this.protectedServiec.getUserData().subscribe({
+  userList: any;
+  dataSource: any;
+  @ViewChild(MatPaginator)
 
-      next: (res)=>{
-        console.log(res);
-      },
-      error:(err)=>{
-        console.log(err);
-      }
-    })*/
+  Loaduser() {
+    this.service.getAllUSers().subscribe((res) => {
+      this.userList = res;
+      this.dataSource = new MatTableDataSource(this.userList);
+    });
   }
 
+  displayedColumns: string[] = ['username', 'email', 'role', 'action'];
+
+  updateUser(idUser: string) {}
 }
