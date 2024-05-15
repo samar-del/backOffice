@@ -28,45 +28,45 @@
               <input id="placeholder_ar" formControlName="placeholder_ar" class="form-control" />
             </div>
           </div>
-          <label for="label_position">Label Position</label>
+          <label for="label_position">{{ translations?.translations?.label_position }}</label>
           <select id="label_position" class="form-control" formControlName="label_position" aria-label="Default select position">
-            <option [value]="'top'">Top</option>
-            <option [value]="'left'">Left</option>
-            <option [value]="'right'">Right</option>
-            <option [value]="'bottom'">Bottom</option>
+            <option value="right" for="position_right">{{ translations?.translations?.position_right }}</option>
+            <option value="left" for="position_left">{{ translations?.translations?.position_left }}</option>
+            <option value="top" for="position_top">{{ translations?.translations?.position_top }}</option>
+            <option value="bottom" for="position_bottom">{{ translations?.translations?.position_bottom }}</option>
           </select>
           <div class="form-group">
-            <label for="custom_css">Custom CSS</label>
+            <label for="custom_css">{{ translations?.translations?.custom_css }}</label>
             <input id="custom_css" formControlName="custom_css" class="form-control" />
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
             <label class="form-check-label" for="hidden">
-              Hidden
+              {{ translations?.translations?.hidden }}
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
             <label class="form-check-label" for="hide_label_fr">
-              Hide label fr
+              {{ translations?.translations?.hide_label_fr }}
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
             <label class="form-check-label" for="hide_label_ar">
-              Hide label ar
+              {{ translations?.translations?.hide_label_ar }}
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="disabled" formControlName="disabled">
             <label class="form-check-label" for="disabled">
-              Disabled
+              {{ translations?.translations?.disabled }}
             </label>
           </div>
         </div>
         <div mat-dialog-actions>
-          <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
-          <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+          <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">{{ translations?.translations?.cancel }}</button>
+          <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>{{ translations?.translations?.save }}</button>
         </div>
       </form>
     </mat-tab>
@@ -75,23 +75,23 @@
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="required" formControlName="required">
           <label class="form-check-label" for="required">
-            Required
+            {{ translations?.translations?.required }}
           </label>
         </div>
         <div class="form-group">
-          <label for="minLength">Min Length</label>
+          <label for="minLength">{{ translations?.translations?.minLength }}</label>
           <input id="minLength" formControlName="minLength" type="number" class="form-control" />
         </div>
         <div class="form-group">
-          <label for="maxLength">Max Length</label>
+          <label for="maxLength">{{ translations?.translations?.maxLength }}</label>
           <input id="maxLength" formControlName="maxLength" type="number" class="form-control" />
         </div>
         <div class="form-group">
-          <label for="error_label">Error Label</label>
+          <label for="error_label">{{ translations?.translations?.error_label }}</label>
           <input id="error_label" formControlName="error_label" type="text" class="form-control" />
         </div>
         <div class="form-group">
-          <label for="custom_error_message">Custom Error Message</label>
+          <label for="custom_error_message">{{ translations?.translations?.custom_error_message }}</label>
           <input id="custom_error_message" formControlName="custom_error_message" type="text" class="form-control" />
         </div>
       </form>
@@ -99,11 +99,11 @@
     <mat-tab label="API"  [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
       <form [formGroup]="form">
       <div class="form-group">
-        <label for="property_name">Property Name</label>
+        <label for="property_name">{{ translations?.translations?.property_name }}</label>
         <input id="property_name" formControlName="property_name" type="text" class="form-control" />
       </div>
         <div class="form-group">
-          <label for="field_tags">Field Tags</label>
+          <label for="field_tags">{{ translations?.translations?.field_tags }}</label>
           <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
           <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
         </div>
@@ -113,29 +113,29 @@
     <mat-tab label="Conditional"  [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
       <form [formGroup]="form">
         <div class="form-group">
-          <label for="shouldDisplay">This component should Display:</label>
+          <label for="shouldDisplay">{{ translations?.translations?.shouldDisplay }}</label>
           <select class="form-select"id="shouldDisplay" formControlName="condi_shouldDisplay" >
             <option value="true">True</option>
             <option value="false">False</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="whenShouldDisplay">When the form component:</label>
+          <label for="whenShouldDisplay">{{ translations?.translations?.whenShouldDisplay }}</label>
           <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay"  >
             <option *ngFor="let f of fieldsList" [value]="f">{{f}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="condi-value">Has the value:</label>
+          <label for="condi-value">{{ translations?.translations?.condi_value }}</label>
           <input id="condi-value" formControlName="condi_value" type="text" class="form-control" />
         </div>
         <div class="form-group" formArrayName="tableRows">
           <table>
             <thead>
             <tr>
-              <th>When the form component</th>
-              <th>Has the value</th>
-              <th>Action</th>
+              <th for="table_when_condi">{{ translations?.translations?.table_when_condi }}</th>
+              <th for="table_has_value">{{ translations?.translations?.table_has_value }}</th>
+              <th for="table_action">{{ translations?.translations?.table_action }}</th>
             </tr>
             </thead>
             <tbody>

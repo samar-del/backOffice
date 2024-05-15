@@ -721,8 +721,8 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'radio') ||
-      (language === 'fr' && type === 'radio') ||
+    } else if ((language === 'an' && type === 'Radio button') ||
+      (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
       if (customizationData) {
@@ -746,8 +746,8 @@ export class ContentComponent implements OnInit, DoCheck {
 
         }];
       }
-    } else if ((language === 'an' && type === 'select') ||
-      (language === 'fr' && type === 'select') ||
+    } else if ((language === 'an' && type === 'Select') ||
+      (language === 'fr' && type === 'Sélectionner') ||
       (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
@@ -806,8 +806,8 @@ export class ContentComponent implements OnInit, DoCheck {
        }
 
     }
-    else if ((language === 'an' && type === 'checkbox') ||
-      (language === 'fr' && type === 'checkbox') ||
+    else if ((language === 'an' && type === 'Checkbox') ||
+      (language === 'fr' && type === 'Case à cocher') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
       if (customizationData) {
@@ -922,7 +922,7 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     }
 
-    else if (type === 'panel') {
+    else if (type === 'Panel') {
         const customizationData = await this.openPanelDialog();
         if (customizationData) {
           newField = [{
