@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
           this.invalidLogin = false;
           this.loginSuccess = true;
           console.log('Login successful:', response);
-          this.router.navigate(['/content']);
+          this.router.navigate(['/createForm']);
         },
         (error) => {
           this.toastr.error('Échec de la connexion. Veuillez réessayer.', 'Erreur');

@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import {MenuItemComponent} from "./components/menu-item/menu-item.component";
 import {FormDialogComponent} from "./components/fields-dialog/form-dialog/form-dialog.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
-import {FormsModule, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
@@ -34,8 +34,6 @@ import { ListFormsComponent } from './components/modules/forms-management-module
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';

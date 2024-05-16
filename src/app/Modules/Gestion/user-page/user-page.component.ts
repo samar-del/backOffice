@@ -68,5 +68,6 @@ export class UserPageComponent {
   }
 
   opendialog() {
+    this.Loaduser();
   }
 }

@@ -7,12 +7,12 @@ import { ForgotPasswordComponent } from './Modules/user/component/forgot-passwor
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
 import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
 import { DashboardComponent } from './Modules/user/component/dashboard/dashboard.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { AuthGuard } from './Modules/user/services/auth.guard';
 import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
 import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
 import { HomeComponent } from './components/home/home.component';
 import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
+import { SidebarComponent } from './components/modules/forms-management-module/sidebar/sidebar.component';
 
 const routes: Routes = [
   { path: 'login',
@@ -49,15 +49,9 @@ const routes: Routes = [
     path:'gestionRole',
     component: GestionRoleComponent
   },
-  {
-    path:'side',
-    component:SidebarComponent
-  },
+
   {path:'user', component:UserPageComponent, canActivate:[AuthGuard]},
-  {
-    path:'**',
-    component:LoginComponent
-  },
+
   {
     path: 'formsManagement',
     loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
@@ -75,12 +69,12 @@ const routes: Routes = [
     ]
   },
   {path: 'listForms' , component: ListFormsComponent},
-  // {path: 'home' , component: HomeComponent,
-  //   children: [
-  //     {path: 'createForm' , component: SidebarComponent}
-  //   ]
-  // },
-  {path: 'createForm' , component: SidebarComponent}
+
+  {path: 'createForm' , component: SidebarComponent , canActivate:[AuthGuard]},
+  {
+    path:'**',
+    component:LoginComponent
+  },
 
 ];
 
