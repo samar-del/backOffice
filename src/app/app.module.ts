@@ -20,7 +20,7 @@ import { FormlyBootstrapModule } from "@ngx-formly/bootstrap";
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
@@ -34,8 +34,6 @@ import { ListFormsComponent } from './components/modules/forms-management-module
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
@@ -50,11 +48,36 @@ import { FormlyFieldIframeComponent } from './components/formly-field-iframe/for
 import { SafeUrlPipe } from './safe-url.pipe';
 import { SidebarGenericComponent } from './components/dashbord/sidebar-generic/sidebar-generic.component';
 import {MatMenuModule} from '@angular/material/menu';
+import { SignupComponent } from './Modules/user/component/signup/signup.component';
+import { LoginComponent } from './Modules/user/component/login/login.component';
+import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
+import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
+import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
+import { GestionPermissionComponent } from './Modules/Gestion/gestion-permission/gestion-permission.component';
+import { AdminPageComponent } from './Modules/Gestion/admin-page/admin-page.component';
+import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
+import { SuperAdminPageComponent } from './Modules/Gestion/super-admin-page/super-admin-page.component';
+import { CommonModule } from '@angular/common';
+import { ToastrModule } from 'ngx-toastr';
+import { MatCardModule } from '@angular/material/card';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+
+
+//import { GoogleLoginProvider } from 'angularx-social-login';
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    SignupComponent,
+    LoginComponent,
+    ResetPasswordComponent,
+    ForgotPasswordComponent,
     MenuItemComponent,
     ToolbarComponent,
     FormDialogComponent,
@@ -83,7 +106,14 @@ import {MatMenuModule} from '@angular/material/menu';
     IFrameDialogComponent,
     FormlyFieldIframeComponent,
     SafeUrlPipe,
-    SidebarGenericComponent
+    SidebarGenericComponent,
+    DateFormDialogComponent,
+    GestionUserComponent,
+    GestionRoleComponent,
+    GestionPermissionComponent,
+    AdminPageComponent,
+    UserPageComponent,
+    SuperAdminPageComponent
   ],
     imports: [
         BrowserModule,
@@ -135,6 +165,15 @@ import {MatMenuModule} from '@angular/material/menu';
         MatSelectModule,
         MatOptionModule,
         MatMenuModule,
+        FormsModule,
+        CommonModule,
+        ToastrModule.forRoot(),
+        MatDialogModule,
+        MatTableModule,
+        MatCardModule,
+        MatPaginatorModule,
+        MatSelectModule
+
     ],
   providers: [],
   bootstrap: [AppComponent]

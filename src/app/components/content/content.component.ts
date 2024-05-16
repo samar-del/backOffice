@@ -1,7 +1,7 @@
 
 import {
   ChangeDetectorRef,
-  Component, DoCheck, NgZone,
+  Component, NgZone,
   OnInit,
   ViewChild,
   ViewEncapsulation
@@ -37,6 +37,10 @@ import {HtmlDialogComponent} from '../fields-dialog/html-dialog/html-dialog.comp
 import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dialog.component';
 
 
+import { LoginService } from 'src/app/Modules/user/services/login.service';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/Modules/user/services/auth.service';
+
 
 
 @Component({
@@ -45,7 +49,7 @@ import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dia
   styleUrls: ['./content.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ContentComponent implements OnInit, DoCheck {
+export class ContentComponent implements OnInit {
 
   @ViewChild('tableWrapper') tableWrapper: TableWrapperComponent;
   previewForm: FormGroup;
@@ -64,26 +68,32 @@ export class ContentComponent implements OnInit, DoCheck {
     { name: 'Category 2', fields: [] },
 
   ];
+  roles="";
+  isLoggedIn: boolean = false;
+
   private previousPreviewFields: FormlyFieldConfig[] = [];
 
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
-              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
+              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService, private router:Router, private loginService:LoginService,
+              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone,private authService:AuthService) {
     this.form = this.fb.group({});
     // this.previewForm = this.fb.group({});
+    this.authService.getUserRoles();
   }
   ngOnInit(): void {
+    this.chacklogedInUser();
+
   }
-  ngDoCheck(): void {
-    // if (this.arePreviewFieldsChanged()) {
-    //   console.log('Preview fields were changed');
-    //   console.log('this.model', this.model);
-    // //  console.log('this.previewmodel', this.previewModel);
-    //   this.updatePreviewFields();
-    // }
-    this.shareService.emitPreviewFieldList(this.previewfields);
-  }
+
+  chacklogedInUser(){
+    this.isLoggedIn= this.authService.isLoggedIn();
+    this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
+
+   }
+
+
+
   updatePreviewFields() {
     this.previewfields.forEach(field => {
       const fieldTocheck = this.fields.find(el => el.key === field.templateOptions.condi_whenShouldDispaly);
@@ -95,6 +105,8 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     });
   }
+
+
   arePreviewFieldsChanged(): boolean {
     if (this.previousPreviewFields.length !== this.previewfields.length) {
       return true;
