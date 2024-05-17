@@ -24,19 +24,17 @@
                 <thead>
                 <tr>
                   <th>Tab Label</th>
-                  <th>Value</th>
                   <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let row of tabLabels.controls; let i = index" [formGroupName]="i">
                   <td><input type="text" class="form-control" formControlName="label"></td>
-                  <td><input type="text" class="form-control" formControlName="value"></td>
                   <td><button type="button" class="btn btn-light" (click)="removeTabLabel(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
                 </tr>
                 </tbody>
               </table>
-              <button type="button" class="btn btn-light" (click)="addTabLabel()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
+              <button type="button" class="btn btn-light" (click)="addRow()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
             </div>
             <div class="form-group">
               <label for="custom_css">Custom CSS</label>
@@ -96,7 +94,7 @@
     <h4>Preview input</h4>
     <hr>
     <div class="formly-form-container">
-      <formly-form #formlyForm [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()" ></formly-form>
+      <formly-form #formlyForm [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
     </div>
 
   </div>

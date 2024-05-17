@@ -13,7 +13,8 @@ import {ShareService} from '../../services/share.service';
     <div class="row" style="margin-bottom: 50px" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (cdkDropListDropped)="drop($event)">
       <ng-container *ngFor="let columnSize of columns">
         <div class="col-{{columnSize.size}}-{{columnSize.widh}}">
-          <ng-container #fieldComponent></ng-container>
+          <ng-container #fieldComponent>
+          </ng-container>
         </div>
       </ng-container>
     </div>

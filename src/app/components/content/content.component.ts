@@ -188,6 +188,7 @@ export class ContentComponent implements OnInit {
 
       }
     }
+
     if ((language === 'an' && type === 'HTML Element') ||
       (language === 'fr' && type === 'Element HTML') ||
       (language === 'ar' && type === 'عنصر HTML')) {
@@ -899,35 +900,14 @@ export class ContentComponent implements OnInit {
     ) {
       const customizationData = await this.openTabDialog();
       if (customizationData) {
-        const tabs: FormlyFieldConfig[] = [];
-
-        customizationData.tabLabels.forEach((tabLabel: any[], tabIndex: number) => {
-          if (Array.isArray(tabLabel)) { // Check if tabLabel is an array
-            const tabFields: FormlyFieldConfig[] = [];
-
-            tabLabel.forEach((labelValue: any, fieldIndex: number) => {
-              const field: FormlyFieldConfig = {
-                key: `tab_${tabIndex}_field_${fieldIndex}`,
-                type: 'input', // Adjust the type as needed
-                templateOptions: {
-                  label: labelValue.label,
-                  placeholder: labelValue.value,
-                },
-              };
-              tabFields.push(field);
-            });
-
-            const tab: FormlyFieldConfig = {
-              key: `tab_${tabIndex}`,
-              type: 'tab',
-              templateOptions: {
-                title: `Tab ${tabIndex + 1}`,
-                fields: tabFields,
-              },
-            };
-
-            tabs.push(tab);
-          }
+        const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
+          return {
+            key: customizationData.property_name + '_' + index,
+            type: 'input', // You can change this type as needed
+            templateOptions: {
+              label: tabLabel.label,
+            },
+          };
         });
 
         newField = [
@@ -946,7 +926,7 @@ export class ContentComponent implements OnInit {
               field_tags: customizationData.field_tags,
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
-              tabLabels: customizationData.tabLabels,
+              tabs: customizationData.tabLabels,
             },
             wrappers: ['column'],
           },
@@ -954,6 +934,7 @@ export class ContentComponent implements OnInit {
         console.log(newField);
       }
     }
+
 
 
 

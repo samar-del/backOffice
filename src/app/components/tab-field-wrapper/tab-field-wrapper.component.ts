@@ -13,12 +13,9 @@ import {FieldType, FormlyFieldConfig } from "@ngx-formly/core";
     </mat-tab-group>
   `,
 })
-export class TabFieldWrapperComponent extends FieldType {
-  isValid(field: FormlyFieldConfig): boolean {
-    if (field.key) {
-      return field.formControl.valid;
+export class TabFieldWrapperComponent extends FieldType implements OnInit{
+    ngOnInit(): void {
+      console.log("im in tab,", this.field );
     }
 
-    return field.fieldGroup ? field.fieldGroup.every((f) => this.isValid(f)) : true;
-  }
 }

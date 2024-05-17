@@ -136,64 +136,52 @@ export class TabDialogComponent implements OnInit {
     }));
   }
 
+  createRow(): FormGroup {
+    const row = this.fb.group({
+      label: [''],
+    });
+    return row;
+  }
+  addRow(): void {
+    const tabLabels = this.form.get('tabLabels') as FormArray;
+    tabLabels.push(this.createRow());
+  }
+
   removeTabLabel(index: number): void {
     const tabLabels = this.form.get('tabLabels') as FormArray;
     tabLabels.removeAt(index);
   }
 
-  updateFields(): void {
-    const labelFrHidden = this.form.get('hide_label_fr').value;
-    const labelArHidden = this.form.get('hide_label_ar').value;
-    const inputHidden = this.form.get('hidden').value;
+  // Inside TabDialogComponent
 
+  updateFields(): void {
     this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
-
-      const tabs: FormlyFieldConfig[] = [];
-
       const tabLabels = this.form.get('tabLabels') as FormArray;
-      tabLabels.controls.forEach((control: FormGroup, index: number) => {
+
+      const fields: FormlyFieldConfig[] = tabLabels.controls.map((control: FormGroup, index: number) => {
         const tabLabel = control.get('label').value;
-        const tabValue = control.get('value').value;
-        //console.log(tabLabel);
-        const tab: FormlyFieldConfig = {
-          key: `tab_${index}`,
-          type: 'tab',
+        return {
+          key: 'tab_' + index,
+          type: 'input',
           templateOptions: {
-            title: tabLabel,
-            fields: [
-              {
-                key: `tab_${index}_field`,
-                type: 'input',
-                templateOptions: {
-                  label: tabLabel,
-                  placeholder: tabValue
-                }
-              }
-            ]
-          }
+            label: tabLabel,
+          },
         };
-        console.log(tabs);
-        tabs.push(tab);
       });
 
       this.newField = {
         type: 'tab',
-        templateOptions: {
+        fieldGroup: fields,
+        templateOptions : {
           label: textLabel,
-          label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
-          label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-          custom_css: this.form.get('custom_css').value,
-          tabs: tabs
-        },
-        hide: inputHidden,
-        expressionProperties: {
-          'templateOptions.hideLabel_fr': () => labelFrHidden,
-          'templateOptions.hideLabel_ar': () => labelArHidden
         },
       };
     });
   }
+
+
+
 }

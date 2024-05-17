@@ -28,5 +28,5 @@ export class TemplateOptions {
   langue ?: string;
   label_fr ?: string;
   label_ar ?: string;
-
+  tabs?: string[];
 }
