@@ -40,6 +40,7 @@ import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dia
 import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Modules/user/services/auth.service';
+import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
 
 
 
@@ -925,6 +926,48 @@ export class ContentComponent implements OnInit {
       }
     }
 
+    else if (
+      (language === 'an' && type === 'Tabs') ||
+      (language === 'fr' && type === 'Onglets') ||
+      (language === 'ar' && type === 'نوافذ التبويب')
+    ) {
+      const customizationData = await this.openTabDialog();
+      if (customizationData) {
+        const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
+          return {
+            key: customizationData.property_name + '_' + index,
+            type: 'input', // You can change this type as needed
+            templateOptions: {
+              label: tabLabel.label,
+            },
+          };
+        });
+
+        newField = [
+          {
+            type: 'tab',
+            fieldGroup: tabs,
+            key: customizationData.property_name,
+            templateOptions: {
+              type: 'tab',
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
+              number_tabs: customizationData.tabLabels.length,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,
+              tabs: customizationData.tabLabels,
+            },
+            wrappers: ['column'],
+          },
+        ];
+        console.log(newField);
+      }
+    }
+
     else if (type === 'Panel') {
         const customizationData = await this.openPanelDialog();
         if (customizationData) {
@@ -1181,6 +1224,23 @@ export class ContentComponent implements OnInit {
       return null;
     }
   }
+
+  async openTabDialog() {
+    const dialogRef = this.dialog.open(TabDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr:'',label_ar:''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   submit() {
     if (this.form.valid) {
       const formValues = this.form.getRawValue();
@@ -1288,6 +1348,17 @@ export class ContentComponent implements OnInit {
     } else {
       options = [];
     }
+
+    const tabsMap: { [key: string]: any } = {};
+    if (field.templateOptions.tabs) {
+      field.templateOptions.tabs.forEach((tab, index) => {
+        tabsMap[`tab${index + 1}`] = tab;
+      });
+    }
+
+    // Log to check tabs array
+    console.log('Tabs:', field.templateOptions.tabs);
+
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
       label_fr: field.templateOptions.label_fr,
@@ -1313,6 +1384,7 @@ export class ContentComponent implements OnInit {
       number_columns: field.templateOptions.number_columns,
       theme: field.templateOptions.theme,
       collapsible: field.templateOptions.collapsible,
+      tabs: tabsMap,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };

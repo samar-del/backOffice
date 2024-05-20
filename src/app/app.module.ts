@@ -66,6 +66,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
+import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
 
 
 //import { GoogleLoginProvider } from 'angularx-social-login';
@@ -113,7 +115,9 @@ import { MatSelectModule } from '@angular/material/select';
     GestionPermissionComponent,
     AdminPageComponent,
     UserPageComponent,
-    SuperAdminPageComponent
+    SuperAdminPageComponent,
+    TabDialogComponent,
+    TabFieldWrapperComponent
   ],
     imports: [
         BrowserModule,
@@ -131,7 +135,7 @@ import { MatSelectModule } from '@angular/material/select';
                 {name: 'iframe', component: FormlyFieldIframeComponent},
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
-
+                {name:'tab', component: TabFieldWrapperComponent},
             ],
             types: [
                 {name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: {templateOptions: {column: true}}},
@@ -141,7 +145,7 @@ import { MatSelectModule } from '@angular/material/select';
                 {name: 'panel', component: PanelFieldWrapperComponent},
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
-
+                {name:'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
             ],
         }),
         FormlyModule.forChild({
