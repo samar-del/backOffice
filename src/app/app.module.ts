@@ -34,6 +34,7 @@ import { ListFormsComponent } from './components/modules/forms-management-module
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
@@ -65,7 +66,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
 import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
 import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
@@ -186,6 +186,7 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
         MatTableModule,
         MatCardModule,
         MatPaginatorModule,
+        MatIconModule,
         MatSelectModule
     ],
   providers: [],

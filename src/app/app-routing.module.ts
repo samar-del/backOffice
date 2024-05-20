@@ -68,14 +68,17 @@ const routes: Routes = [
       }
     ]
   },
-  {path: 'listForms' , component: ListFormsComponent},
-
-  {path: 'createForm' , component: SidebarComponent , canActivate:[AuthGuard]},
+  // {path: 'home' , component: HomeComponent,
+  //   children: [
+  //     {path: 'createForm' , component: SidebarComponent}
+  //   ]
+  // },
+  {path: 'createForm' , component: SidebarComponent},
+  {path: '' , component: ListFormsComponent},
   {
     path:'**',
     component:LoginComponent
   },
-
 ];
 
 @NgModule({

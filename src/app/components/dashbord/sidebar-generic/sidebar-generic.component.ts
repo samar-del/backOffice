@@ -38,6 +38,8 @@ MenuList = [{name: 'Dashbord' , items: []} , {name: 'Gestion des utilisateurs' ,
   navigateTo(item: string) {
     if (item === 'Ajouter un formulaire'){
       this.router.navigate(['admin/formsManagement/createForm']);
+    } else if (item === 'Gestion des formulaire' ){
+      this.router.navigate(['admin/formsManagement/']);
     }
   }
 }

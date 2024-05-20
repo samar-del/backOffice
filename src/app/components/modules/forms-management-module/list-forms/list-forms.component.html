@@ -1,2 +1,36 @@
-<button (click)="getForm()">get form content</button>
-<formly-form [form]="form" [fields]="fields" [options]="options" [model]="model"></formly-form>
+<div class="container">
+  <h3>Liste des formulaires crées</h3>
+  <hr>
+  <br>
+  <mat-table [dataSource]="allFormTemplateList">
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <mat-cell *matCellDef="let form">{{ form.name }}</mat-cell>
+    </ng-container>
+
+    <!-- Description Column -->
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+      <mat-cell *matCellDef="let form">{{ form.description }}</mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let form">
+        <button mat-icon-button (click)="navigateTo(form.id)">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+        <button mat-icon-button (click)="deleteForm(form)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>

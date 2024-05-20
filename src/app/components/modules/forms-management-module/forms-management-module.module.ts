@@ -11,6 +11,8 @@ import {FormlyModule} from '@ngx-formly/core';
 import {ListFormsComponent} from './list-forms/list-forms.component';
 import {FormPreviewCreationComponent} from '../../form-preview-creation/form-preview-creation.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatTableModule} from '@angular/material/table';
 
 
 
@@ -30,6 +32,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     ReactiveFormsModule,
     FormlyModule,
     DragDropModule,
+    MatPaginatorModule,
+    MatTableModule,
   ]
 })
 export class FormsManagementModuleModule { }

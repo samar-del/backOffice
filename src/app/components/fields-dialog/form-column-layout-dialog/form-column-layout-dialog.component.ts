@@ -11,7 +11,8 @@ export class FormColumnLayoutDialogComponent implements OnInit {
 
   form: FormGroup;
   sizes: string[] = ['md', 'lg', 'sm']; // Define available sizes
-
+  selectedTabIndex = 0;
+  translations: any = {};
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormColumnLayoutDialogComponent>,
@@ -28,6 +29,13 @@ export class FormColumnLayoutDialogComponent implements OnInit {
     if (this.data.tableRows) {
       this.data.tableRows.forEach(row => this.addRow(row.size, row.width));
     }
+  }
+  onTabChange(event: any): void {
+    this.selectedTabIndex = event.index;
+  }
+  updateTags(inputValue: string): void {
+    const tagsArray = inputValue.split(',').map(tag => tag.trim());
+    this.form.get('field_tags').setValue(tagsArray);
   }
 
   // Add a new table row
