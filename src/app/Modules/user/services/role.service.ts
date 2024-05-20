@@ -19,7 +19,7 @@ export class RoleService {
   }
 
 
-  deleteRole(id: number): Observable<any>{
+  deleteRole(id: string): Observable<any>{
     return this.http.delete<any>(`http://localhost:8078/Role/deleteRole/${id}`);
   }
 

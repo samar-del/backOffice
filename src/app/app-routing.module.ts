@@ -13,73 +13,83 @@ import { UserPageComponent } from './Modules/Gestion/user-page/user-page.compone
 import { HomeComponent } from './components/home/home.component';
 import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
 import { SidebarComponent } from './components/modules/forms-management-module/sidebar/sidebar.component';
+import { GestionPermissionComponent } from './Modules/Gestion/PermissionPage/gestion-permission.component';
+import { RolePageComponent } from './Modules/Gestion/role-page/role-page.component';
 
 const routes: Routes = [
-  { path: 'login',
-      component: LoginComponent
-  },
+  { path: 'login', component: LoginComponent },
   {
     path: 'signup',
-    component: SignupComponent
+    component: SignupComponent,
   },
   {
-    path:'',
-    redirectTo:'content',
-    pathMatch:'full'
+    path: 'permission',
+    component: GestionPermissionComponent,
+  },
+  {
+    path: 'role',
+    component: RolePageComponent
+  },
+  {
+    path: '',
+    redirectTo: 'content',
+    pathMatch: 'full',
   },
 
   {
-    path:'content',
-    component: ContentComponent , canActivate:[AuthGuard]
+    path: 'content',
+    component: ContentComponent,
+    canActivate: [AuthGuard],
   },
   {
-    path:'forgotPassword',
-    component:ForgotPasswordComponent
+    path: 'forgotPassword',
+    component: ForgotPasswordComponent,
   },
-  {path: "resetpassword/:token",
-    component: ResetPasswordComponent
-  },
+  { path: 'resetpassword/:token', component: ResetPasswordComponent },
   {
-    path:'dashboard',
+    path: 'dashboard',
     component: DashboardComponent,
-    canActivate:[AuthGuard]
-
+    canActivate: [AuthGuard],
   },
   {
-    path:'gestionRole',
-    component: GestionRoleComponent
+    path: 'gestionRole',
+    component: GestionRoleComponent,
   },
 
-  {path:'user', component:UserPageComponent, canActivate:[AuthGuard]},
+  { path: 'user', component: UserPageComponent, canActivate: [AuthGuard] },
 
   {
     path: 'formsManagement',
-    loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
-      .then(m => m.FormsManagementModuleModule)
+    loadChildren: () =>
+      import(
+        './components/modules/forms-management-module/forms-management-module.module'
+      ).then((m) => m.FormsManagementModuleModule),
   },
   {
     path: 'admin',
     component: HomeComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'formsManagement',
-        loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
-          .then(m => m.FormsManagementModuleModule)
-      }
-    ]
+        loadChildren: () =>
+          import(
+            './components/modules/forms-management-module/forms-management-module.module'
+          ).then((m) => m.FormsManagementModuleModule),
+      },
+    ],
   },
-  {path: 'listForms' , component: ListFormsComponent},
+  { path: 'listForms', component: ListFormsComponent },
 
-  {path: 'createForm' , component: SidebarComponent , canActivate:[AuthGuard]},
+  { path: 'createForm', component: SidebarComponent, canActivate: [AuthGuard] },
   {
-    path:'**',
-    component:LoginComponent
+    path: '**',
+    component: LoginComponent,
   },
-
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

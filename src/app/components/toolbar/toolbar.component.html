@@ -16,15 +16,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 <mat-toolbar *ngIf="ismenurequired">
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item [routerLink]="'/user'">User</button>
-    <button mat-menu-item [routerLink]="'/dashboard'">Dashboard</button>
-    <button mat-menu-item [routerLink]="'/createForm'">FormCreation</button>
-    <!-- Ajoutez d'autres liens comme cela -->
-  </mat-menu>
+  
 
 <nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
   <div class="container-fluid">
