@@ -41,6 +41,7 @@ import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Modules/user/services/auth.service';
 import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
+import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
 
 
 
@@ -1296,8 +1297,26 @@ export class ContentComponent implements OnInit {
       this.formlyForm.resetForm({ model: this.model, fields: this.fields });
     }
   }
+
+  async openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      width: '1400px',
+      data: {},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   // tslint:disable-next-line:typedef
    async addFormTemplate() {
+
+     const customizationData = await this.openAlertDialog();
+
     if (this.form.valid) {
       const fieldsId: string[] = [];
       const fieldsGroupId: any[] = [];
@@ -1322,6 +1341,7 @@ export class ContentComponent implements OnInit {
         fieldIds: fieldsId,
         title: 'first form',
         version: 1,
+        alert_message: customizationData.alert_message,
         createdAt: new Date(),
         description: 'description form 1 test'
       };

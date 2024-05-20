@@ -1,0 +1,47 @@
+
+::ng-deep .mat-dialog-container {
+  height: 350px !important;
+  width: 400px !important;
+  position: relative;
+  left: 38%;
+}
+
+.mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-tab {
+  text-align: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.row.justify-content-center {
+  display: flex;
+  justify-content: center;
+}
+
+.form-check-inline {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.form-check-inline .form-check-label {
+  margin-left: 5px;
+}
+
+.form-check-inline .form-control {
+  margin-right: 5px;
+}
+
