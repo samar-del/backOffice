@@ -68,6 +68,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
 import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
+import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
 
 
 //import { GoogleLoginProvider } from 'angularx-social-login';
@@ -117,7 +118,8 @@ import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-fie
     UserPageComponent,
     SuperAdminPageComponent,
     TabDialogComponent,
-    TabFieldWrapperComponent
+    TabFieldWrapperComponent,
+    AlertDialogComponent
   ],
     imports: [
         BrowserModule,
@@ -130,22 +132,30 @@ import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-fie
         DragDropModule,
         ReactiveFormsModule,
         FormlyModule.forRoot({
-            wrappers: [{name: 'column', component: ColumnWrapperComponent}, {name: 'columnSize', component: ColumnSizeComponent},
+            wrappers: [{name: 'column', component: ColumnWrapperComponent}, {
+                name: 'columnSize',
+                component: ColumnSizeComponent
+            },
                 {name: 'html', component: FormlyFieldHtmlComponent},
                 {name: 'iframe', component: FormlyFieldIframeComponent},
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
-                {name:'tab', component: TabFieldWrapperComponent},
+                {name: 'tab', component: TabFieldWrapperComponent},
             ],
             types: [
-                {name: 'column', extends: 'formly-group', wrappers: ['form-field'], defaultOptions: {templateOptions: {column: true}}},
+                {
+                    name: 'column',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                },
                 {name: 'columnSize', component: ColumnSizeComponent},
                 {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
                 {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
                 {name: 'panel', component: PanelFieldWrapperComponent},
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
-                {name:'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
+                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
             ],
         }),
         FormlyModule.forChild({
@@ -177,7 +187,7 @@ import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-fie
         MatCardModule,
         MatPaginatorModule,
         MatIconModule,
-
+        MatSelectModule
     ],
   providers: [],
   bootstrap: [AppComponent]
