@@ -1348,6 +1348,17 @@ export class ContentComponent implements OnInit {
     } else {
       options = [];
     }
+
+    const tabsMap: { [key: string]: any } = {};
+    if (field.templateOptions.tabs) {
+      field.templateOptions.tabs.forEach((tab, index) => {
+        tabsMap[`tab${index + 1}`] = tab;
+      });
+    }
+
+    // Log to check tabs array
+    console.log('Tabs:', field.templateOptions.tabs);
+
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
       label_fr: field.templateOptions.label_fr,
@@ -1373,6 +1384,7 @@ export class ContentComponent implements OnInit {
       number_columns: field.templateOptions.number_columns,
       theme: field.templateOptions.theme,
       collapsible: field.templateOptions.collapsible,
+      tabs: tabsMap,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };

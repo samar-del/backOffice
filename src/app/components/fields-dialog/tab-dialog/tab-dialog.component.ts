@@ -177,6 +177,7 @@ export class TabDialogComponent implements OnInit {
         fieldGroup: fields,
         templateOptions : {
           label: textLabel,
+          tabs: tabLabels.value.map(tab => tab.label)
         },
       };
     });
