@@ -1325,6 +1325,11 @@ export class ContentComponent implements OnInit, DoCheck {
 
      const customizationData = await this.openAlertDialog();
 
+     if (!customizationData) {
+       console.log('Dialog was closed without data');
+       return; // Exit the method if there's no data
+     }
+
     if (this.form.valid) {
       const fieldsId: string[] = [];
       const fieldsGroupId: any[] = [];
