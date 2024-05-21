@@ -1,9 +1,12 @@
+import { RolePageComponent } from './../role-page/role-page.component';
 
 import { Component, OnInit } from '@angular/core';
-import { PermissionService } from '../../user/services/permission.service';
-import { RoleService } from '../../user/services/role.service';
 import { Permission } from 'src/app/models/permission';
 import { Role } from 'src/app/models/role';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { PermissionService } from 'src/app/Modules/user/services/permission.service';
+import { RoleService } from 'src/app/Modules/user/services/role.service';
 
 @Component({
   selector: 'app-gestion-role',
@@ -16,15 +19,36 @@ export class GestionRoleComponent implements OnInit {
   permissions: Permission[];
 
   newRole: Role = { roleType: '', permissions: [] };
+  form: FormGroup;
 
   constructor(
     private roleService: RoleService,
-    private permissionService: PermissionService
-  ) { }
+    private permissionService: PermissionService,
+    private dialogRef: MatDialogRef<RolePageComponent>,
+    private fb: FormBuilder
+
+  ) {
+    this.form= this.fb.group({
+      roleType:['', Validators.required]
+    })
+   }
 
   ngOnInit(): void {
     this.loadRoles();
     this.loadPermissions();
+  }
+
+  save(){
+    if(this.form.valid){
+      const newRole: Role = this.form.value;
+      this.roleService.addRole(newRole).subscribe(res=>{
+        this.loadRoles();
+        this.dialogRef.close(res);
+      }, error => {
+        console.error('Error adding role:', error);
+      })
+    }
+
   }
 
   loadRoles() {
@@ -64,5 +88,9 @@ export class GestionRoleComponent implements OnInit {
     }
     return selectedIds;
   }
+  close() {
+    this.dialogRef.close();
+  }
+
 
 }

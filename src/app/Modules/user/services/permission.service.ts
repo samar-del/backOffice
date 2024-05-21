@@ -19,7 +19,7 @@ export class PermissionService {
     return this.http.post<Permission>('http://localhost:8078/Permission/addPermission',permission);
   }
 
-  deletePermission(id: number){
+  deletePermission(id: string){
     return this.http.delete<any>(`http://localhost:8078/Permission/SupPermission/${id}`);
   }
 

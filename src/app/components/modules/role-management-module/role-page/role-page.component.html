@@ -1,0 +1,70 @@
+<div class="full-page">
+  <mat-card class="user-list-card">
+    <mat-card-header class="header">
+      <h2 class="title">Role Listing &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+      <br>
+      <br>
+      <button (click)="addRole()" class="btn btn-secondary mb-2">Add New Role</button>
+    </mat-card-header>
+    <mat-card-content class="content">
+      <div class="mat-elevation-z8">
+        <table mat-table class="table" matSort [dataSource]="dataSource">
+
+          <!-- Role Type Column -->
+          <ng-container matColumnDef="RoleType">
+            <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Role Type </th>
+            <td mat-cell class="cell" *matCellDef="let element"> {{element.roleType}} </td>
+          </ng-container>
+
+          <!-- Permissions Column -->
+          <ng-container matColumnDef="Permissions">
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
+            <td mat-cell class="cell" *matCellDef="let element">
+              <select>
+                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">{{ permission.permissionType }}</option>
+              </select>
+            </td>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
+            <td mat-cell class="cell" *matCellDef="let element">
+              <button *ngIf="element.roleType" (click)="updateRole(element.idRole)" class="btn btn-outline-info mb-2">Update</button>
+            </td>
+          </ng-container>
+
+          <!-- Delete Column -->
+          <ng-container matColumnDef="delete">
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
+            <td mat-cell class="cell" *matCellDef="let element">
+              <a *ngIf="element.roleType !== 'SUPER-ADMIN'" (click)="deleteRole(element.idRole)" class="btn btn-outline-secondary mb-2">Delete Role</a>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row class="header-row" *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row class="data-row" *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator class="paginator" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements"></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div *ngIf="showAddRoleModal">
+  <div class="modal">
+    <div class="modal-content">
+      <!-- Contenu de votre modal ici -->
+      <h2>Add New Role</h2>
+      <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
+        <label>
+          Role Type:
+          <input type="text" formControlName="roleType">
+        </label>
+        <!-- Ajoutez ici d'autres champs du formulaire si nécessaire -->
+        <button type="submit">Save</button>
+        <button type="button" (click)="closeAddRoleModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>

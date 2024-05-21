@@ -1,0 +1,40 @@
+<form [formGroup]="form" (ngSubmit)="addNewUser()">
+  <h2 class="modal-title" id="exampleModalLabel">ADD NEW USER</h2>
+  <div class="row gy-3 overflow-hidden">
+    <div class="col-12">
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" formControlName="userName" placeholder="UserName">
+        <label class="form-label">UserName</label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" formControlName="password" placeholder="Password">
+        <label class="form-label">Password</label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" formControlName="email" placeholder="name@example.com1">
+        <label class="form-label">Email</label>
+      </div>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Role Type</label>
+      <select class="form-select" formControlName="roleType">
+        <option *ngFor="let role of roles" [value]="role.roleType">{{ role.roleType }}</option>
+      </select>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Permission Type</label>
+      <select class="form-select" formControlName="permissionType">
+        <option *ngFor="let permission of permissions" [value]="permission.permissionType">{{ permission.permissionType }}</option>
+      </select>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button  (click)="onNoClick()"  class="btn btn-outline-info mb-2">Cancel</button>
+    <button type="submit"  class="btn btn-outline-info mb-2">Add</button>
+  </div>
+</form>

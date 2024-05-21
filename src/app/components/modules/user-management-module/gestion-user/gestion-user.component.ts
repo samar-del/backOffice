@@ -1,15 +1,12 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { UserService } from '../../user/services/user.service';
 import { User } from 'src/app/models/user';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SignupService } from '../../user/services/signup.service';
-import { AuthService } from '../../user/services/auth.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { AuthService } from 'src/app/Modules/user/services/auth.service';
+import { SignupService } from 'src/app/Modules/user/services/signup.service';
+import { UserService } from 'src/app/Modules/user/services/user.service';
 
 @Component({
   selector: 'app-gestion-user',

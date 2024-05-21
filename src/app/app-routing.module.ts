@@ -5,84 +5,123 @@ import { SignupComponent } from './Modules/user/component/signup/signup.componen
 import { ContentComponent } from './components/content/content.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
-import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
 import { DashboardComponent } from './Modules/user/component/dashboard/dashboard.component';
 import { AuthGuard } from './Modules/user/services/auth.guard';
-import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
-import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
 import { HomeComponent } from './components/home/home.component';
 import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
 import { SidebarComponent } from './components/modules/forms-management-module/sidebar/sidebar.component';
+import { GestionPermissionComponent } from './components/modules/permession-management-module/PermissionPage/gestion-permission.component';
+import { GestionRoleComponent } from './components/modules/role-management-module/gestion-role/gestion-role.component';
+import { RolePageComponent } from './components/modules/role-management-module/role-page/role-page.component';
+import { UserPageComponent } from './components/modules/user-management-module/user-page/user-page.component';
 
 const routes: Routes = [
-  { path: 'login',
-      component: LoginComponent
-  },
+  { path: 'login', component: LoginComponent },
   {
     path: 'signup',
-    component: SignupComponent
+    component: SignupComponent,
   },
   {
-    path:'',
-    redirectTo:'content',
-    pathMatch:'full'
+    path: 'permission',
+    component: GestionPermissionComponent,
+  },
+  {
+    path: 'role',
+    component: RolePageComponent
+  },
+  {
+    path: '',
+    redirectTo: 'content',
+    pathMatch: 'full',
   },
 
   {
-    path:'content',
-    component: ContentComponent , canActivate:[AuthGuard]
+    path: 'content',
+    component: ContentComponent,
+    canActivate: [AuthGuard],
   },
   {
-    path:'forgotPassword',
-    component:ForgotPasswordComponent
+    path: 'forgotPassword',
+    component: ForgotPasswordComponent,
   },
-  {path: "resetpassword/:token",
-    component: ResetPasswordComponent
-  },
+  { path: 'resetpassword/:token', component: ResetPasswordComponent },
   {
-    path:'dashboard',
+    path: 'dashboard',
     component: DashboardComponent,
-    canActivate:[AuthGuard]
-
+    canActivate: [AuthGuard],
   },
   {
-    path:'gestionRole',
-    component: GestionRoleComponent
+    path: 'gestionRole',
+    component: GestionRoleComponent,
   },
 
-  {path:'user', component:UserPageComponent, canActivate:[AuthGuard]},
+  { path: 'user', component: UserPageComponent, canActivate: [AuthGuard] },
 
   {
     path: 'formsManagement',
-    loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
-      .then(m => m.FormsManagementModuleModule)
+    loadChildren: () =>
+      import(
+        './components/modules/forms-management-module/forms-management-module.module'
+      ).then((m) => m.FormsManagementModuleModule),
+  },
+  {
+    path: 'userManagement',
+    loadChildren: () =>
+      import(
+        './components/modules/user-management-module/user-management-module.module'
+      ).then((m) => m.UserManagementModuleModule)
   },
   {
     path: 'admin',
     component: HomeComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'formsManagement',
-        loadChildren: () => import('./components/modules/forms-management-module/forms-management-module.module')
-          .then(m => m.FormsManagementModuleModule)
+        loadChildren: () =>
+          import(
+            './components/modules/forms-management-module/forms-management-module.module'
+          ).then((m) => m.FormsManagementModuleModule)
+      },
+      {
+        path: 'userManagement',
+        loadChildren: () =>
+          import(
+            './components/modules/user-management-module/user-management-module.module'
+          ).then((m) => m.UserManagementModuleModule)
+      },
+      {
+        path: 'roleManagement',
+        loadChildren: () =>
+          import(
+            './components/modules/role-management-module/role-management-module.module'
+          ).then((m) => m.RoleManagementModuleModule)
+      },
+      {
+        path: 'permissionManagement',
+        loadChildren: () =>
+          import(
+            './components/modules/permession-management-module/permession-management-module.module'
+          ).then((m) => m.PermessionManagementModuleModule)
       }
     ]
   },
+
   // {path: 'home' , component: HomeComponent,
   //   children: [
   //     {path: 'createForm' , component: SidebarComponent}
   //   ]
   // },
-  {path: 'createForm' , component: SidebarComponent},
+  {path: 'createForm' , component: SidebarComponent, canActivate: [AuthGuard]},
   {path: '' , component: ListFormsComponent},
   {
-    path:'**',
-    component:LoginComponent
+    path: '**',
+    component: LoginComponent,
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

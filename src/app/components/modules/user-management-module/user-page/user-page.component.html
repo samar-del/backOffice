@@ -1,10 +1,14 @@
 <div class="full-page">
   <mat-card class="user-list-card">
     <mat-card-header class="header">
-      <h2 class="title">User Listing</h2>
+      <h2 class="title">User Listing &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+      <br>
+      <br>
+
+      <a class="back-button" style="cursor:pointer" (click)="AddAdminDialog()">Add New Admin</a>
+
     </mat-card-header>
     <mat-card-content class="content">
-      <a class="back-button" routerLink="/createForm" routerLinkActive="active">Go back to content</a>
       <div class="mat-elevation-z8">
         <table mat-table class="table" matSort [dataSource]="dataSource">
 
@@ -23,24 +27,26 @@
           <ng-container matColumnDef="role">
             <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Role </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <ng-container *ngIf="element.roles && element.roles.length > 0; else unassigned">
-                <span *ngFor="let role of element.roles" class="role">{{ roles.roleType }}</span>
-              </ng-container>
+              <select >
+                <option *ngFor="let role of roleList" [value]="role.idRole">{{ role.roleType }}</option>
+              </select>
+
             </td>
           </ng-container>
-
           <ng-container matColumnDef="action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <button *ngIf="element.roles != 'SUPER-ADMIN'" (click)="updateUser(element.idUser)" mat-raised-button>Update</button>
+              <button *ngIf="element.roles != 'SUPER-ADMIN'" (click)="updateUser(element.idUser, element)"
+                         class="btn btn-outline-info mb-2">Update</button>
             </td>
           </ng-container>
+
 
 
           <ng-container matColumnDef="delete">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <a *ngIf="element.roles != 'SUPER-ADMIN'" (click)="deleteUser(element.idUser)" mat-raised-button>Delete User</a>
+              <a *ngIf="element.roles != 'SUPER-ADMIN'" (click)="deleteUser(element.idUser)" class="btn btn-outline-secondary mb-2">Delete User</a>
             </td>
           </ng-container>
 
