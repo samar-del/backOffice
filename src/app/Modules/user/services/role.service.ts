@@ -34,4 +34,7 @@ export class RoleService {
   updateRole(role:Role): Observable<any>{
     return this.http.put('http://localhost:8078/Role/', role);
   }
+  associatePermissionToRole(roleId: string, permissionId: string): Observable<string> {
+    return this.http.post<string>(`http://localhost:8078/Role/ajouterPermissionToRole/${roleId}/${permissionId}`, {});
+  }
 }

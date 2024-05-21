@@ -37,7 +37,6 @@ import { ColumnSizeComponent } from './components/column-size/column-size.compon
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
-import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
@@ -125,8 +124,7 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
     PermissionDialogAddComponent,
     RolePageComponent,
     GestionPermissionDialogComponent,
-    UpdateUserComponent
-    SuperAdminPageComponent,
+    UpdateUserComponent,
     TabDialogComponent,
     TabFieldWrapperComponent,
     AlertDialogComponent
@@ -196,9 +194,8 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
         MatTableModule,
         MatCardModule,
         MatPaginatorModule,
-        MatIconModule,
-        MatSelectModule
-    ],
+        MatIconModule
+          ],
   providers: [],
   bootstrap: [AppComponent],
 })

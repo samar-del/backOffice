@@ -9,6 +9,7 @@ import { Role } from 'src/app/models/role';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { GestionRoleComponent } from '../gestion-role/gestion-role.component';
+import { RoleUpdateDialogComponent } from '../role-update-dialog/role-update-dialog.component';
 
 @Component({
   selector: 'app-role-page',
@@ -62,7 +63,21 @@ export class RolePageComponent implements OnInit {
   closeAddRoleModal(): void {
     this.showAddRoleModal = false;
   }
+  updateRole(){
+    const dialogRef = this.dialog.open(RoleUpdateDialogComponent, {
+      width: '500px',
+      data: {} // Vous pouvez passer des données au dialogue si nécessaire
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+        this.loadRoles();  // Recharger la liste des rôles après ajout
+        this.toastr.success('User added successfully!');
+      } else {
+        this.toastr.info('User addition cancelled.');
+      }
+    })
+  }
 
 
   addRole() {
@@ -81,9 +96,7 @@ export class RolePageComponent implements OnInit {
     });
   }
 
-  updateRole(idRole: string): void {
-    // Mettez à jour la logique du rôle ici
-  }
+
 
   deleteRole(idRole: string): void {
     this.roleService.deleteRole(idRole).subscribe(()=>{

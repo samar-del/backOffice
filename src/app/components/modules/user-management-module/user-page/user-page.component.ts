@@ -9,6 +9,7 @@ import { Role } from 'src/app/models/role';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { UserService } from 'src/app/Modules/user/services/user.service';
 import { AdminPageComponent } from '../admin-page/admin-page.component';
+import { UpdateUserComponent } from '../update-user/update-user.component';
 
 @Component({
   selector: 'app-user-page',
@@ -71,7 +72,7 @@ export class UserPageComponent {
       console.log('Dialogue fermé');
     });
   }*/
-  updateUser(idUser: string){
+  updateUser(){
 
   }
 
@@ -99,7 +100,7 @@ export class UserPageComponent {
 
   AddAdminDialog(): void {
     const dialogRef = this.dialog.open(AdminPageComponent, {
-      width: '350px',
+      width: '500px',
       data: {} // Vous pouvez passer des données au dialogue si nécessaire
     }
   );
