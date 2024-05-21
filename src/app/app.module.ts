@@ -54,12 +54,6 @@ import { SignupComponent } from './Modules/user/component/signup/signup.componen
 import { LoginComponent } from './Modules/user/component/login/login.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
-import { GestionUserComponent } from './Modules/Gestion/gestion-user/gestion-user.component';
-import { GestionRoleComponent } from './Modules/Gestion/gestion-role/gestion-role.component';
-import { GestionPermissionComponent } from './Modules/Gestion/PermissionPage/gestion-permission.component';
-import { AdminPageComponent } from './Modules/Gestion/admin-page/admin-page.component';
-import { UserPageComponent } from './Modules/Gestion/user-page/user-page.component';
-import { SuperAdminPageComponent } from './Modules/Gestion/super-admin-page/super-admin-page.component';
 import { CommonModule } from '@angular/common';
 import { ToastrModule } from 'ngx-toastr';
 import { MatCardModule } from '@angular/material/card';
@@ -68,10 +62,15 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { PermissionDialogAddComponent } from './Modules/Gestion/permission-dialog-add/permission-dialog-add.component';
-import { RolePageComponent } from './Modules/Gestion/role-page/role-page.component';
-import { GestionPermissionDialogComponent } from './Modules/Gestion/gestion-permission-dialog/gestion-permission-dialog.component';
-import { UpdateUserComponent } from './Modules/Gestion/update-user/update-user.component';
+import { GestionPermissionComponent } from './components/modules/permession-management-module/PermissionPage/gestion-permission.component';
+import { GestionPermissionDialogComponent } from './components/modules/permession-management-module/gestion-permission-dialog/gestion-permission-dialog.component';
+import { AdminPageComponent } from './components/modules/user-management-module/admin-page/admin-page.component';
+import { GestionUserComponent } from './components/modules/user-management-module/gestion-user/gestion-user.component';
+import { UpdateUserComponent } from './components/modules/user-management-module/update-user/update-user.component';
+import { PermissionDialogAddComponent } from './components/modules/permession-management-module/permission-dialog-add/permission-dialog-add.component';
+import { GestionRoleComponent } from './components/modules/role-management-module/gestion-role/gestion-role.component';
+import { RolePageComponent } from './components/modules/role-management-module/role-page/role-page.component';
+import { UserPageComponent } from './components/modules/user-management-module/user-page/user-page.component';
 
 //import { GoogleLoginProvider } from 'angularx-social-login';
 
@@ -117,7 +116,6 @@ import { UpdateUserComponent } from './Modules/Gestion/update-user/update-user.c
     GestionPermissionComponent,
     AdminPageComponent,
     UserPageComponent,
-    SuperAdminPageComponent,
     PermissionDialogAddComponent,
     RolePageComponent,
     GestionPermissionDialogComponent,

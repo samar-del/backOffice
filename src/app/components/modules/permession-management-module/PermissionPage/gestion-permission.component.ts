@@ -1,12 +1,12 @@
-import { PermissionService } from '../../user/services/permission.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { RoleService } from '../../user/services/role.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { PermissionDialogAddComponent } from '../permission-dialog-add/permission-dialog-add.component';
+import { PermissionService } from 'src/app/Modules/user/services/permission.service';
+import { RoleService } from 'src/app/Modules/user/services/role.service';
 
 @Component({
   selector: 'app-gestion-permission',

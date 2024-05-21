@@ -3,8 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { User } from 'src/app/models/user';
-import { UserService } from '../../user/services/user.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { UserService } from 'src/app/Modules/user/services/user.service';
 
 @Component({
   selector: 'app-update-user',
@@ -30,5 +30,5 @@ export class UpdateUserComponent implements OnInit {
 
   ngOnInit(): void {}
 
- 
+
 }

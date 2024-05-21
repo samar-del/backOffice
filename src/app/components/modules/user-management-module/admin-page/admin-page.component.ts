@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { UserService } from '../../user/services/user.service';
 import { ToastrService } from 'ngx-toastr';
+import { UserService } from 'src/app/Modules/user/services/user.service';
 
 @Component({
   selector: 'app-admin-page',
@@ -67,7 +67,7 @@ export class AdminPageComponent implements OnInit {
       this.toastr.warning('Please fill in all required fields');
     }
   }
-  
+
 
 
 

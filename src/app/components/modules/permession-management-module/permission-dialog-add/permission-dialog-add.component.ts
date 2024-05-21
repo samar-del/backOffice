@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Permission } from 'src/app/models/permission';
-import { PermissionService } from '../../user/services/permission.service';
 import { GestionPermissionComponent } from '../PermissionPage/gestion-permission.component';
+import { PermissionService } from 'src/app/Modules/user/services/permission.service';
 
 @Component({
   selector: 'app-permission-dialog-add',
@@ -35,7 +35,7 @@ export class PermissionDialogAddComponent  {
       });
     }
   }
-  
+
 
   close() {
     this.dialogRef.close();

@@ -1,17 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ProtectedService } from '../../user/services/protected.service';
-import { UserService } from '../../user/services/user.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { GestionUserComponent } from '../gestion-user/gestion-user.component';
-import { RoleService } from '../../user/services/role.service';
 import { User } from 'src/app/models/user';
 import { ToastrService } from 'ngx-toastr';
-import { AdminPageComponent } from '../admin-page/admin-page.component';
 import { Role } from 'src/app/models/role';
-import { UpdateUserComponent } from '../update-user/update-user.component';
+import { RoleService } from 'src/app/Modules/user/services/role.service';
+import { UserService } from 'src/app/Modules/user/services/user.service';
+import { AdminPageComponent } from '../admin-page/admin-page.component';
 
 @Component({
   selector: 'app-user-page',

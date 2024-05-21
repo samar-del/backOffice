@@ -1,13 +1,12 @@
 import { RolePageComponent } from './../role-page/role-page.component';
 
 import { Component, OnInit } from '@angular/core';
-import { PermissionService } from '../../user/services/permission.service';
-import { RoleService } from '../../user/services/role.service';
 import { Permission } from 'src/app/models/permission';
 import { Role } from 'src/app/models/role';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { GestionPermissionComponent } from '../PermissionPage/gestion-permission.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { PermissionService } from 'src/app/Modules/user/services/permission.service';
+import { RoleService } from 'src/app/Modules/user/services/role.service';
 
 @Component({
   selector: 'app-gestion-role',
