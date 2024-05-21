@@ -65,6 +65,13 @@ const routes: Routes = [
       ).then((m) => m.FormsManagementModuleModule),
   },
   {
+    path: 'userManagement',
+    loadChildren: () =>
+      import(
+        './components/modules/user-management-module/user-management-module.module'
+      ).then((m) => m.UserManagementModuleModule)
+  },
+  {
     path: 'admin',
     component: HomeComponent,
     canActivate: [AuthGuard],
@@ -74,9 +81,30 @@ const routes: Routes = [
         loadChildren: () =>
           import(
             './components/modules/forms-management-module/forms-management-module.module'
-          ).then((m) => m.FormsManagementModuleModule),
+          ).then((m) => m.FormsManagementModuleModule)
       },
-    ],
+      {
+        path: 'userManagement',
+        loadChildren: () =>
+          import(
+            './components/modules/user-management-module/user-management-module.module'
+          ).then((m) => m.UserManagementModuleModule)
+      },
+      {
+        path: 'roleManagement',
+        loadChildren: () =>
+          import(
+            './components/modules/role-management-module/role-management-module.module'
+          ).then((m) => m.RoleManagementModuleModule)
+      },
+      {
+        path: 'permissionManagement',
+        loadChildren: () =>
+          import(
+            './components/modules/permession-management-module/permession-management-module.module'
+          ).then((m) => m.PermessionManagementModuleModule)
+      }
+    ]
   },
   { path: 'listForms', component: ListFormsComponent },
 

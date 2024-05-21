@@ -12,8 +12,8 @@ export class SidebarGenericComponent implements OnInit, AfterViewInit  {
   isExpanded = true;
   isShowing = true;
 MenuList = [{name: 'Dashbord' , items: []} ,
- {name: 'Gestion des utilisateurs' ,route:'user', items: ['Ajouter des utilisateurs' , 'Modifier des utilisateurs' ]},
-  {name: 'Gestion des roles', items: ['Ajouter un role' , 'Modifier un role' ]}  ,
+ {name: 'Gestion des utilisateurs' ,route:'user', items: ['Ajouter des utilisateurs'  ]},
+  {name: 'Gestion des roles', items: ['Ajouter un role' ]}  ,
   {name: 'Gestion des permissions', items: ['Ajouter une permession']},
   {name: 'Gestion des formulaire' , route: 'createForm', items: ['Ajouter un formulaire' , 'Modifier un formulaire' , 'Supprimer un formulaire']}];
   constructor(private router: Router) { }
@@ -40,12 +40,12 @@ MenuList = [{name: 'Dashbord' , items: []} ,
     if (item === 'Ajouter un formulaire'){
       this.router.navigate(['admin/formsManagement/createForm']);
     }else if (item === 'Ajouter des utilisateurs') {
-      this.router.navigate(['admin/formsManagement/user']);
+      this.router.navigate(['admin/userManagement/user']);
     }
     else if (item === 'Ajouter un role') {
-      this.router.navigate(['admin/formsManagement/role']);
+      this.router.navigate(['admin/roleManagement/role']);
     }else if (item === 'Ajouter une permession') {
-      this.router.navigate(['admin/formsManagement/permission']);
+      this.router.navigate(['admin/permissionManagement/permission']);
     }
   }
 }
