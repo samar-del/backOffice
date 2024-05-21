@@ -4,6 +4,7 @@
       <h2 class="title">Role Listing &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
       <br>
       <br>
+      <button (click)="addRole()" class="btn btn-secondary mb-2">Add New Role</button>
     </mat-card-header>
     <mat-card-content class="content">
       <div class="mat-elevation-z8">
@@ -19,7 +20,7 @@
           <ng-container matColumnDef="Permissions">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <select >
+              <select>
                 <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">{{ permission.permissionType }}</option>
               </select>
             </td>
@@ -45,10 +46,25 @@
           <tr mat-row class="data-row" *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
-        <mat-paginator class="paginator" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-          aria-label="Select page of periodic elements">
-        </mat-paginator>
+        <mat-paginator class="paginator" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements"></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>
+</div>
+<div *ngIf="showAddRoleModal">
+  <div class="modal">
+    <div class="modal-content">
+      <!-- Contenu de votre modal ici -->
+      <h2>Add New Role</h2>
+      <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
+        <label>
+          Role Type:
+          <input type="text" formControlName="roleType">
+        </label>
+        <!-- Ajoutez ici d'autres champs du formulaire si nécessaire -->
+        <button type="submit">Save</button>
+        <button type="button" (click)="closeAddRoleModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
 </div>

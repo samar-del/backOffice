@@ -121,7 +121,8 @@ import { UpdateUserComponent } from './Modules/Gestion/update-user/update-user.c
     PermissionDialogAddComponent,
     RolePageComponent,
     GestionPermissionDialogComponent,
-    UpdateUserComponent,
+    UpdateUserComponent
+
   ],
   imports: [
     BrowserModule,

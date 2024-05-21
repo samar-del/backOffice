@@ -106,12 +106,14 @@ export class UserPageComponent {
       data: {} // Vous pouvez passer des données au dialogue si nécessaire
     }
   );
-  this.loadUser();
-
-
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialogue fermé');
-    });
+      if (result) {
+        this.loadUser();  // Recharger la liste des rôles après ajout
+        this.toastr.success('User added successfully!');
+      } else {
+        this.toastr.info('User addition cancelled.');
+      }
+        });
   }
 
   opendialog() {

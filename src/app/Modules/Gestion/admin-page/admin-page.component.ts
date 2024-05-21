@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../user/services/user.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-admin-page',
@@ -17,7 +18,8 @@ export class AdminPageComponent implements OnInit {
   permissions: any[];
 
   constructor(private formBuilder: FormBuilder, private userService: UserService,
-    public dialogRef: MatDialogRef<AdminPageComponent>
+    public dialogRef: MatDialogRef<AdminPageComponent>,
+    public toastr:ToastrService
 
   ) { }
 
@@ -49,23 +51,23 @@ export class AdminPageComponent implements OnInit {
     );
   }
 
-  addNewUser() {
+  addNewUser(): void {
     if (this.form.valid) {
-      console.log("Form Data:", this.form.value);
       this.userService.addUser(this.form.value).subscribe(
-        data => {
-          alert("User ajouté avec succès");
+        response => {
+          this.toastr.success('User added successfully!');
+          this.form.reset();
         },
         error => {
-          console.error("Erreur lors de l'ajout d'un utilisateur:", error);
-          alert("Erreur lors de l'ajout d'un utilisateur");
+          console.error('Error adding user:', error);
+          this.toastr.error('Error adding user: ' + error.message);
         }
       );
     } else {
-      // Traiter le formulaire invalide si nécessaire
-      alert("Veuillez remplir correctement tous les champs.");
+      this.toastr.warning('Please fill in all required fields');
     }
   }
+  
 
 
 

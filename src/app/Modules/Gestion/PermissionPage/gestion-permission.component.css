@@ -12,7 +12,7 @@
 }
 
 .header {
-  background-color: #4b90da;
+  background:linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
   color: #ffffff;
   padding: 10px;
 }

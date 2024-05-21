@@ -54,7 +54,11 @@ export class GestionPermissionComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Dialogue fermé');
-    });
+      if (result) {
+        this.LoadPermission();  // Recharger la liste des rôles après ajout
+        this.toastr.success('Permission added successfully!');
+      } else {
+        this.toastr.info('Permission addition cancelled.');
+      }    });
   }
 }

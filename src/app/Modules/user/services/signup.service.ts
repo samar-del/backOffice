@@ -1,9 +1,9 @@
 import { signupRequest } from './../../../models/signupRequest';
-import { baseUrl, environment } from './../../../../environments/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { baseUrl } from './../../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import {  throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
