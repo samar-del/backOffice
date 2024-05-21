@@ -336,7 +336,7 @@ export class ContentComponent implements OnInit, DoCheck {
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
             },
-            // wrappers: ['column'],
+             wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
@@ -992,7 +992,6 @@ export class ContentComponent implements OnInit, DoCheck {
               property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             collapsible: customizationData.collapsible
-              // Add any other template options as needed
             },
             // wrappers: ['column'],
 
@@ -1396,6 +1395,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
+      label: field.templateOptions.label,
       label_fr: field.templateOptions.label_fr,
       label_ar: field.templateOptions.label_ar,
       disabled: field.templateOptions.disabled,
