@@ -26,12 +26,7 @@
         <option *ngFor="let role of roles" [value]="role.roleType">{{ role.roleType }}</option>
       </select>
     </div>
-    <div class="col-12">
-      <label class="form-label">Permission Type</label>
-      <select class="form-select" formControlName="permissionType">
-        <option *ngFor="let permission of permissions" [value]="permission.permissionType">{{ permission.permissionType }}</option>
-      </select>
-    </div>
+  
 
   </div>
   <div class="modal-footer">
