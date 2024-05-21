@@ -15,5 +15,8 @@ export class FormCreationService {
   public addFormTemplate(form: FormTemplate): Observable<any> {
     return this.httpClient.post('http://localhost:8078/addFormTemplate', form);
   }
+  public getAllFormTemplate(): Observable<any> {
+    return this.httpClient.get<any>('http://localhost:8078/getAllFormTemplate');
+  }
 
 }

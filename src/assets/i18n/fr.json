@@ -10,7 +10,7 @@
     },
     {
       "name": "Mise en page",
-      "items": ["Colonnes", "Tableau", "Panel"]
+      "items": ["Colonnes", "Tableau", "Panel", "Onglets"]
     }
   ],
   "translations": {

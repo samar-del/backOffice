@@ -35,9 +35,11 @@ import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapp
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 import { ColumnSizeComponent } from './components/column-size/column-size.component';
 import { HomeComponent } from './components/home/home.component';
-import { FormlyFieldFileComponent } from './components/fields-dialog/formly-field-file/formly-field-file.component';
-import { FileValueAccessorDirective } from './file-value-accessor.directive';
-import { MatOptionModule } from '@angular/material/core';
+import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
+import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import {MatSelectModule} from "@angular/material/select";
+import {MatOptionModule} from "@angular/material/core";
+
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
@@ -71,6 +73,10 @@ import { PermissionDialogAddComponent } from './components/modules/permession-ma
 import { GestionRoleComponent } from './components/modules/role-management-module/gestion-role/gestion-role.component';
 import { RolePageComponent } from './components/modules/role-management-module/role-page/role-page.component';
 import { UserPageComponent } from './components/modules/user-management-module/user-page/user-page.component';
+import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
+import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
+import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
+
 
 //import { GoogleLoginProvider } from 'angularx-social-login';
 
@@ -120,88 +126,79 @@ import { UserPageComponent } from './components/modules/user-management-module/u
     RolePageComponent,
     GestionPermissionDialogComponent,
     UpdateUserComponent
-
+    SuperAdminPageComponent,
+    TabDialogComponent,
+    TabFieldWrapperComponent,
+    AlertDialogComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    MatSidenavModule,
-    BrowserAnimationsModule,
-    MatListModule,
-    MatIconModule,
-    MatToolbarModule,
-    DragDropModule,
-    ReactiveFormsModule,
-    FormlyModule.forRoot({
-      wrappers: [
-        { name: 'column', component: ColumnWrapperComponent },
-        { name: 'columnSize', component: ColumnSizeComponent },
-        { name: 'html', component: FormlyFieldHtmlComponent },
-        { name: 'iframe', component: FormlyFieldIframeComponent },
-        { name: 'address-wrapper', component: AddressWrapperComponent },
-        { name: 'table', component: TableWrapperComponent },
-      ],
-      types: [
-        {
-          name: 'column',
-          extends: 'formly-group',
-          wrappers: ['form-field'],
-          defaultOptions: { templateOptions: { column: true } },
-        },
-        { name: 'columnSize', component: ColumnSizeComponent },
-        {
-          name: 'file',
-          component: FormlyFieldFileComponent,
-          wrappers: ['form-field'],
-        },
-        {
-          name: 'table',
-          component: TableWrapperComponent,
-          wrappers: ['form-field'],
-        },
-        { name: 'panel', component: PanelFieldWrapperComponent },
-        {
-          name: 'html',
-          component: FormlyFieldHtmlComponent,
-          wrappers: ['form-field'],
-        },
-        {
-          name: 'iframe',
-          component: FormlyFieldIframeComponent,
-          wrappers: ['form-field'],
-        },
-      ],
-    }),
-    FormlyModule.forChild({
-      wrappers: [{ name: 'row', component: RowWrapperComponent }],
-      types: [
-        {
-          name: 'row',
-          extends: 'formly-group',
-          wrappers: ['form-field'],
-          defaultOptions: { templateOptions: { row: true } },
-        },
-      ],
-    }),
-    FormlyBootstrapModule,
-    MatTabsModule,
-    MatDialogModule,
-    NgbModule,
-    HttpClientModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatMenuModule,
-    FormsModule,
-    CommonModule,
-    ToastrModule.forRoot(),
-    MatDialogModule,
-    MatTableModule,
-    MatCardModule,
-    MatPaginatorModule,
-    MatSelectModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        MatSidenavModule,
+        BrowserAnimationsModule,
+        MatListModule,
+        MatIconModule,
+        MatToolbarModule,
+        DragDropModule,
+        ReactiveFormsModule,
+        FormlyModule.forRoot({
+            wrappers: [{name: 'column', component: ColumnWrapperComponent}, {
+                name: 'columnSize',
+                component: ColumnSizeComponent
+            },
+                {name: 'html', component: FormlyFieldHtmlComponent},
+                {name: 'iframe', component: FormlyFieldIframeComponent},
+                {name: 'address-wrapper', component: AddressWrapperComponent},
+                {name: 'table', component: TableWrapperComponent},
+                {name: 'tab', component: TabFieldWrapperComponent},
+            ],
+            types: [
+                {
+                    name: 'column',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                },
+                {name: 'columnSize', component: ColumnSizeComponent},
+                {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
+                {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
+                {name: 'panel', component: PanelFieldWrapperComponent},
+                {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
+                {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
+                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
+            ],
+        }),
+        FormlyModule.forChild({
+            wrappers: [{name: 'row', component: RowWrapperComponent}],
+            types: [
+                {
+                    name: 'row',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {row: true}}
+                },
+            ],
+        }),
+        FormlyBootstrapModule,
+        MatTabsModule,
+        MatDialogModule,
+        NgbModule,
+        HttpClientModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatOptionModule,
+        MatMenuModule,
+        FormsModule,
+        CommonModule,
+        ToastrModule.forRoot(),
+        MatDialogModule,
+        MatTableModule,
+        MatCardModule,
+        MatPaginatorModule,
+        MatIconModule,
+        MatSelectModule
+    ],
   providers: [],
   bootstrap: [AppComponent],
 })

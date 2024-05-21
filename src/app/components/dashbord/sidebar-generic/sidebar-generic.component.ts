@@ -46,6 +46,8 @@ MenuList = [{name: 'Dashbord' , items: []} ,
       this.router.navigate(['admin/roleManagement/role']);
     }else if (item === 'Ajouter une permession') {
       this.router.navigate(['admin/permissionManagement/permission']);
+    } else if (item === 'Gestion des formulaire' ){
+      this.router.navigate(['admin/formsManagement/']);
     }
   }
 }

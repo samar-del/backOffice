@@ -1,4 +1,14 @@
 <div class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+  <form [formGroup]="formHeader" class="row g-3">
+    <div class="col-auto">
+      <label>Titre du formulaire</label>
+      <input type="text" class="form-control" placeholder="titre du formulaire" formControlName="title">
+    </div>
+    <div class="col-auto">
+      <label>Description du formulaire</label>
+      <input type="text" class="form-control" placeholder="description du formulaire" formControlName="description">
+    </div>
+  </form>
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
     <ng-container *ngFor="let field of fields; let i = index">
       <div class="row align-items-center" cdkDrag cdkDragBoundary=".content-container"> <!-- Add cdkDrag directive here to make the row draggable -->

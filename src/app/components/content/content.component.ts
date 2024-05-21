@@ -1,7 +1,7 @@
 
 import {
   ChangeDetectorRef,
-  Component, NgZone,
+  Component, DoCheck, NgZone,
   OnInit,
   ViewChild,
   ViewEncapsulation
@@ -40,6 +40,8 @@ import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dia
 import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Modules/user/services/auth.service';
+import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
+import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
 
 
 
@@ -49,7 +51,7 @@ import { AuthService } from 'src/app/Modules/user/services/auth.service';
   styleUrls: ['./content.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ContentComponent implements OnInit {
+export class ContentComponent implements OnInit, DoCheck {
 
   @ViewChild('tableWrapper') tableWrapper: TableWrapperComponent;
   previewForm: FormGroup;
@@ -72,28 +74,39 @@ export class ContentComponent implements OnInit {
   isLoggedIn: boolean = false;
 
   private previousPreviewFields: FormlyFieldConfig[] = [];
+  formHeader: FormGroup;
 
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
-              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService, private router:Router, private loginService:LoginService,
-              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone,private authService:AuthService) {
+              private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
+              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private router:Router, private loginService:LoginService,private authService:AuthService
+    ,         private fbh: FormBuilder) {
     this.form = this.fb.group({});
+    this.formHeader = this.fbh.group({});
     // this.previewForm = this.fb.group({});
     this.authService.getUserRoles();
   }
   ngOnInit(): void {
     this.chacklogedInUser();
-
+    this.formHeader = this.fb.group({
+      title: [''],
+      description: ['']
+    });
   }
-
+  ngDoCheck(): void {
+    // if (this.arePreviewFieldsChanged()) {
+    //   console.log('Preview fields were changed');
+    //   console.log('this.model', this.model);
+    // //  console.log('this.previewmodel', this.previewModel);
+    //   this.updatePreviewFields();
+    // }
+    this.shareService.emitPreviewFieldList(this.previewfields);
+  }
   chacklogedInUser(){
     this.isLoggedIn= this.authService.isLoggedIn();
     this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
 
-   }
-
-
-
+  }
   updatePreviewFields() {
     this.previewfields.forEach(field => {
       const fieldTocheck = this.fields.find(el => el.key === field.templateOptions.condi_whenShouldDispaly);
@@ -105,8 +118,6 @@ export class ContentComponent implements OnInit {
       }
     });
   }
-
-
   arePreviewFieldsChanged(): boolean {
     if (this.previousPreviewFields.length !== this.previewfields.length) {
       return true;
@@ -199,7 +210,7 @@ export class ContentComponent implements OnInit {
               return conditionValues;
             })
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               const value = model[uniqueKey];
@@ -254,7 +265,7 @@ export class ContentComponent implements OnInit {
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
               // Check the length constraints and set error state accordingly
@@ -325,7 +336,7 @@ export class ContentComponent implements OnInit {
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
             },
-            //wrappers: ['column'],
+            // wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
@@ -372,7 +383,7 @@ export class ContentComponent implements OnInit {
                   error_label: customizationData.error_label,
                   custom_error_message: customizationData.custom_error_message
                 },
-                //wrappers: ['column'],
+                // wrappers: ['column'],
 
               },
             ],
@@ -417,7 +428,7 @@ export class ContentComponent implements OnInit {
             custom_error_message: customizationData.custom_error_message,
 
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
 
           expressionProperties: {
@@ -451,7 +462,7 @@ export class ContentComponent implements OnInit {
         newField = [{
           type: 'iframe',
           key: customizationData.property_name,
-          //wrappers: ['column'],
+          // wrappers: ['column'],
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
@@ -516,7 +527,7 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -568,7 +579,7 @@ export class ContentComponent implements OnInit {
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -614,7 +625,7 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -658,7 +669,7 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -708,7 +719,7 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -745,7 +756,7 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
         }];
       }
@@ -774,7 +785,7 @@ export class ContentComponent implements OnInit {
             custom_error_message: customizationData.custom_error_message
 
         },
-        //wrappers: ['column'],
+        // wrappers: ['column'],
 
       }]; }
     }
@@ -834,7 +845,7 @@ export class ContentComponent implements OnInit {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
 
           defaultValue: false,
         }];
@@ -855,17 +866,15 @@ export class ContentComponent implements OnInit {
         this.shareService.emitNumberColumn(columnSizess);
         console.log(columnSizess);
         newField = [
-          {
-
-            key: customizationData.property_name, // Key of the wrapper component for columns
-            type: 'row',
-            fieldArray: {
-              type: 'columnSize',
-              fieldGroup: [],
-            },
-            //wrappers: ['column'],
-
-          },
+            {
+              key: customizationData.propertyName, // Key of the wrapper component for columns
+              type: 'row',
+              fieldArray: {
+                type: 'columnSize',
+                fieldGroup: [],
+              },
+              wrappers: ['columnSize'],
+            }
         ];
 
         this.columnSize = customizationData.tableRows;
@@ -919,8 +928,50 @@ export class ContentComponent implements OnInit {
             hide_label_fr: customizationData.hide_label_fr,
             hide_label_ar: customizationData.hide_label_ar,
           },
-          //wrappers: ['column'],
+          // wrappers: ['column'],
         }];
+        console.log(newField);
+      }
+    }
+
+    else if (
+      (language === 'an' && type === 'Tabs') ||
+      (language === 'fr' && type === 'Onglets') ||
+      (language === 'ar' && type === 'نوافذ التبويب')
+    ) {
+      const customizationData = await this.openTabDialog();
+      if (customizationData) {
+        const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
+          return {
+            key: customizationData.property_name + '_' + index,
+            type: 'input', // You can change this type as needed
+            templateOptions: {
+              label: tabLabel.label,
+            },
+          };
+        });
+
+        newField = [
+          {
+            type: 'tab',
+            fieldGroup: tabs,
+            key: customizationData.property_name,
+            templateOptions: {
+              type: 'tab',
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
+              number_tabs: customizationData.tabLabels.length,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,
+              tabs: customizationData.tabLabels,
+            },
+            wrappers: ['column'],
+          },
+        ];
         console.log(newField);
       }
     }
@@ -943,7 +994,7 @@ export class ContentComponent implements OnInit {
             collapsible: customizationData.collapsible
               // Add any other template options as needed
             },
-            //wrappers: ['column'],
+            // wrappers: ['column'],
 
           }];
         }
@@ -962,18 +1013,19 @@ export class ContentComponent implements OnInit {
         previewField.key = el.key;
         previewField.templateOptions = el.templateOptions;
         previewField.type = el.type;
+        if (el.templateOptions.condi_whenShouldDisplay !== undefined) {
         const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
-        if (fieldToCheck){
-            if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value){
-              previewField.templateOptions.hidden = true ;
-            } else {
-              previewField.templateOptions.hidden = false ;
-            }
-            this.previewfields.push(previewField);
+        if (fieldToCheck) {
+          if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value) {
+            previewField.templateOptions.hidden = true;
           } else {
+            previewField.templateOptions.hidden = false;
+          }
+          this.previewfields.push(previewField);
+        } else {
           this.previewfields.push(el);
         }
-
+      }
       });
       this.form.valueChanges.subscribe((value) => {
          this.model = { ...value };
@@ -1181,6 +1233,23 @@ export class ContentComponent implements OnInit {
       return null;
     }
   }
+
+  async openTabDialog() {
+    const dialogRef = this.dialog.open(TabDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr:'',label_ar:''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   submit() {
     if (this.form.valid) {
       const formValues = this.form.getRawValue();
@@ -1236,8 +1305,31 @@ export class ContentComponent implements OnInit {
       this.formlyForm.resetForm({ model: this.model, fields: this.fields });
     }
   }
+
+  async openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      width: '1400px',
+      data: {},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   // tslint:disable-next-line:typedef
    async addFormTemplate() {
+
+     const customizationData = await this.openAlertDialog();
+
+     if (!customizationData) {
+       console.log('Dialog was closed without data');
+       return; // Exit the method if there's no data
+     }
+
     if (this.form.valid) {
       const fieldsId: string[] = [];
       const fieldsGroupId: any[] = [];
@@ -1258,12 +1350,15 @@ export class ContentComponent implements OnInit {
           fieldsId.push(fieldId);
           }
       }
+      const titre = this.formHeader.get('title').value;
+      const description = this.formHeader.get('description').value;
       const formTemplate = {
         fieldIds: fieldsId,
-        title: 'first form',
+        title: titre,
         version: 1,
+        alert_message: customizationData.alert_message,
         createdAt: new Date(),
-        description: 'description form 1 test'
+        description
       };
 
       this.formService.addFormTemplate(formTemplate).subscribe(
@@ -1288,6 +1383,17 @@ export class ContentComponent implements OnInit {
     } else {
       options = [];
     }
+
+    const tabsMap: { [key: string]: any } = {};
+    if (field.templateOptions.tabs) {
+      field.templateOptions.tabs.forEach((tab, index) => {
+        tabsMap[`tab${index + 1}`] = tab;
+      });
+    }
+
+    // Log to check tabs array
+    console.log('Tabs:', field.templateOptions.tabs);
+
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
       label_fr: field.templateOptions.label_fr,
@@ -1313,6 +1419,7 @@ export class ContentComponent implements OnInit {
       number_columns: field.templateOptions.number_columns,
       theme: field.templateOptions.theme,
       collapsible: field.templateOptions.collapsible,
+      tabs: tabsMap,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
     };
