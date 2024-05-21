@@ -22,9 +22,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RadioCustomizeDialogComponent } from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import { HttpClientModule } from '@angular/common/http';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
@@ -34,12 +34,14 @@ import { FormColumnLayoutDialogComponent } from './components/fields-dialog/form
 import { ColumnWrapperComponent } from './components/column-wrapper/column-wrapper.component';
 import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.component';
 import { ColumnSizeComponent } from './components/column-size/column-size.component';
+import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
-import {MatOptionModule} from "@angular/material/core";
 
+import {MatOptionModule} from '@angular/material/core';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
+import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from './components/table-wrapper/table-wrapper.component';
 import { PanelDialogComponent } from './components/fields-dialog/panel-dialog/panel-dialog.component';
@@ -50,7 +52,7 @@ import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { SidebarGenericComponent } from './components/dashbord/sidebar-generic/sidebar-generic.component';
-import { MatMenuModule } from '@angular/material/menu';
+import {MatMenuModule} from '@angular/material/menu';
 import { SignupComponent } from './Modules/user/component/signup/signup.component';
 import { LoginComponent } from './Modules/user/component/login/login.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
@@ -77,7 +79,6 @@ import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-fie
 import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
 
 
-//import { GoogleLoginProvider } from 'angularx-social-login';
 
 @NgModule({
   declarations: [
@@ -194,9 +195,10 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
         MatTableModule,
         MatCardModule,
         MatPaginatorModule,
-        MatIconModule
-          ],
+
+        MatIconModule,
+    ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
