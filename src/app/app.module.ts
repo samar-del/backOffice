@@ -38,6 +38,7 @@ import { ListFormsComponent } from './components/modules/forms-management-module
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
+
 import {MatOptionModule} from '@angular/material/core';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
@@ -194,6 +195,7 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
         MatTableModule,
         MatCardModule,
         MatPaginatorModule,
+
         MatIconModule,
     ],
   providers: [],

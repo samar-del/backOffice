@@ -15,7 +15,7 @@ export class SignupService {
   constructor(private http: HttpClient) { }
 
   signup(request : signupRequest) {
-    return this.http.post<any>(`${baseUrl}/auth/signup`, request).pipe(
+    return this.http.post<any>(`http://localhost:8078/auth/signup`, request).pipe(
       catchError(error => {
         return throwError(error);
       })

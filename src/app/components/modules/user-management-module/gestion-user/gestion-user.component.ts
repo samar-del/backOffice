@@ -14,7 +14,7 @@ import { UserService } from 'src/app/Modules/user/services/user.service';
   styleUrls: ['./gestion-user.component.css'],
 })
 export class GestionUserComponent implements OnInit {
-  signupForm: FormGroup;
+  form: FormGroup;
   rolelist: any;
 
 
@@ -29,7 +29,7 @@ export class GestionUserComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialog: MatDialogRef<GestionUserComponent>
   ) {
-    this.signupForm = this.formBuilder.group({
+    this.form = this.formBuilder.group({
       userName: [''],
       password: [''],
       email: [''],
@@ -49,7 +49,7 @@ export class GestionUserComponent implements OnInit {
         // Check if editdata is defined and contains the roles property before accessing it
         if (this.editdata && this.editdata.roles && this.editdata.roles.length > 0) {
           const selectedRoleIds = this.editdata.roles.map(role => role.idRole);
-          this.signupForm.patchValue({
+          this.form.patchValue({
             roles: selectedRoleIds // Set the selected role IDs
           });
         }
@@ -59,9 +59,9 @@ export class GestionUserComponent implements OnInit {
 
 
   UpdateUser() {
-    if (this.signupForm.valid) {
+    if (this.form.valid) {
       this.userService
-        .updateUser(this.signupForm.value.idUser, this.signupForm.value)
+        .updateUser(this.form.value.idUser, this.form.value)
         .subscribe((res) => {
           this.toastr.success('Updated successfully!');
           this.dialog.close();

@@ -5,7 +5,7 @@
       <br>
       <br>
 
-      <a class="back-button" style="cursor:pointer" (click)="AddAdminDialog()">Add New Admin</a>
+      <a class="btn btn-secondary mb-2" style="cursor:pointer" (click)="AddAdminDialog()">Add New Admin</a>
 
     </mat-card-header>
     <mat-card-content class="content">
@@ -30,13 +30,12 @@
               <select >
                 <option *ngFor="let role of roleList" [value]="role.idRole">{{ role.roleType }}</option>
               </select>
-
-            </td>
+             </td>
           </ng-container>
           <ng-container matColumnDef="action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <button *ngIf="element.roles != 'SUPER-ADMIN'" (click)="updateUser(element.idUser, element)"
+              <button *ngIf="element.roles != 'SUPER-ADMIN'" (click)="updateUser()"
                          class="btn btn-outline-info mb-2">Update</button>
             </td>
           </ng-container>

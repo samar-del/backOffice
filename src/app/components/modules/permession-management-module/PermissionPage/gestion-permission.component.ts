@@ -49,7 +49,7 @@ export class GestionPermissionComponent implements OnInit {
   }
   addPermission() {
     const dialogRef = this.dialog.open(PermissionDialogAddComponent, {
-      width: '350px',
+      width: '500px',
       data: {}, // Vous pouvez passer des données au dialogue si nécessaire
     });
 

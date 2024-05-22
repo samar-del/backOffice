@@ -53,7 +53,7 @@ export class AdminPageComponent implements OnInit {
 
   addNewUser(): void {
     if (this.form.valid) {
-      this.userService.addUser(this.form.value).subscribe(
+      this.userService.addUserWithRoles(this.form.value).subscribe(
         response => {
           this.toastr.success('User added successfully!');
           this.form.reset();

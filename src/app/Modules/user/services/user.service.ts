@@ -51,4 +51,9 @@ updateUser(idUser: string, user:User){
   getAllPermissions(): Observable<Permission[]>{
     return this.http.get<Permission[]>('http://localhost:8078/Permission/AllPermissions');
   }
+
+
+  addUserWithRoles(user:User):Observable<User>{
+    return this.http.post<User>(`http://localhost:8078/auth/addUserWithRoles`,user);
+  }
 }

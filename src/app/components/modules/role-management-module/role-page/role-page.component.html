@@ -21,7 +21,9 @@
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <select>
-                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">{{ permission.permissionType }}</option>
+                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">
+                  {{ permission.permissionType }} - {{ permission.permissionName }}
+                </option>
               </select>
             </td>
           </ng-container>
