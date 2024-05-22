@@ -53,20 +53,4 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div *ngIf="showAddRoleModal">
-  <div class="modal">
-    <div class="modal-content">
-      <!-- Contenu de votre modal ici -->
-      <h2>Add New Role</h2>
-      <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
-        <label>
-          Role Type:
-          <input type="text" formControlName="roleType">
-        </label>
-        <!-- Ajoutez ici d'autres champs du formulaire si nécessaire -->
-        <button type="submit">Save</button>
-        <button type="button" (click)="closeAddRoleModal()">Cancel</button>
-      </form>
-    </div>
-  </div>
-</div>
+

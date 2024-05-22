@@ -16,7 +16,22 @@ import { UpdateUserComponent } from '../update-user/update-user.component';
   templateUrl: './user-page.component.html',
   styleUrls: ['./user-page.component.css'],
 })
-export class UserPageComponent {
+export class UserPageComponent implements OnInit{
+
+  haveedit: any;
+  haveedd: any;
+  havedelete: any;
+
+  roles:any;
+  users:User[]=[];
+  roleList: Role[] = [];
+  userList: any;
+  dataSource: any;
+  selectedRole: string | undefined;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor(
     private service: UserService,
     private dialog: MatDialog,
@@ -28,34 +43,32 @@ export class UserPageComponent {
     this.loadUser();
     this.loadRoles();
   }
+  ngOnInit(): void {
+    this.loadUser();
+    }
 
-  haveedit: any;
-  haveedd: any;
-  havedelete: any;
-
-  roleList: Role[] = [];
-  userList: any;
-  dataSource: any;
-  selectedRole: string | undefined;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   loadUser(): void {
-    this.service.getAllUSers().subscribe((userList: User[]) => {
-      this.dataSource = new MatTableDataSource(userList);
+    this.service.getAllUSers().subscribe(
+      (userList: User[]) => {
+      this.users= userList;
+      this.dataSource = new MatTableDataSource<User>(this.users);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-    });
+    },
+    error => {
+      console.error('Error fetching roles:', error);
+    }
+  );
   }
 
   loadRoles(): void {
     this.roleService.getAllRoles().subscribe(
-      (roles: Role[]) => {
-        this.roleList = roles;
+      roles => {
+        this.roles = roles;
       },
-      (error) => {
-        console.error('Error fetching roles', error);
+      error => {
+        console.error('Error loading permissions:', error);
       }
     );
   }

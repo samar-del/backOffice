@@ -16,7 +16,7 @@
     </div>
     <div class="col-12">
       <div class="form-floating mb-3">
-        <input type="email" class="form-control" formControlName="email" placeholder="name@example.com1">
+        <input type="email" class="form-control" formControlName="email" placeholder="name@example.com">
         <label class="form-label">Email</label>
       </div>
     </div>
@@ -26,11 +26,9 @@
         <option *ngFor="let role of roles" [value]="role.roleType">{{ role.roleType }}</option>
       </select>
     </div>
-  
-
   </div>
   <div class="modal-footer">
-    <button  (click)="onNoClick()"  class="btn btn-outline-info mb-2">Cancel</button>
-    <button type="submit"  class="btn btn-outline-info mb-2">Add</button>
+    <button type="button" (click)="onNoClick()" class="btn btn-outline-info mb-2">Cancel</button>
+    <button type="submit" class="btn btn-outline-info mb-2">Add</button>
   </div>
 </form>

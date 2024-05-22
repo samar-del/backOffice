@@ -59,13 +59,7 @@ export class RolePageComponent implements OnInit {
     );
   }
 
-  openAddRoleModal(): void {
-    this.showAddRoleModal = true;
-  }
-
-  closeAddRoleModal(): void {
-    this.showAddRoleModal = false;
-  }
+ 
   updateRole(){
     const dialogRef = this.dialog.open(RoleUpdateDialogComponent, {
       width: '500px',

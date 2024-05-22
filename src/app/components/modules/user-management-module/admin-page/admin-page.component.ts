@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/Modules/user/services/user.service';
+import { UserRequest } from 'src/app/models/user-request';
 
 @Component({
   selector: 'app-admin-page',
@@ -28,8 +29,8 @@ export class AdminPageComponent implements OnInit {
       userName: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
-      roleType: new FormControl(''),
-      permissionType: new FormControl('')
+      roleType: new FormControl('')
+     // permissionType: new FormControl('')
 
         });
 
@@ -41,31 +42,32 @@ export class AdminPageComponent implements OnInit {
         console.error('Error fetching roles:', error);
       }
     );
-    this.userService.getAllPermissions().subscribe(
-      (data: any) => {
-        this.permissions = data; // Stockez les permissions récupérées dans la variable permissions
-      },
-      error => {
-        console.error('Error fetching permissions:', error);
-      }
-    );
   }
 
   addNewUser(): void {
-    if (this.form.valid) {
-      this.userService.addUserWithRoles(this.form.value).subscribe(
-        response => {
-          this.toastr.success('User added successfully!');
-          this.form.reset();
-        },
-        error => {
-          console.error('Error adding user:', error);
-          this.toastr.error('Error adding user: ' + error.message);
-        }
-      );
-    } else {
-      this.toastr.warning('Please fill in all required fields');
+    if (this.form.invalid) {
+      return;
     }
+
+    const formValue = this.form.value;
+    const selectedRole = this.roles.find(role => role.name === formValue.roleType);
+    const userRequest: UserRequest = {
+      userName: formValue.userName,
+      password: formValue.password,
+      email: formValue.email,
+      role: selectedRole ? [selectedRole] : []
+    };
+
+    this.userService.addUserAndAssignRole(userRequest).subscribe(
+       response => {
+        this.toastr.success('User added successfully', 'Success');
+        this.dialogRef.close(true);
+      },
+      error => {
+        this.toastr.error('Error adding user', 'Error');
+        console.error('Error adding user', error);
+      }
+    );
   }
 
 
