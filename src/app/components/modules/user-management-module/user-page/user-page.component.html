@@ -25,10 +25,12 @@
           </ng-container>
 
           <ng-container matColumnDef="role">
-            <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Role </th>
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Role </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <select >
-                <option *ngFor="let role of roleList" [value]="role.idRole">{{ role.roleType }}</option>
+                <option *ngFor="let role of roles" [value]="role.idRole">
+                  {{ role.roleType }}
+                </option>
               </select>
              </td>
           </ng-container>
