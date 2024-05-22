@@ -21,6 +21,7 @@ export class GestionRoleComponent implements OnInit {
 
   newRole: Role = { roleType: '', permissions: [] };
   form: FormGroup;
+  selectedPermissions: number[] = [];
 
   constructor(
     private roleService: RoleService,
@@ -83,6 +84,9 @@ export class GestionRoleComponent implements OnInit {
 
       this.roleService.addRoleWithPermissions(newRole).subscribe(
         response => {
+          this.dialogRef.close(response);
+          this.loadRoles();
+          this.loadPermissions();
           this.toastr.success('Role added successfully');
           this.form.reset();
         },
@@ -95,7 +99,7 @@ export class GestionRoleComponent implements OnInit {
   }
 
 
-  assignPermissions(options: HTMLOptionsCollection): void {
+ assignPermissions(options: HTMLOptionsCollection): void {
     const selectedIds: string[] = [];
     for (let i = 0; i < options.length; i++) {
       if (options[i].selected) {
@@ -104,7 +108,6 @@ export class GestionRoleComponent implements OnInit {
     }
     this.form.get('permissions')?.setValue(selectedIds);
   }
-
 
   getSelectedPermissionIds(options: HTMLOptionsCollection): string[] {
     const selectedIds: string[] = [];

@@ -10,6 +10,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { GestionRoleComponent } from '../gestion-role/gestion-role.component';
 import { RoleUpdateDialogComponent } from '../role-update-dialog/role-update-dialog.component';
+import { PermissionService } from 'src/app/Modules/user/services/permission.service';
 
 @Component({
   selector: 'app-role-page',
@@ -26,10 +27,12 @@ export class RolePageComponent implements OnInit {
   role : Role[];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  permissions: any;
 
   constructor(
     private fb: FormBuilder,
     private roleService: RoleService,
+    private permissionService:PermissionService,
     private toastr: ToastrService,
     public dialog: MatDialog
   ) {}
@@ -78,7 +81,16 @@ export class RolePageComponent implements OnInit {
       }
     })
   }
-
+  loadPermissions(): void {
+    this.permissionService.getAllPermissions().subscribe(
+      permissions => {
+        this.permissions = permissions;
+      },
+      error => {
+        console.error('Error loading permissions:', error);
+      }
+    );
+  }
 
   addRole() {
     const dialogRef = this.dialog.open(GestionRoleComponent, {
@@ -89,6 +101,7 @@ export class RolePageComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadRoles();  // Recharger la liste des rôles après ajout
+        this.loadPermissions();
         this.toastr.success('Role added successfully!');
       } else {
         this.toastr.info('Role addition cancelled.');
