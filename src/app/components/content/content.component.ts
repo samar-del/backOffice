@@ -35,13 +35,13 @@ import { PanelDialogComponent } from '../fields-dialog/panel-dialog/panel-dialog
 import {TranslationService} from '../../services/translation.service';
 import {HtmlDialogComponent} from '../fields-dialog/html-dialog/html-dialog.component';
 import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dialog.component';
-
-
+import { Location } from '@angular/common';
 import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Modules/user/services/auth.service';
 import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
 import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
+import {StepperDialogComponent} from "../fields-dialog/stepper-dialog/stepper-dialog.component";
 
 
 
@@ -80,7 +80,7 @@ export class ContentComponent implements OnInit, DoCheck {
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private  formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
               private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private router:Router, private loginService:LoginService,private authService:AuthService
-    ,         private fbh: FormBuilder) {
+    ,         private fbh: FormBuilder, private location: Location) {
     this.form = this.fb.group({});
     this.formHeader = this.fbh.group({});
     // this.previewForm = this.fb.group({});
@@ -975,6 +975,47 @@ export class ContentComponent implements OnInit, DoCheck {
         console.log(newField);
       }
     }
+    else if (
+      (language === 'an' && type === 'Stepper') ||
+      (language === 'fr' && type === 'Étapes') ||
+      (language === 'ar' && type === 'متدرج')
+    ) {
+      const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
+      if (customizationData) {
+        const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
+          return {
+            key: customizationData.property_name + '_' + index,
+            type: 'input', // You can change this type as needed
+            templateOptions: {
+              label: stepLabel.label,
+            },
+          };
+        });
+
+        newField = [
+          {
+            type: 'stepper',
+            fieldGroup: steps,
+            key: customizationData.property_name,
+            templateOptions: {
+              type: 'stepper',
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
+              number_steps: customizationData.stepperLabels.length,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,
+              steps: customizationData.stepperLabels,
+            },
+            wrappers: ['column'],
+          },
+        ];
+        console.log(newField);
+      }
+    }
 
     else if (type === 'Panel') {
         const customizationData = await this.openPanelDialog();
@@ -1249,6 +1290,22 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
+  async openStepperDialog() {
+    const dialogRef = this.dialog.open(StepperDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr:'',label_ar:''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
   submit() {
     if (this.form.valid) {
       const formValues = this.form.getRawValue();
@@ -1361,7 +1418,9 @@ export class ContentComponent implements OnInit, DoCheck {
       };
 
       this.formService.addFormTemplate(formTemplate).subscribe(
-        res => console.log('Form template added:', res),
+        res => {
+          console.log('Form template added:', res);
+        },
         err => console.error('Error adding form template:', err)
       );
     }
@@ -1392,6 +1451,26 @@ export class ContentComponent implements OnInit, DoCheck {
 
     // Log to check tabs array
     console.log('Tabs:', field.templateOptions.tabs);
+    const stepsMap: {[key: string]: any } = {};
+      if (field.templateOptions.steps) {
+        field.templateOptions.steps.forEach((step, index) => {
+          stepsMap[`step${index + 1}`] = step;
+        });
+      }
+    console.log('Steps:', field.templateOptions.steps);
+    // Parse number_rows and number_columns to integers
+    const numberRows = parseInt(field.templateOptions.number_rows, 10);
+    const numberColumns = parseInt(field.templateOptions.number_columns, 10);
+
+    // Generate rows array based on number_rows and number_columns
+    const rows: Array<Array<{ columns: any[] }>> = [];
+    for (let i = 0; i < numberRows; i++) {
+      const row: Array<{ columns: any[] }> = [];
+      for (let j = 0; j < numberColumns; j++) {
+        row.push({ columns: [] });
+      }
+      rows.push(row);
+    }
 
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
@@ -1419,9 +1498,13 @@ export class ContentComponent implements OnInit, DoCheck {
       number_columns: field.templateOptions.number_columns,
       theme: field.templateOptions.theme,
       collapsible: field.templateOptions.collapsible,
+      htmlElement: field.templateOptions.htmlElement,
+      link_iframe: field.templateOptions.link_iframe,
       tabs: tabsMap,
+      steps: stepsMap,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
+      rows: rows
     };
 
     await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();

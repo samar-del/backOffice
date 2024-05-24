@@ -29,4 +29,8 @@ export class TemplateOptions {
   label_fr ?: string;
   label_ar ?: string;
   tabs ?: { [key: string]: any } = {};
+  steps ?: { [key: string]: any } = {};
+  rows?: Array<Array<{ columns: any[] }>> = [];
+  htmlElement ?: string;
+  link_iframe ?: string;
 }

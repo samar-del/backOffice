@@ -77,6 +77,10 @@ import { UserPageComponent } from './components/modules/user-management-module/u
 import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
 import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
 import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
+import { StepperWrapperComponent } from './components/stepper-wrapper/stepper-wrapper.component';
+import {MatStepperModule} from '@angular/material/stepper';
+import { MatButtonModule } from '@angular/material/button';
+import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
 
 
 
@@ -128,7 +132,9 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
     UpdateUserComponent,
     TabDialogComponent,
     TabFieldWrapperComponent,
-    AlertDialogComponent
+    AlertDialogComponent,
+    StepperWrapperComponent,
+    StepperDialogComponent
   ],
     imports: [
         BrowserModule,
@@ -150,6 +156,7 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
+              {name: 'stepper', component: StepperWrapperComponent}
             ],
             types: [
                 {
@@ -164,7 +171,8 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
                 {name: 'panel', component: PanelFieldWrapperComponent},
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
-                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
+                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
+                {name: 'stepper', component: StepperWrapperComponent, wrappers: ['form-field']}
             ],
         }),
         FormlyModule.forChild({
@@ -195,8 +203,9 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
         MatTableModule,
         MatCardModule,
         MatPaginatorModule,
-
+        MatStepperModule,
         MatIconModule,
+        MatButtonModule,
     ],
   providers: [],
   bootstrap: [AppComponent]
