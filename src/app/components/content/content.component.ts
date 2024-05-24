@@ -1,7 +1,7 @@
 
 import {
   ChangeDetectorRef,
-  Component, DoCheck, NgZone,
+  Component, DoCheck, HostListener, NgZone,
   OnInit,
   ViewChild,
   ViewEncapsulation
@@ -75,8 +75,15 @@ export class ContentComponent implements OnInit, DoCheck {
 
   private previousPreviewFields: FormlyFieldConfig[] = [];
   formHeader: FormGroup;
-  layoutField: FormlyFieldConfig;
+  layoutField: FormlyFieldConfig = {};
   fieldGroup: Field = {} ;
+  mouseX: number = 0;
+  mouseY: number = 0;
+  isMouseDown: boolean = false;
+
+  // Track the dragged field
+  draggedField: any;
+  dragEvent: any = {};
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
@@ -95,7 +102,37 @@ export class ContentComponent implements OnInit, DoCheck {
       description: ['']
     });
   }
-
+  @HostListener('document:mousemove', ['$event'])
+  // tslint:disable-next-line:typedef
+  onMouseMove(event: MouseEvent) {
+    if (this.isMouseDown && this.draggedField) {
+      this.mouseX = event.clientX;
+      this.mouseY = event.clientY;
+    }
+  }
+  @HostListener('document:mouseup', ['$event'])
+  // tslint:disable-next-line:typedef
+  onMouseUp(event1: MouseEvent) {
+    if (this.isMouseDown && this.draggedField) {
+      // Check if the mouse is over a panel event1.target.__ngContext__[20].__ngContext__[3][3][0].__ngContext__[30].field.type
+      if ((event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'content-container') || !(event1.target && event1.target?.__ngContext__[20] && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0] &&event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30] !== null && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel')){
+        // this.addFieldGroupToField('text');
+        this.addField('Panel');
+          }
+    else if (event1.target && event1.target?.__ngContext__[20] && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0] &&event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30] !== null && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel'){
+        // event.target.__ngContext__[8].draggedField
+        // this.addField('Panel');
+        this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
+        this.addFieldGroupToField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
+       // this.addFieldGroupToField('Text');
+      }
+      this.endDrag();
+    }
+  }
+  endDrag() {
+    this.isMouseDown = false;
+    this.draggedField = null;
+  }
   ngDoCheck(): void {
     // if (this.arePreviewFieldsChanged()) {
     //   console.log('Preview fields were changed');
@@ -142,13 +179,53 @@ export class ContentComponent implements OnInit, DoCheck {
     console.log('this.previewmodel', this.previewModel);
     console.log('this.fields.values()', this.fields.values());
   }
+  // onMouseMove(event: MouseEvent) {
+  //   // Handle mouse move event
+  //   console.log('Mouse moved:', event);
+  //   if (event.target.__ngContext__[8].field.type === 'panel'){
+  //     this.addFieldGroupToField('text');
+  //   }
+  //   // You can access event.clientX and event.clientY for mouse coordinates
+  // }
 
-  drop(event: CdkDragDrop<string[]>, droppedItem: string) {
-    // Calculate the position based on the cursor position
-    const position = this.calculatePosition(event);
+  // onMouseLeave(event: MouseEvent) {
+  //   // Handle mouse leave event
+  //   console.log('Mouse left the component.');
+  // }
+  drop(event: CdkDragDrop<string[]>, droppedItem: any) {
+    this.dragEvent = event ;
+    this.isMouseDown = true;
+    this.draggedField = droppedItem;
+    const targetContainer = event.container.element.nativeElement;
+    this.onMouseUp(event1 , event);
+    // Find the formly-form parent element
+    let formlyForm = targetContainer;
+    while (formlyForm && !formlyForm.tagName.toLowerCase().includes('formly-form')) {
+      formlyForm = formlyForm.parentElement;
+    }
 
-    // Insert the dropped item at the calculated position
-    this.addField(droppedItem);
+    // Check if a formly-form element was found
+    if (formlyForm && event) {
+      this.onMouseMove(event);
+      console.log('Dropped inside formly-field:');
+
+      // Check if the parent field is a panel
+      const parentField = formlyForm.children[0].__ngContext__[24];
+      if (parentField && parentField.type === 'panel') {
+        console.log('Parent is a panel. Using addFieldGroup.');
+        // this.addFieldGroupToField(targetField, droppedItem);
+        this.addFieldGroupToField(droppedItem);
+      } else {
+        console.log('Parent is not a panel. Using addFieldToForm.');
+        // this.addFieldToForm(targetField, droppedItem);
+        this.addField(droppedItem);
+      }
+    } else {
+      this.addField(droppedItem);
+      // Handle drop outside any formly-field
+      console.log('Dropped outside any formly-field');
+    }
+ //   this.addField(droppedItem);
 
 
     this.containerDraggedOver = false;
@@ -1510,7 +1587,8 @@ export class ContentComponent implements OnInit, DoCheck {
       formlyForm = formlyForm.parentElement;
     }
     // Check if a formly-form element was found and if the field type is "panel" and then add for other type of layout
-    if (formlyForm && formlyForm.children[0].__ngContext__[24].type === 'panel') {
+    if (formlyForm && formlyForm.children[0].__ngContext__[24].type === 'panel' ||
+      formlyForm && formlyForm.children[0].__ngContext__[24].type === 'tabs') {
       this.layoutField = formlyForm.children[0].__ngContext__[24];
       console.log('layout field', this.layoutField);
       const clickX = event.clientX;
@@ -1518,7 +1596,6 @@ export class ContentComponent implements OnInit, DoCheck {
       console.log('Clicked at X:', clickX, 'Y:', clickY, 'inside panel field');
 
     }
-    // modification to add any type of field based on the dropped field
     this.addFieldGroupToField('Text');
   }
   async addFieldGroupToField(type: string) {
@@ -2114,6 +2191,7 @@ export class ContentComponent implements OnInit, DoCheck {
             updatedField,
             ...this.fields.slice(index + 1)
           ];
+          this.dragEvent = {};
         }
       }
     });

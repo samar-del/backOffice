@@ -14,7 +14,7 @@
       <div class="row align-items-center" cdkDrag cdkDragBoundary=".content-container"> <!-- Add cdkDrag directive here to make the row draggable -->
         <div class="col-12">
           <div class="formly-form-container">
-            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"  (click)="onDragLeaveField($event)">
+            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"   (mousemove)="onMouseMove($event)" >
               <formly-field *ngIf="field.templateOptions.custom_css" [field]="field" ></formly-field>
             </formly-form>
           </div>
