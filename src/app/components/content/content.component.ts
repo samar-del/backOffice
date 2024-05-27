@@ -42,6 +42,7 @@ import { AuthService } from 'src/app/Modules/user/services/auth.service';
 import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
 import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
 import {StepperDialogComponent} from "../fields-dialog/stepper-dialog/stepper-dialog.component";
+import { FormFileDialogComponent } from '../fields-dialog/form-file-dialog/form-file-dialog.component';
 
 
 
@@ -854,11 +855,39 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if (type === 'File') {
+    } else if  ((language === 'an' && type === 'File') ||
+    (language === 'fr' && type === 'Fichier') ||
+    (language === 'ar' && type === 'خانة اختيار')) {
+      const customizationData = await this.openFileDialog();
+      if (customizationData){
+        newField = [{
+          type: 'file',
+          templateOptions: {
+          },
+        }];
+      } /*{
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
       newField = [{
-        key: 'file',
+        key: customizationData.property_name,
         type: 'file',
+        templateOptions: {
+          label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+          label_fr,
+          label_ar,
+          disabled: customizationData.disabled,
+          hidden: customizationData.hidden,
+          hide_label: customizationData.hide_label,
+          custom_css: customizationData.custom_css,
+          required: customizationData.required,
+          property_name: customizationData.property_name,
+          field_tags: customizationData.field_tags,
+          error_label: customizationData.error_label,
+          custom_error_message: customizationData.custom_error_message
+        },
       }];
+    }*/
     }
    else if (type === 'Columns') {
 
@@ -1139,6 +1168,18 @@ export class ContentComponent implements OnInit, DoCheck {
 
   openCheckboxDialog(): Observable<any> {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label_fr: '' , // Default label value
+        label_ar: ''
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  openFileDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(FormFileDialogComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
         label_fr: '' , // Default label value

@@ -82,6 +82,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
+import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 
 
 
@@ -136,7 +137,8 @@ import { StepperVerticalWrapperComponent } from './components/stepper-vertical-w
     AlertDialogComponent,
     StepperWrapperComponent,
     StepperDialogComponent,
-    StepperVerticalWrapperComponent
+    StepperVerticalWrapperComponent,
+    FormFileDialogComponent
   ],
     imports: [
         BrowserModule,
