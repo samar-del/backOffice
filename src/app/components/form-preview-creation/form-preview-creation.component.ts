@@ -55,22 +55,7 @@ export class FormPreviewCreationComponent implements DoCheck {
       }
       }}
     // test pour list des conditions
-    if (this.previewfields != null){
-      // tslint:disable-next-line:prefer-for-of
-      for (let i = 0; i < this.previewfields.length; i++) {
-        const fieldTochek = this.previewfields.find(el => el.key === this.previewfields[i].templateOptions.condi_whenShouldDisplay);
-        // @ts-ignore
-        if (fieldTochek){
-          console.log('typeof fieldTochek.model', typeof fieldTochek.model.key);
-          const nomValue = fieldTochek.model[this.previewfields[i].templateOptions.condi_whenShouldDisplay];
-          console.log(nomValue);
-          if (nomValue === this.previewfields[i].templateOptions.condi_value)  {
-            this.updatePreviewFields(this.previewfields[i].key.toString());
-            return  console.log('equal', fieldTochek , this.previewModel[this.previewfields[i].key.toString()]);
-          }
-          console.log('fieldTochek', fieldTochek);
-        }
-      }}
+
   }
   updatePreviewFields(key: string) {
       const fieldToUpdate = this.previewfields.find(el => el.key.toString() === key);
@@ -82,6 +67,8 @@ export class FormPreviewCreationComponent implements DoCheck {
       this.cdRef.detectChanges();
       this.previewForm = this.fb.group({});
   }
+
+
   arePreviewFieldsChanged(): boolean {
     if (this.field.length !== this.previewfields.length) {
       return true;
