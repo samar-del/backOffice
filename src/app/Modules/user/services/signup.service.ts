@@ -26,7 +26,7 @@ IsLoggedIn(){
   return sessionStorage.getItem('username')!=null;
 }
 
-GetUserRole(){
+/*GetUserRole(){
   return sessionStorage.getItem('userrole')!=null?sessionStorage.getItem('userrole')?.toString():'';
-}
+}*/
 }

@@ -18,12 +18,12 @@ export class ToolbarComponent implements DoCheck {
     private router: Router
   ) {}
   ngDoCheck(): void {
-let currenturl= this.router.url;
-if(currenturl=='/login' || currenturl=='/signup'){
-this.ismenurequired=false;
-}else{
-  this.ismenurequired=true;
-}
+      let currenturl= this.router.url;
+      if(currenturl=='/login' || currenturl=='/signup'){
+      this.ismenurequired=false;
+      }else{
+        this.ismenurequired=true;
+      }
   }
 
   changeLanguage(language: string): void {
