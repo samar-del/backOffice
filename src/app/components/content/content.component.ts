@@ -26,7 +26,7 @@ import {TemplateOptionsService} from '../../services/template-options.service';
 import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-form-dialog.component';
 import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
 import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
-import {error, promise} from 'protractor';
+import {element, error, promise} from 'protractor';
 import {ShareService} from '../../services/share.service';
 import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
 import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
@@ -160,6 +160,7 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
   // tslint:disable-next-line:typedef
+
   async addField(type: string, position: number) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     let language: string;
@@ -168,6 +169,7 @@ export class ContentComponent implements OnInit, DoCheck {
       language = currentLang;
     });
     let newField: FormlyFieldConfig[] = [{}];
+
     if ((language === 'an' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
@@ -232,6 +234,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
+
     if ((language === 'an' && type === 'HTML Element') ||
       (language === 'fr' && type === 'Element HTML') ||
       (language === 'ar' && type === 'عنصر HTML')) {
@@ -981,8 +984,9 @@ export class ContentComponent implements OnInit, DoCheck {
       (language === 'ar' && type === 'متدرج')
     ) {
       const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
+      const newFieldType = customizationData.stepper_orientation === 'horizontal' ? 'hr_stepper' : 'vr_stepper';
       if (customizationData) {
-        const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
+          const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
             key: customizationData.property_name + '_' + index,
             type: 'input', // You can change this type as needed
@@ -994,11 +998,11 @@ export class ContentComponent implements OnInit, DoCheck {
 
         newField = [
           {
-            type: 'stepper',
+            type: newFieldType,
             fieldGroup: steps,
             key: customizationData.property_name,
             templateOptions: {
-              type: 'stepper',
+              type: newFieldType,
               label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
               label_fr: customizationData.label_fr,
               label_ar: customizationData.label_ar,
@@ -1009,6 +1013,7 @@ export class ContentComponent implements OnInit, DoCheck {
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
               steps: customizationData.stepperLabels,
+              orientation: customizationData.orientation
             },
             wrappers: ['column'],
           },
@@ -1068,17 +1073,14 @@ export class ContentComponent implements OnInit, DoCheck {
       }
       });
       this.form.valueChanges.subscribe((value) => {
-         this.model = { ...value };
+         this.model = { ...this.form.value };
          console.log('preview fields', this.previewfields);
-         console.log(this.model);
+         console.log('model',this.model);
       });
-      if (this.formlyForm) {
-        // this.formlyForm.resetForm({ model: this.model });
 
-      }
       // Rebuild the form group with the updated fields
-      this.form = this.fb.group({});
-      this.previewForm = this.newfb.group({});
+        this.fb.group({});
+        this.newfb.group({});
     }
   }
 
@@ -1500,6 +1502,7 @@ export class ContentComponent implements OnInit, DoCheck {
       collapsible: field.templateOptions.collapsible,
       htmlElement: field.templateOptions.htmlElement,
       link_iframe: field.templateOptions.link_iframe,
+      stepper_orientation: field.templateOptions.stepper_orientation,
       tabs: tabsMap,
       steps: stepsMap,
       options: optionValues, // Store option IDs instead of values

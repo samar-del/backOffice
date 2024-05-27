@@ -33,4 +33,5 @@ export class TemplateOptions {
   rows?: Array<Array<{ columns: any[] }>> = [];
   htmlElement ?: string;
   link_iframe ?: string;
+  stepper_orientation ?: string;
 }

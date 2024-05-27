@@ -1,10 +1,12 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import {Component, ComponentFactoryResolver, Inject, OnInit, ViewChild} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { Subscription } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslationService } from '../../../services/translation.service';
 import { ShareService } from '../../../services/share.service';
+import {StepperWrapperComponent} from "../../stepper-wrapper/stepper-wrapper.component";
+import {StepperVerticalWrapperComponent} from "../../stepper-vertical-wrapper/stepper-vertical-wrapper.component";
 
 @Component({
   selector: 'app-stepper-dialog',
@@ -29,6 +31,8 @@ export class StepperDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<StepperDialogComponent>,
     private translationService: TranslationService,
     private shareService: ShareService,
+    private componentFactoryResolver: ComponentFactoryResolver,
+
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.fieldsListSub = this.shareService.fieldsList$.subscribe(data => {
@@ -45,6 +49,7 @@ export class StepperDialogComponent implements OnInit {
       hidden: [this.data.hidden],
       hide_label_fr: [this.data.hide_label_fr],
       hide_label_ar: [this.data.hide_label_ar],
+      stepper_orientation: [this.data.stepper_orientation || 'horizontal'], // default to horizontal
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
       stepperLabels: this.fb.array([])
@@ -66,6 +71,8 @@ export class StepperDialogComponent implements OnInit {
     });
 
     this.loadTranslations();
+
+
 
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
@@ -159,7 +166,7 @@ export class StepperDialogComponent implements OnInit {
       const stepLabel = control.get('label').value;
       return {
         key: 'step_' + index,
-        type: 'stepper',
+        type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
         templateOptions: {
           label: stepLabel,
         },
@@ -167,12 +174,15 @@ export class StepperDialogComponent implements OnInit {
     });
 
     this.newField = {
-      type: 'stepper',
+      type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
       fieldGroup: fields,
       templateOptions: {
         label: this.form.get('label_fr').value,
         steps: stepperLabels.value.map(step => step.label),
+        stepper_orientation: this.form.get('stepper_orientation').value,
       },
     };
   }
+
+
 }

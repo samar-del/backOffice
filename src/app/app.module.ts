@@ -81,6 +81,7 @@ import { StepperWrapperComponent } from './components/stepper-wrapper/stepper-wr
 import {MatStepperModule} from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
+import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 
 
 
@@ -134,7 +135,8 @@ import { StepperDialogComponent } from './components/fields-dialog/stepper-dialo
     TabFieldWrapperComponent,
     AlertDialogComponent,
     StepperWrapperComponent,
-    StepperDialogComponent
+    StepperDialogComponent,
+    StepperVerticalWrapperComponent
   ],
     imports: [
         BrowserModule,
@@ -156,7 +158,8 @@ import { StepperDialogComponent } from './components/fields-dialog/stepper-dialo
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
-              {name: 'stepper', component: StepperWrapperComponent}
+              {name: 'hr_stepper', component: StepperWrapperComponent},
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent}
             ],
             types: [
                 {
@@ -172,7 +175,8 @@ import { StepperDialogComponent } from './components/fields-dialog/stepper-dialo
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
                 {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-                {name: 'stepper', component: StepperWrapperComponent, wrappers: ['form-field']}
+                {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
         }),
         FormlyModule.forChild({
