@@ -5,8 +5,6 @@ import { Subscription } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslationService } from '../../../services/translation.service';
 import { ShareService } from '../../../services/share.service';
-import {StepperWrapperComponent} from "../../stepper-wrapper/stepper-wrapper.component";
-import {StepperVerticalWrapperComponent} from "../../stepper-vertical-wrapper/stepper-vertical-wrapper.component";
 
 @Component({
   selector: 'app-stepper-dialog',
