@@ -84,6 +84,7 @@ export class ContentComponent implements OnInit, DoCheck {
   // Track the dragged field
   draggedField: any;
   dragEvent: any = {};
+  tabTag: string ;
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
@@ -114,15 +115,27 @@ export class ContentComponent implements OnInit, DoCheck {
   // tslint:disable-next-line:typedef
   onMouseUp(event1: MouseEvent) {
     if (this.isMouseDown && this.draggedField) {
+     // const tabCondition = event1.target?.__ngContext__[26] === 'mat-tab-content-32-0' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'mat-tab-group' ;
       // Check if the mouse is over a panel event1.target.__ngContext__[20].__ngContext__[3][3][0].__ngContext__[30].field.type
-      if ((event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'content-container') || !(event1.target && event1.target?.__ngContext__[20] && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0] &&event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30] !== null && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel')){
-        // this.addFieldGroupToField('text');
-        this.addField('Panel');
+      if ((event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] ==='content-container' ) || ( event1.target?.__ngContext__ === undefined || (event1.target?.__ngContext__[26] === 'mat-tab-content-32-0' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] !== 'mat-tab-group' )) ||
+        (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel' )) ){
+        // this.addFieldGroupToField('text');  mat-tab-label-content
+        this.addField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
           }
-    else if (event1.target && event1.target?.__ngContext__[20] && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0] &&event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30] !== null && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel'){
+      else if ( event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null || event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel' ){
         // event.target.__ngContext__[8].draggedField
         // this.addField('Panel');
-        this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
+        if (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null ){
+         if (event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
+           this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+         } else{
+           this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[24] ;
+         }
+          this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
+          this.tabTag = event1.target?.__ngContext__[21].innerText ; }
+        else {
+          this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
+        }
         this.addFieldGroupToField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
        // this.addFieldGroupToField('Text');
       }
@@ -197,7 +210,7 @@ export class ContentComponent implements OnInit, DoCheck {
     this.isMouseDown = true;
     this.draggedField = droppedItem;
     const targetContainer = event.container.element.nativeElement;
-    this.onMouseUp(event1 , event);
+    this.onMouseUp(event1);
     // Find the formly-form parent element
     let formlyForm = targetContainer;
     while (formlyForm && !formlyForm.tagName.toLowerCase().includes('formly-form')) {
@@ -1021,11 +1034,8 @@ export class ContentComponent implements OnInit, DoCheck {
       if (customizationData) {
         const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
           return {
-            key: customizationData.property_name + '_' + index,
-            type: 'input', // You can change this type as needed
-            templateOptions: {
-              label: tabLabel.label,
-            },
+            templateOptions: { label: tabLabel.label },
+            fieldGroup : [],
           };
         });
 
@@ -1070,13 +1080,6 @@ export class ContentComponent implements OnInit, DoCheck {
             collapsible: customizationData.collapsible
           },
           fieldGroup: [
-            {
-              type: 'input',
-              key: customizationData.property_name,
-              templateOptions: {
-                label: 'nom',
-             placeholder: 'ecrire nom'
-              }}
           ],
         }];
       }
@@ -2169,29 +2172,104 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     }
     newField.forEach(el => {
+      // if (this.layoutField.type ==='tab'){
+      //   const index = this.fields.findIndex(field => field.key === this.layoutField.key);
+      //   console.log(this.layoutField);
+        // if (index !== -1) {
+        //   const updatedField = { ...this.fields[index] };
+        //
+        //   if (!updatedField.fieldGroup) {
+        //     updatedField.fieldGroup = [];
+        //   }
+        //
+        //   const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
+        //   if (existingFieldIndex === -1) {
+        //     updatedField.fieldGroup = [...updatedField.fieldGroup, el];
+        //     // const control = this.fb.control(el.defaultValue || '');
+        //     // this.form.addControl(el.key.toString(), control);
+        //     // control.valueChanges.subscribe(value => {
+        //     //   this.model[el.key.toString()] = value;
+        //     // });
+        //
+        //     this.fields = [
+        //       ...this.fields.slice(0, index),
+        //       updatedField,
+        //       ...this.fields.slice(index + 1)
+        //     ];
+        //     this.dragEvent = {};
+        //   }
+        // }
       const index = this.fields.findIndex(field => field.key === this.layoutField.key);
       if (index !== -1) {
-        const updatedField = { ...this.fields[index] };
+        const updatedField = {...this.fields[index]};
 
-        if (!updatedField.fieldGroup) {
-          updatedField.fieldGroup = [];
-        }
+        if (updatedField.type === 'tab' && Array.isArray(updatedField.fieldGroup)) {
+          // Assuming each tab has a key or label to identify them
+          const tabIndex = updatedField.fieldGroup.findIndex(tab => tab.templateOptions.label === this.tabTag);
 
-        const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
-        if (existingFieldIndex === -1) {
-          updatedField.fieldGroup = [...updatedField.fieldGroup, el];
-          // const control = this.fb.control(el.defaultValue || '');
-          // this.form.addControl(el.key.toString(), control);
-          // control.valueChanges.subscribe(value => {
-          //   this.model[el.key.toString()] = value;
-          // });
+          if (tabIndex !== -1) {
+            const updatedTab = {...updatedField.fieldGroup[tabIndex]};
 
-          this.fields = [
-            ...this.fields.slice(0, index),
-            updatedField,
-            ...this.fields.slice(index + 1)
-          ];
-          this.dragEvent = {};
+            if (!updatedTab.fieldGroup) {
+              updatedTab.fieldGroup = [];
+            }
+
+            const existingFieldIndex = updatedTab.fieldGroup.findIndex(groupField => groupField.key === el.key);
+            if (existingFieldIndex === -1) {
+              updatedTab.fieldGroup = [...updatedTab.fieldGroup, el];
+              updatedField.fieldGroup = [
+                ...updatedField.fieldGroup.slice(0, tabIndex),
+                updatedTab,
+                ...updatedField.fieldGroup.slice(tabIndex + 1)
+              ];
+              this.fields = [
+                ...this.fields.slice(0, index),
+                updatedField,
+                ...this.fields.slice(index + 1)
+              ];
+              this.dragEvent = {};
+            }
+          }
+        } else if (updatedField.type === 'row' && Array.isArray(updatedField.fieldArray.fieldGroup)){
+          updatedField.fieldArray.fieldGroup.push(el);
+          const existingFieldIndex = updatedField.fieldArray.fieldGroup.findIndex(groupField => groupField.key === el.key);
+          if (existingFieldIndex === -1) {
+            updatedField.fieldArray.fieldGroup = [...updatedField.fieldArray.fieldGroup, el];
+            // const control = this.fb.control(el.defaultValue || '');
+            // this.form.addControl(el.key.toString(), control);
+            // control.valueChanges.subscribe(value => {
+            //   this.model[el.key.toString()] = value;
+            // });
+
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
+          }
+        else {
+          if (!updatedField.fieldGroup) {
+            updatedField.fieldGroup = [];
+          }
+
+          const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
+          if (existingFieldIndex === -1) {
+            updatedField.fieldGroup = [...updatedField.fieldGroup, el];
+            // const control = this.fb.control(el.defaultValue || '');
+            // this.form.addControl(el.key.toString(), control);
+            // control.valueChanges.subscribe(value => {
+            //   this.model[el.key.toString()] = value;
+            // });
+
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
         }
       }
     });
