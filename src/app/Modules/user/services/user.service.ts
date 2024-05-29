@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Permission } from 'src/app/models/permission';
 import { User } from 'src/app/models/user';
+import { UserRequest } from 'src/app/models/user-request';
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +51,10 @@ updateUser(idUser: string, user:User){
 
   getAllPermissions(): Observable<Permission[]>{
     return this.http.get<Permission[]>('http://localhost:8078/Permission/AllPermissions');
+  }
+
+
+  addUserAndAssignRole(userRequest:UserRequest):Observable<User>{
+    return this.http.post<User>(`http://localhost:8078/auth/addUserWithRoles`,userRequest);
   }
 }

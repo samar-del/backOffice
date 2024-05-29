@@ -10,7 +10,7 @@
     },
     {
       "name": "Layout",
-      "items": ["Columns", "Table", "Panel", "Tabs"]
+      "items": ["Columns", "Table", "Panel", "Tabs", "Stepper"]
     }
   ],
   "translations": {

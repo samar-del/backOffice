@@ -38,6 +38,7 @@ import { ListFormsComponent } from './components/modules/forms-management-module
 import { HomeComponent } from './components/home/home.component';
 import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
 import {FileValueAccessorDirective} from './file-value-accessor.directive';
+
 import {MatOptionModule} from '@angular/material/core';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
@@ -78,6 +79,12 @@ import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-fie
 import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
 import { DraggableComponent } from './components/draggable/draggable.component';
 import { FormlyFieldPanelComponent } from './components/formly-field-panel/formly-field-panel.component';
+import { StepperWrapperComponent } from './components/stepper-wrapper/stepper-wrapper.component';
+import {MatStepperModule} from '@angular/material/stepper';
+import { MatButtonModule } from '@angular/material/button';
+import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
+import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
+
 
 
 
@@ -132,6 +139,9 @@ import { FormlyFieldPanelComponent } from './components/formly-field-panel/forml
     AlertDialogComponent,
     DraggableComponent,
     FormlyFieldPanelComponent
+    StepperWrapperComponent,
+    StepperDialogComponent,
+    StepperVerticalWrapperComponent
   ],
     imports: [
         BrowserModule,
@@ -153,7 +163,9 @@ import { FormlyFieldPanelComponent } from './components/formly-field-panel/forml
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
-                { name: 'panel', component: PanelFieldWrapperComponent }
+                { name: 'panel', component: PanelFieldWrapperComponent },
+              {name: 'hr_stepper', component: StepperWrapperComponent},
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
             ],
             types: [
                 {
@@ -168,7 +180,9 @@ import { FormlyFieldPanelComponent } from './components/formly-field-panel/forml
                 {name: 'panel', component: PanelFieldWrapperComponent, wrappers: ['form-field']},
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
-                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']}
+                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
+                {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
         }),
         FormlyModule.forChild({
@@ -199,7 +213,9 @@ import { FormlyFieldPanelComponent } from './components/formly-field-panel/forml
         MatTableModule,
         MatCardModule,
         MatPaginatorModule,
+        MatStepperModule,
         MatIconModule,
+        MatButtonModule,
     ],
   providers: [],
   bootstrap: [AppComponent]

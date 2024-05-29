@@ -27,9 +27,8 @@ export class SignupComponent {
                       this.signupForm = this.formBuilder.group({
                       userName: ['', Validators.required],
                       password: ['', [Validators.required, Validators.minLength(8)]],
-                      email: ['', [Validators.required, Validators.email, Validators.pattern("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")]],
-                      roles:['',[Validators.required]]
-                    });
+                      email: ['', [Validators.required, Validators.email, Validators.pattern("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")]]                 
+                      });
   }
 
   get form() { return this.signupForm.controls; }

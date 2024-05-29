@@ -21,7 +21,9 @@
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <select>
-                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">{{ permission.permissionType }}</option>
+                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">
+                  {{ permission.permissionType }} - {{ permission.permissionName }}
+                </option>
               </select>
             </td>
           </ng-container>
@@ -51,20 +53,4 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div *ngIf="showAddRoleModal">
-  <div class="modal">
-    <div class="modal-content">
-      <!-- Contenu de votre modal ici -->
-      <h2>Add New Role</h2>
-      <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
-        <label>
-          Role Type:
-          <input type="text" formControlName="roleType">
-        </label>
-        <!-- Ajoutez ici d'autres champs du formulaire si nécessaire -->
-        <button type="submit">Save</button>
-        <button type="button" (click)="closeAddRoleModal()">Cancel</button>
-      </form>
-    </div>
-  </div>
-</div>
+

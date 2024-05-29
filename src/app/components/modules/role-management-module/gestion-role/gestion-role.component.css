@@ -18,6 +18,12 @@
   padding: 5px;
   margin-right: 10px;
 }
+.header-title {
+  background: linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
+  color: white;
+  padding: 10px;
+}
+
 
 .add-role-container button {
   padding: 5px 10px;

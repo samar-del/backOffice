@@ -15,6 +15,7 @@
         <div class="col-12">
           <div class="formly-form-container">
             <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"   (mousemove)="onMouseMove($event)" >
+
               <formly-field *ngIf="field.templateOptions.custom_css" [field]="field" ></formly-field>
             </formly-form>
           </div>

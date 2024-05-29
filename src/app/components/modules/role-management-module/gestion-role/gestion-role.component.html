@@ -1,16 +1,19 @@
-<h2 mat-dialog-title>Add New Permission</h2>
-<form [formGroup]="form" (ngSubmit)="save()">
-  <mat-dialog-content>
-    <div class="row">
-      <div class="col form-group">
-        <label for="roleType">Role Type</label>
-        <input id="roleType" formControlName="roleType" class="form-control" />
-      </div>
+<h2 class="header-title">Add New Role</h2>
+<form [formGroup]="form" (ngSubmit)="addRoleWithPermissions()">
+  <div>
+    <label class="form-label" for="roleType">Role Type:</label>
+    <input class="form-control" id="roleType" formControlName="roleType" />
+  </div>
+  <div>
+    <label class="form-label" for="permissions">Permissions Name:</label>
+    <select id="permissions"  multiple (change)="assignPermissions($event.target.options)">
+      <option  *ngFor="let permission of permissions" [value]="permission.idPermission">
+        {{ permission.permissionName }}
+      </option>
+    </select>
+  </div>
 
-    </div>
-  </mat-dialog-content>
-  <mat-dialog-actions>
-    <button  class="btn btn-outline-info mb-2" type="button" (click)="close()">Cancel</button>
-    <button  class="btn btn-outline-info mb-2" color="primary" type="submit">Save</button>
-  </mat-dialog-actions>
+  <button  (click)="onNoClick()"  class="btn btn-outline-info mb-2">Cancel</button>
+
+  <button class="btn btn-outline-info mb-2" type="submit">Add Role</button>
 </form>

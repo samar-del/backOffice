@@ -1,0 +1,36 @@
+import { Component, OnInit } from '@angular/core';
+import {FieldType} from "@ngx-formly/core";
+import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
+
+@Component({
+  selector: 'app-stepper-wrapper',
+  template: `
+      <mat-horizontal-stepper [linear]="true" #stepper>
+      <ng-container *ngFor="let step of field.fieldGroup; let index = index">
+        <mat-step [label]="step.templateOptions.label">
+          <ng-template matStepLabel>{{ step.templateOptions.label }}</ng-template>
+          <div>
+            <h2>{{ step.templateOptions.label }}</h2>
+            <p>Step content for {{ step.templateOptions.label }}</p>
+          </div>
+          <div>
+            <button mat-button matStepperPrevious *ngIf="index > 0">Back</button>
+            <button mat-button matStepperNext *ngIf="index < field.fieldGroup.length - 1">Next</button>
+            <button mat-button *ngIf="index === field.fieldGroup.length - 1" (click)="onComplete()">Finish</button>
+          </div>
+        </mat-step>
+      </ng-container>
+    </mat-horizontal-stepper>
+ `,
+})
+export class StepperWrapperComponent extends FieldType implements OnInit {
+
+  ngOnInit(): void {
+    console.log("im in stepper,", this.field );
+  }
+
+  onComplete(): void {
+    console.log('Stepper completed!');
+  }
+
+}
