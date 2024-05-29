@@ -7,7 +7,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
@@ -100,13 +100,22 @@ export class ContentComponent implements OnInit, DoCheck {
     // //  console.log('this.previewmodel', this.previewModel);
     //   this.updatePreviewFields();
     // }
-    this.shareService.emitPreviewFieldList(this.previewfields);
+    this.fields.forEach((field, index) => {
+      this.logFieldIndex(index);
+    });
+    this.shareService.emitPreviewFieldList(this.fields);
+    //this.shareService.emitPreviewFieldList(this.previewfields);
   }
   chacklogedInUser(){
     this.isLoggedIn= this.authService.isLoggedIn();
     this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
 
   }
+
+  logFieldIndex(index: number): void {
+    console.log('Field index:', index);
+  }
+
   updatePreviewFields() {
     this.previewfields.forEach(field => {
       const fieldTocheck = this.fields.find(el => el.key === field.templateOptions.condi_whenShouldDispaly);
@@ -146,6 +155,10 @@ export class ContentComponent implements OnInit, DoCheck {
 
 
     this.containerDraggedOver = false;
+  }
+  dropInside(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.fields, event.previousIndex, event.currentIndex);
+    this.shareService.emitPreviewFieldList(this.previewfields);
   }
 
   calculatePosition(event: CdkDragDrop<string[]>): number {
@@ -1058,29 +1071,31 @@ export class ContentComponent implements OnInit, DoCheck {
         previewField.key = el.key;
         previewField.templateOptions = el.templateOptions;
         previewField.type = el.type;
-        if (el.templateOptions.condi_whenShouldDisplay !== undefined) {
         const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
-        if (fieldToCheck) {
-          if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value) {
-            previewField.templateOptions.hidden = true;
+        if (fieldToCheck){
+          if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value){
+            previewField.templateOptions.hidden = true ;
           } else {
-            previewField.templateOptions.hidden = false;
+            previewField.templateOptions.hidden = false ;
           }
           this.previewfields.push(previewField);
         } else {
           this.previewfields.push(el);
         }
-      }
+
       });
       this.form.valueChanges.subscribe((value) => {
-         this.model = { ...this.form.value };
-         console.log('preview fields', this.previewfields);
-         console.log('model',this.model);
+        this.model = { ...value };
+        console.log('preview fields',this.previewfields);
+        console.log(this.model);
       });
+      if (this.formlyForm) {
+        // this.formlyForm.resetForm({ model: this.model });
 
+      }
       // Rebuild the form group with the updated fields
-        this.fb.group({});
-        this.newfb.group({});
+      this.form = this.fb.group({});
+      this.previewForm = this.newfb.group({});
     }
   }
 

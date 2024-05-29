@@ -20,7 +20,6 @@ export class ShareService {
   emitListFields(list: {}[]){
     this.recentFieldsList.next(list);
   }
-
   // tslint:disable-next-line:typedef
   emitNumberColumn(message: {}[]) {
     this.nomberOfColumns.next(message);

@@ -1,8 +1,9 @@
-import {ChangeDetectorRef, Component, DoCheck, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, DoCheck, Input, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ShareService} from '../../services/share.service';
 import {any} from 'codelyzer/util/function';
+import {element} from "protractor";
 
 @Component({
   selector: 'app-form-preview-creation',
@@ -18,16 +19,20 @@ export class FormPreviewCreationComponent implements DoCheck {
   options: FormlyFormOptions = {};
   @Input() field: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
+  private previousFields: FormlyFieldConfig[] = [];
+
+  changes: SimpleChanges;
   constructor(private fb: FormBuilder, private shareService: ShareService, private cdRef: ChangeDetectorRef) {
     this.previewForm = this.fb.group({});
   }
+
   ngDoCheck(): void {
-    // this.previewfields.forEach(field => {
-    //   const formControlName = field.key ;
-    //   this.previewForm = this.fb.group({
-    //     formControlName: [field.model],
-    //   });
-    // });
+    /*this.previewfields.forEach(field => {
+    const formControlName = field.key ;
+    this.previewForm = this.fb.group({
+    formControlName: [field.model],
+    });
+    });*/
 
     console.log('this.previewmodel', this.previewModel);
     this.shareService.fieldsPreviewList$.subscribe(data => {
@@ -48,26 +53,36 @@ export class FormPreviewCreationComponent implements DoCheck {
           const nomValue = fieldTochek.model[this.previewfields[i].templateOptions.condi_whenShouldDisplay];
           console.log(nomValue);
           if (nomValue === this.previewfields[i].templateOptions.condi_value)  {
-          this.updatePreviewFields(this.previewfields[i].key.toString());
-          return  console.log('equal', fieldTochek , this.previewModel[this.previewfields[i].key.toString()]);
-        }
+            this.updatePreviewFields(this.previewfields[i].key.toString());
+            return  console.log('equal', fieldTochek , this.previewModel[this.previewfields[i].key.toString()]);
+          }
           console.log('fieldTochek', fieldTochek);
-      }
+        }
+
+        if (this.haveFieldsChanged()) {
+          this.updatePreviewFields(this.previewfields[i].key.toString()); // Update the preview form whenever fields are changed
+        }
+
       }}
     // test pour list des conditions
-
   }
+
+  haveFieldsChanged(): boolean {
+    // Check if the fields have changed
+    return JSON.stringify(this.previewfields) !== JSON.stringify(this.previousFields);
+  }
+
   updatePreviewFields(key: string) {
-      const fieldToUpdate = this.previewfields.find(el => el.key.toString() === key);
-      if (fieldToUpdate){
-        fieldToUpdate.templateOptions.hidden = false;
-      }
-      // fieldToUpdate.templateOptions.change;
-      console.log(fieldToUpdate);
-      this.cdRef.detectChanges();
-      this.previewForm = this.fb.group({});
-  }
+    const fieldToUpdate = this.previewfields.find(el => el.key.toString() === key);
+    if (fieldToUpdate){
+      fieldToUpdate.templateOptions.hidden = false;
+    }
 
+    // fieldToUpdate.templateOptions.change;
+    console.log(fieldToUpdate);
+    this.cdRef.detectChanges();
+    this.previewForm = this.fb.group({});
+  }
 
   arePreviewFieldsChanged(): boolean {
     if (this.field.length !== this.previewfields.length) {
@@ -76,16 +91,16 @@ export class FormPreviewCreationComponent implements DoCheck {
     this.previousPreviewFields = {...this.field};
     if (this.previewfields != null){
       // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < this.previewfields.length; i++) {
-      const fieldTochek = this.previewfields.find(el => el.key === this.previewfields[i].templateOptions.condi_whenShouldDisplay && el.model === this.previewfields[i].templateOptions.condi_value);
-      // if (JSON.stringify(this.previewfields[i].model) !== JSON.stringify(this.previousPreviewFields[i].model)) {
-      console.log('fieldTochek', fieldTochek);
-      if (fieldTochek) {
-        return true;
-      }
-    }}
+      for (let i = 0; i < this.previewfields.length; i++) {
+        const fieldTochek = this.previewfields.find(el => el.key === this.previewfields[i].templateOptions.condi_whenShouldDisplay && el.model === this.previewfields[i].templateOptions.condi_value);
+        // if (JSON.stringify(this.previewfields[i].model) !== JSON.stringify(this.previousPreviewFields[i].model)) {
+        console.log('fieldTochek', fieldTochek);
+        if (fieldTochek) {
+          return true;
+        }
+      }}
     return false;
     console.log('this.previewfields.values()', this.previewfields.values());
     console.log('this.previewmodel', this.previewModel);
-     }
+  }
 }

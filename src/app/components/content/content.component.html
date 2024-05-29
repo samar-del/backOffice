@@ -1,4 +1,4 @@
-<div class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+<div cdkDropList (cdkDropListDropped)="dropInside($event)"  class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
   <form [formGroup]="formHeader" class="row g-3">
     <div class="col-auto">
       <label>Titre du formulaire</label>
@@ -11,7 +11,7 @@
   </form>
   <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
     <ng-container *ngFor="let field of fields; let i = index">
-      <div class="row align-items-center" cdkDrag cdkDragBoundary=".content-container"> <!-- Add cdkDrag directive here to make the row draggable -->
+      <div class="row align-items-center box" cdkDrag cdkDragBoundary=".content-container" (click)="logFieldIndex(i)"> <!-- Add cdkDrag directive here to make the row draggable -->
         <div class="col-12">
           <div class="formly-form-container">
             <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form">
