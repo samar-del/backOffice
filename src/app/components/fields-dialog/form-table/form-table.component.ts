@@ -133,11 +133,6 @@ export class FormTableComponent implements OnInit {
       const tableRow: FormlyFieldConfig[] = [];
       for (let j = 0; j < numberRows; j++) {
         const newField: FormlyFieldConfig = {
-          key: `row_${j}_col_${i}`,
-          type: 'input', // You can change this to the appropriate field type
-          templateOptions: {
-            label: `Row ${j + 1} - Column ${i + 1}`,
-          },
         };
         tableRow.push(newField);
       }

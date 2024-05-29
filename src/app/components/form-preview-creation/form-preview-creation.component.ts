@@ -29,7 +29,6 @@ export class FormPreviewCreationComponent implements DoCheck {
     //   });
     // });
 
-    console.log('this.previewmodel', this.previewModel);
     this.shareService.fieldsPreviewList$.subscribe(data => {
       this.previewfields = data;
     });

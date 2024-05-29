@@ -77,9 +77,9 @@ export class ContentComponent implements OnInit, DoCheck {
   formHeader: FormGroup;
   layoutField: FormlyFieldConfig = {};
   fieldGroup: Field = {} ;
-  mouseX: number = 0;
-  mouseY: number = 0;
-  isMouseDown: boolean = false;
+  mouseX = 0;
+  mouseY = 0;
+  isMouseDown = false;
 
   // Track the dragged field
   draggedField: any;
@@ -115,24 +115,28 @@ export class ContentComponent implements OnInit, DoCheck {
   // tslint:disable-next-line:typedef
   onMouseUp(event1: MouseEvent) {
     if (this.isMouseDown && this.draggedField) {
-     // const tabCondition = event1.target?.__ngContext__[26] === 'mat-tab-content-32-0' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'mat-tab-group' ;
-      // Check if the mouse is over a panel event1.target.__ngContext__[20].__ngContext__[3][3][0].__ngContext__[30].field.type
-      if ((event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] ==='content-container' ) || ( event1.target?.__ngContext__ === undefined || (event1.target?.__ngContext__[26] === 'mat-tab-content-32-0' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] !== 'mat-tab-group' )) ||
-        (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel' )) ){
+      const firstElmCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'content-container' ;
+      const panelCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table');
+      const tabCondition = event1.target?.__ngContext__ === undefined || (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] !== 'mat-tab-group') ;
+      const columnCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24] !== 0 && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row';
+      const tableCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table');
+      if (firstElmCondition || tabCondition || panelCondition || columnCondition ) {
         // this.addFieldGroupToField('text');  mat-tab-label-content
         this.addField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
           }
-      else if ( event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null || event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel' ){
+      else if (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' || (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel') || (event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row' ) || event1.target?.__ngContext__[23].type === 'column' ){
         // event.target.__ngContext__[8].draggedField
         // this.addField('Panel');
-        if (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null ){
-         if (event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
+        if ((event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || event1.target?.__ngContext__[23].type === 'column'  ){
+         if (event1.target?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
            this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
-         } else{
-           this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[24] ;
+         } else if (event1.target?.__ngContext__[23].type === 'column' ) {
+           this.layoutField = event1.target?.__ngContext__[23];
+         }else {
+             this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[24] ;
          }
-          this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
-          this.tabTag = event1.target?.__ngContext__[21].innerText ; }
+         // this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
+         this.tabTag = event1.target?.__ngContext__[21].innerText ; }
         else {
           this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
         }
@@ -964,10 +968,19 @@ export class ContentComponent implements OnInit, DoCheck {
           {
             key: customizationData.propertyName, // Key of the wrapper component for columns
             type: 'row',
-            fieldArray: {
+            fieldGroup: [{
               type: 'columnSize',
-              fieldGroup: [],
-            },
+              fieldGroup: [
+                {
+                  type: 'input',
+                  key: customizationData.property_name,
+                  templateOptions: {
+                    label: 'nom',
+                    type: 'text',
+                    placeholder: 'nom',
+                  }}
+              ],
+            }],
             wrappers: ['columnSize'],
           }
         ];
@@ -984,26 +997,35 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openTableDialog();
       if (customizationData) {
         const tableRows: FormlyFieldConfig[] = [];
-
+        // let tableRows: FormlyFieldConfig[] = [
+        //   {
+        //     type: 'row',
+        //     fieldGroup: []
+        //   }
+        // ];
+        let tableRow: FormlyFieldConfig;
+        let columnField: FormlyFieldConfig = {};
+       // const columnFieldsByRow: FormlyFieldConfig[] = [];
         // Generate table rows with the specified number of rows and columns
-        for (let i = 0; i < customizationData.number_columns; i++) {
-          const tableRow: FormlyFieldConfig[] = [];
-          for (let j = 0; j < customizationData.number_rows; j++) {
-            const newField: FormlyFieldConfig = {
-              key: `row_${j}_col_${i}`,
-              type: 'input', // You can change this to the appropriate field type
-              templateOptions: {
-                label: `Row ${j + 1} - Column ${i + 1}`,
-              },
-            };
-            tableRow.push(newField);
-            console.log(newField);
+        for (let i = 0; i < customizationData.number_rows; i++) {
+          const columnFieldsByRow: FormlyFieldConfig[] = [];
+          for (let j = 0; j < customizationData.number_columns; j++) {
+            columnField = {
+              key: 'column' + Math.floor(Math.random() * 90) + j,
+              type: 'column',
+              fieldGroup: [],
+            } ;
+            columnFieldsByRow.push(columnField);
+            console.log(tableRow);
           }
-          tableRows.push({
-            fieldGroup: tableRow,
-          });
+          tableRow = {
+             key: 'row' + Math.floor(Math.random() * 90) + i,
+            type: 'row',
+            fieldGroup: columnFieldsByRow,
+          };
+          tableRows.push(tableRow);
         }
-
+        console.log(tableRow);
         newField = [{
           type: 'table',
           fieldGroup: tableRows,
@@ -2199,7 +2221,34 @@ export class ContentComponent implements OnInit, DoCheck {
         //     this.dragEvent = {};
         //   }
         // }
-      const index = this.fields.findIndex(field => field.key === this.layoutField.key);
+      let index: number;
+      let rowColumn = {row : '' , column: ''};
+      if (this.layoutField.type === 'column'){
+        const tables = this.fields.filter( element => element.type === 'table');
+      //  index = tables.findIndex(field => field.fieldGroup.find(fieldGroup => fieldGroup.key === this.layoutField.key));
+        tables.forEach(table => {
+         table.fieldGroup.forEach(row => {
+           let columnKey = '';
+           for (const col of row.fieldGroup){
+             if (col.key === this.layoutField.key){
+               columnKey = col.key.toString();
+               break;
+             }
+           }
+
+           if (columnKey){
+              rowColumn = { row: row.key.toString(), column: columnKey };
+             }
+           const columnExist = row.fieldGroup.findIndex(column => column.key === rowColumn.column);
+           if (columnExist !== -1){
+             index = tables.findIndex(tablesElm => tablesElm.key === table.key);
+           }
+           });
+       });
+       // index = tables.findIndex(field => field.fieldGroup.forEach(fieldGroupElm => {fieldGroupElm.fieldGroup.find(col => col.key === this.layoutField.key); }));
+      }else {
+        index = this.fields.findIndex(field => field.key === this.layoutField.key);
+      }
       if (index !== -1) {
         const updatedField = {...this.fields[index]};
 
@@ -2249,6 +2298,37 @@ export class ContentComponent implements OnInit, DoCheck {
             this.dragEvent = {};
           }
           }
+        else if (updatedField.type === 'table' && Array.isArray(updatedField.fieldGroup)) {
+          let fieldAdded = false;
+
+          // Loop through rows and columns to find the target column
+          updatedField.fieldGroup.forEach(row => {
+            if (row.type === 'row' && Array.isArray(row.fieldGroup) && row.key === rowColumn.row) {
+             const fieldExist = row.fieldGroup.find(col => col.type === 'column' && col.key === rowColumn.column);
+             if (fieldExist){
+                   fieldExist.fieldGroup = [...fieldExist.fieldGroup, el];
+                   fieldAdded = true;
+                 }
+          //       if ( row.fieldGroup[i].type === 'column' && row.fieldGroup[i].key === this.layoutField.key) {
+          //         const existingFieldIndex = row.fieldGroup[i].fieldGroup.findIndex(groupField => groupField.key === el.key);
+          //         if (existingFieldIndex === -1) {
+          //           row.fieldGroup[i].fieldGroup = [...row.fieldGroup[i].fieldGroup, el];
+          //           fieldAdded = true; // Set flag to true if field is added
+          //         }
+          // }
+            }
+          });
+
+          // Only update the fields if the field was actually added
+          if (fieldAdded) {
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
+        }
         else {
           if (!updatedField.fieldGroup) {
             updatedField.fieldGroup = [];

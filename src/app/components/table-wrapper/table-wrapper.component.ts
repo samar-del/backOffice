@@ -6,9 +6,9 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
   template: `
     <div class="table-layout-wrapper">
       <table class="table table-bordered">
-          <tr>
-            <td *ngFor="let f of field.fieldGroup" [ngClass]="f.className">
-              <formly-field [field]="f"></formly-field>
+          <tr *ngFor="let f of field.fieldGroup" [ngClass]="f.className">
+            <td *ngFor="let col of f.fieldGroup" [ngClass]="f.className" >
+              <formly-field [field]="col"></formly-field>
             </td>
           </tr>
       </table>

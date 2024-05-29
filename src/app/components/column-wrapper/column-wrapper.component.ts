@@ -65,7 +65,7 @@ export class ColumnWrapperComponent extends FieldWrapper{
       return;
     }
     if (droppedItem === 'input') {
-      console.log(droppedItem)
+      console.log(droppedItem);
       this.contentComponent.addField('input');
     } else if (droppedItem === 'radio') {
       this.contentComponent.addField('radio');

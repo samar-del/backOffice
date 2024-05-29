@@ -27,20 +27,5 @@ export class ColumnSizeComponent extends FieldWrapper {
 
     this.subscription = this.shareService.currentNomberOfColumns.subscribe(data => this.columns = data);
   }
-  // tslint:disable-next-line:typedef
-  onDrop(event: any) {
-    if (event.previousContainer !== event.container) {
-      const field = {...event.item.data};
-      this.contentComponent.addField(field);
-     // this.field.fieldArray.push(this.contentComponent.addField(field));
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
-  }
 }
 
