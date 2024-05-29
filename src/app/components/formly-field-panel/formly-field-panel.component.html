@@ -1,0 +1,6 @@
+<div class="panel" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+  <label>{{ to.label }}</label>
+  <ng-container *ngFor="let field of field.fieldGroup">
+    <formly-field [field]="field"></formly-field>
+  </ng-container>
+</div>

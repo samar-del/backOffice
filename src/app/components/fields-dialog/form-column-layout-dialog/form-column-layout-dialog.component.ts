@@ -22,6 +22,7 @@ export class FormColumnLayoutDialogComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       label: [this.data.label, Validators.required],
+      property_name: [this.data.propertyName],
       tableRows: this.fb.array([]) // Initialize form array for table rows
     });
 

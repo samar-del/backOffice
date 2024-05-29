@@ -9,7 +9,7 @@ import { ShareService } from 'src/app/services/share.service';
     <div class="card" [ngClass]="theme" [ngClass]="{ 'collapsed': collapsible && isCollapsed }">
       <h3 class="card-header" [ngClass]="theme" (click)="toggleCollapse()" *ngIf="!hideHeader">{{ to.label }}</h3>
       <div class="card-body" *ngIf="!collapsible || !isCollapsed">
-          <ng-container *ngFor="let field of fields">
+          <ng-container *ngFor="let field of field.fieldGroup">
               <formly-field [field]="field"></formly-field>
           </ng-container>
       </div>
