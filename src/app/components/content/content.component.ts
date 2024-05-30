@@ -42,6 +42,7 @@ import { AuthService } from 'src/app/Modules/user/services/auth.service';
 import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
 import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
 import {StepperDialogComponent} from "../fields-dialog/stepper-dialog/stepper-dialog.component";
+import { FormFileDialogComponent } from '../fields-dialog/form-file-dialog/form-file-dialog.component';
 
 
 
@@ -953,11 +954,61 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if (type === 'File') {
+    } else if  ((language === 'an' && type === 'File') ||
+    (language === 'fr' && type === 'Fichier') ||
+    (language === 'ar' && type === 'خانة اختيار')) {
+      const customizationData = await this.openFileDialog().toPromise();
+      if (customizationData){
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
+        newField = [{
+          type: 'file',
+          key: customizationData.property_name,
+
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            storageType:customizationData.storageType,
+            minFileSize:customizationData.minFileSize,
+            maxFileSize:customizationData.maxFileSize
+          },
+        }];
+      }
+       /*{
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
       newField = [{
-        key: 'file',
+        key: customizationData.property_name,
         type: 'file',
+        templateOptions: {
+          label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+          label_fr,
+          label_ar,
+          disabled: customizationData.disabled,
+          hidden: customizationData.hidden,
+          hide_label: customizationData.hide_label,
+          custom_css: customizationData.custom_css,
+          required: customizationData.required,
+          property_name: customizationData.property_name,
+          field_tags: customizationData.field_tags,
+          error_label: customizationData.error_label,
+          custom_error_message: customizationData.custom_error_message
+        },
       }];
+    }*/
+    
     } else if (type === 'Columns') {
 
       const customizationData = await this.openColumnDialog();
@@ -1257,6 +1308,19 @@ export class ContentComponent implements OnInit, DoCheck {
     return dialogRef.afterClosed();
   }
 
+  openFileDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(FormFileDialogComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label_fr: '' , // Default label value
+        label_ar: ''
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  async openHTMLDialog() {
     async openHTMLDialog() {
     const dialogRef = this.dialog.open(HtmlDialogComponent, {
       width: '1400px',
@@ -1632,6 +1696,9 @@ export class ContentComponent implements OnInit, DoCheck {
       htmlElement: field.templateOptions.htmlElement,
       link_iframe: field.templateOptions.link_iframe,
       stepper_orientation: field.templateOptions.stepper_orientation,
+      storageType: field.templateOptions.storageType,
+      maxFileSize:field.templateOptions.maxFileSize,
+      minFileSize:field.templateOptions.minFileSize,
       tabs: tabsMap,
       steps: stepsMap,
       options: optionValues, // Store option IDs instead of values

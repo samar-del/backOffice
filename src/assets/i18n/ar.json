@@ -54,7 +54,10 @@
     "table_when_condi": "عندما يكون مكون النموذج",
     "table_has_value": "بالقيمة",
     "cancel": "إلغاء",
-    "save": "حفظ"
+    "save": "حفظ",
+    "storageType":" نوع الملف",
+    "local_storage":"التخزين المحلي",
+    "url":"الرابط"
   }
 
 }

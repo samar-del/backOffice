@@ -54,6 +54,9 @@
     "table_when_condi": "When the form component",
     "table_has_value": "Has the value",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "storageType": "Storage",
+    "local_storage":"Local storage",
+    "url":"Url"
   }
 }

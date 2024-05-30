@@ -74,7 +74,7 @@ const routes: Routes = [
   {
     path: 'admin',
     component: HomeComponent,
-    // canActivate: [AuthGuard],
+
     children: [
       {
         path: 'formsManagement',

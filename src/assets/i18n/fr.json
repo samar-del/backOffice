@@ -55,6 +55,9 @@
     "table_when_condi": "Lorsque le composant de formulaire",
     "table_has_value": "A la valeur",
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "storageType":"type de stockage",
+    "local_storage":"Stockage local",
+    "url":"url"
   }
 }
