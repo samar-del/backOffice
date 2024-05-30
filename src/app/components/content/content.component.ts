@@ -100,8 +100,17 @@ export class ContentComponent implements OnInit, DoCheck {
     // //  console.log('this.previewmodel', this.previewModel);
     //   this.updatePreviewFields();
     // }
+    this.fields.forEach((field, index) => {
+      this.logFieldIndex(index);
+    });
+
     this.shareService.emitPreviewFieldList(this.previewfields);
   }
+
+  logFieldIndex(index: number): void {
+    console.log('Field index:', index);
+  }
+
   chacklogedInUser(){
     this.isLoggedIn= this.authService.isLoggedIn();
     this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
@@ -146,6 +155,10 @@ export class ContentComponent implements OnInit, DoCheck {
 
 
     this.containerDraggedOver = false;
+  }
+  dropInside(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.fields, event.previousIndex, event.currentIndex);
+    this.shareService.emitPreviewFieldList(this.previewfields);
   }
 
   calculatePosition(event: CdkDragDrop<string[]>): number {
@@ -1048,7 +1061,7 @@ export class ContentComponent implements OnInit, DoCheck {
     //  this.openRadioDialog();
     }
 
-    if (newField.length > 0) {
+    /*if (newField.length > 0) {
       console.log(newField);
       newField.forEach(el => {
         this.fields.push(el);
@@ -1081,6 +1094,51 @@ export class ContentComponent implements OnInit, DoCheck {
       // Rebuild the form group with the updated fields
         this.fb.group({});
         this.newfb.group({});
+    }*/
+    this.addNewFields(newField);
+  }
+
+  addNewFields(newField: FormlyFieldConfig[]): void {
+
+    if (newField.length > 0) {
+
+      console.log(newField);
+      newField.forEach(el => {
+        this.fields.push(el);
+        this.recentListFields.push(el.key);
+        this.shareService.emitListFields(this.recentListFields);
+
+        const previewField: FormlyFieldConfig = {
+          key: el.key,
+          templateOptions: el.templateOptions,
+          type: el.type
+        };
+
+        if (el.templateOptions.condi_whenShouldDisplay !== undefined) {
+          const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
+          if (fieldToCheck) {
+            if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value) {
+              previewField.templateOptions.hidden = true;
+            } else {
+              previewField.templateOptions.hidden = false;
+            }
+            this.previewfields.push(previewField);
+
+          } else {
+            this.previewfields.push(el);
+          }
+        }
+      });
+
+      this.form.valueChanges.subscribe((value) => {
+        this.model = { ...this.form.value };
+        console.log('preview fields', this.previewfields);
+        console.log('model', this.model);
+      });
+
+      // Rebuild the form group with the updated fields
+      //this.fb.group({});
+      this.newfb.group({});
     }
   }
 

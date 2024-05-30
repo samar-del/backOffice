@@ -46,9 +46,10 @@ export class FormPreviewCreationComponent implements DoCheck {
         if (fieldTochek){
           console.log('typeof fieldTochek.model', typeof fieldTochek.model.key);
           const nomValue = fieldTochek.model[this.previewfields[i].templateOptions.condi_whenShouldDisplay];
-          console.log(nomValue);
+          console.log('nomValue',nomValue);
           if (nomValue === this.previewfields[i].templateOptions.condi_value)  {
           this.updatePreviewFields(this.previewfields[i].key.toString());
+          //this.previewfields[i].templateOptions.placeholder === nomValue;
           return  console.log('equal', fieldTochek , this.previewModel[this.previewfields[i].key.toString()]);
         }
           console.log('fieldTochek', fieldTochek);
