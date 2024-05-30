@@ -77,12 +77,15 @@ import { UserPageComponent } from './components/modules/user-management-module/u
 import { TabDialogComponent } from './components/fields-dialog/tab-dialog/tab-dialog.component';
 import { TabFieldWrapperComponent } from './components/tab-field-wrapper/tab-field-wrapper.component';
 import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/alert-dialog.component';
+import { DraggableComponent } from './components/draggable/draggable.component';
+import { FormlyFieldPanelComponent } from './components/formly-field-panel/formly-field-panel.component';
 import { StepperWrapperComponent } from './components/stepper-wrapper/stepper-wrapper.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
+
 
 
 
@@ -135,6 +138,8 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
     TabDialogComponent,
     TabFieldWrapperComponent,
     AlertDialogComponent,
+    DraggableComponent,
+    FormlyFieldPanelComponent
     StepperWrapperComponent,
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
@@ -160,8 +165,9 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
+                { name: 'panel', component: PanelFieldWrapperComponent },
               {name: 'hr_stepper', component: StepperWrapperComponent},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent}
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
             ],
             types: [
                 {
@@ -173,7 +179,7 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
                 {name: 'columnSize', component: ColumnSizeComponent},
                 {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
                 {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
-                {name: 'panel', component: PanelFieldWrapperComponent},
+                {name: 'panel', component: PanelFieldWrapperComponent, wrappers: ['form-field']},
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
                 {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},

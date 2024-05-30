@@ -65,16 +65,16 @@ export class ColumnWrapperComponent extends FieldWrapper{
       return;
     }
     if (droppedItem === 'input') {
-      console.log(droppedItem)
-      this.contentComponent.addField('input', position);
+      console.log(droppedItem);
+      this.contentComponent.addField('input');
     } else if (droppedItem === 'radio') {
-      this.contentComponent.addField('radio', position);
+      this.contentComponent.addField('radio');
     } else if (droppedItem === 'checkbox') {
-      this.contentComponent.addField('checkbox', position);
+      this.contentComponent.addField('checkbox');
     } else if (droppedItem === 'button') {
-      this.contentComponent.addField('button', position);
+      this.contentComponent.addField('button');
     } else if (droppedItem === 'select') {
-      this.contentComponent.addField('select', position);
+      this.contentComponent.addField('select');
 
       // Ensure the form is updated with new fields
       this.form = this.formlyForm.form;
