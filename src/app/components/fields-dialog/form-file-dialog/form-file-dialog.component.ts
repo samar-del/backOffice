@@ -62,7 +62,10 @@ export class FormFileDialogComponent implements OnInit {
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
-      tableRows: this.fb.array([])
+      tableRows: this.fb.array([]),
+      storageType: ['local', Validators.required],
+      minFileSize: [0, Validators.required],
+      maxFileSize: [0, Validators.required],
     });
 
     // Subscribe to label changes to update property name

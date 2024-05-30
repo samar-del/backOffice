@@ -879,7 +879,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            storageType:customizationData.storageType,
+            minFileSize:customizationData.minFileSize,
+            maxFileSize:customizationData.maxFileSize
           },
         }];
       }
@@ -1562,6 +1565,9 @@ export class ContentComponent implements OnInit, DoCheck {
       htmlElement: field.templateOptions.htmlElement,
       link_iframe: field.templateOptions.link_iframe,
       stepper_orientation: field.templateOptions.stepper_orientation,
+      storageType: field.templateOptions.storageType,
+      maxFileSize:field.templateOptions.maxFileSize,
+      minFileSize:field.templateOptions.minFileSize,
       tabs: tabsMap,
       steps: stepsMap,
       options: optionValues, // Store option IDs instead of values

@@ -71,8 +71,27 @@
         </form>
       </mat-tab>
       <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
-        <form [[formGroup]="form"]>
-
+        <form [formGroup]="form">
+          <div>
+            <label for="storageType">{{ translations?.translations?.storageType }}</label>
+            <select id="storageType" class="form-control" formControlName="storageType">
+              <option value="local" for="local_storage">{{ translations?.translations?.local_storage }}</option>
+              <option value="url" for="url">{{ translations?.translations?.url }}</option>
+              <option value="s3">S3</option>
+              <option value="googleDrive">Google Drive</option>
+              <option value="azureFileService">Azure File Service</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="minFileSize">{{ translations?.translations?.min_file_size }}</label>
+            <input id="minFileSize" formControlName="minFileSize" type="number" class="form-control" />
+            <small class="form-text text-muted">File Minimum Size (in KB)</small>
+          </div>
+          <div class="form-group">
+            <label for="maxFileSize">{{ translations?.translations?.max_file_size }}</label>
+            <input id="maxFileSize" formControlName="maxFileSize" type="number" class="form-control" />
+            <small class="form-text text-muted">File Maximum Size (in KB)</small>
+          </div>
         </form>
       </mat-tab>
 

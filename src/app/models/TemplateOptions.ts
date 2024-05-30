@@ -34,4 +34,7 @@ export class TemplateOptions {
   htmlElement ?: string;
   link_iframe ?: string;
   stepper_orientation ?: string;
+  storageType ?: string;
+  minFileSize ?: number;
+  maxFileSize ?: number;
 }
