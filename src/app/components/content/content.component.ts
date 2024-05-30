@@ -858,14 +858,32 @@ export class ContentComponent implements OnInit, DoCheck {
     } else if  ((language === 'an' && type === 'File') ||
     (language === 'fr' && type === 'Fichier') ||
     (language === 'ar' && type === 'خانة اختيار')) {
-      const customizationData = await this.openFileDialog();
+      const customizationData = await this.openFileDialog().toPromise();
       if (customizationData){
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
         newField = [{
           type: 'file',
+          key: customizationData.property_name,
+
           templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
           },
         }];
-      } /*{
+      }
+       /*{
         const label_fr = customizationData.label_fr;
         const label_ar = customizationData.label_ar;
 

@@ -48,8 +48,6 @@ export class FormFileDialogComponent implements OnInit {
       label_ar: [this.data.label_ar, Validators.required],
       placeholder_fr: [this.data.placeholder_fr],
       placeholder_ar: [this.data.placeholder_ar],
-      minLength: [this.data.minLength, Validators.min(0)],
-      maxLength: [this.data.maxLength, Validators.min(0)],
       label_position: [this.data.label_position || 'top'],
       custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
@@ -188,22 +186,7 @@ export class FormFileDialogComponent implements OnInit {
         'templateOptions.hideLabel_fr': () => labelFrHidden,
         'templateOptions.hideLabel_ar': () => labelArHidden
       },
-      validators: {
-        minLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const minLength = this.form.get('minLength').value || 0;
-            return !value || value.length >= minLength;
-          }
-        },
-        maxLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const maxLength = this.form.get('maxLength').value || Infinity;
-            return !value || value.length <= maxLength;
-          }
-        }
-      },
+
     };
     });
   }

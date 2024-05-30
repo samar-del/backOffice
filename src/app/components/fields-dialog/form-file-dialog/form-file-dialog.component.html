@@ -70,21 +70,19 @@
           </div>
         </form>
       </mat-tab>
-      <mat-tab label="Validation"  [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+      <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+        <form [[formGroup]="form"]>
+
+        </form>
+      </mat-tab>
+
+      <mat-tab label="Validation"  [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
         <form [formGroup]="form">
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="required" formControlName="required">
             <label class="form-check-label" for="required">
               {{ translations?.translations?.required }}
             </label>
-          </div>
-          <div class="form-group">
-            <label for="minLength">{{ translations?.translations?.minLength }}</label>
-            <input id="minLength" formControlName="minLength" type="number" class="form-control" />
-          </div>
-          <div class="form-group">
-            <label for="maxLength">{{ translations?.translations?.maxLength }}</label>
-            <input id="maxLength" formControlName="maxLength" type="number" class="form-control" />
           </div>
           <div class="form-group">
             <label for="error_label">{{ translations?.translations?.error_label }}</label>
@@ -96,7 +94,8 @@
           </div>
         </form>
       </mat-tab>
-      <mat-tab label="API"  [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+
+      <mat-tab label="API"  [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">
         <form [formGroup]="form">
         <div class="form-group">
           <label for="property_name">{{ translations?.translations?.property_name }}</label>
@@ -109,7 +108,6 @@
           </div>
         </form>
       </mat-tab>
-      <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 3 }"> Layout </mat-tab>
       <mat-tab label="Conditional"  [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
         <form [formGroup]="form">
           <div class="form-group">
