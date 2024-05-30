@@ -65,7 +65,7 @@ export class FormFileDialogComponent implements OnInit {
       tableRows: this.fb.array([]),
       storageType: ['local', Validators.required],
       minFileSize: [0, Validators.required],
-      maxFileSize: [0, Validators.required],
+      maxFileSize: [this.convertToKilobytes('1GB'), Validators.required],
     });
 
     // Subscribe to label changes to update property name
@@ -85,6 +85,22 @@ export class FormFileDialogComponent implements OnInit {
     });
 
     this.updateFields();
+  }
+  convertToKilobytes(sizeString: string): number {
+    const sizes: { [key: string]: number } = {
+      'KB': 1,
+      'MB': 1024,
+      'GB': 1024 * 1024,
+    };
+
+    const regex = /(\d+)\s*(\w+)/;
+    const matches = regex.exec(sizeString);
+    if (matches && matches.length === 3) {
+      const size = parseInt(matches[1]);
+      const unit = matches[2].toUpperCase();
+      return size * sizes[unit];
+    }
+    return 0;
   }
   addRow(): void {
     const tableRowsArray = this.form.get('tableRows') as FormArray;

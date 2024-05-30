@@ -1008,7 +1008,7 @@ export class ContentComponent implements OnInit, DoCheck {
         },
       }];
     }*/
-    
+
     } else if (type === 'Columns') {
 
       const customizationData = await this.openColumnDialog();
@@ -1320,7 +1320,6 @@ export class ContentComponent implements OnInit, DoCheck {
     return dialogRef.afterClosed();
   }
 
-  async openHTMLDialog() {
     async openHTMLDialog() {
     const dialogRef = this.dialog.open(HtmlDialogComponent, {
       width: '1400px',

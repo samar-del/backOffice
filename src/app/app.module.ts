@@ -22,9 +22,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {RadioCustomizeDialogComponent} from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RadioCustomizeDialogComponent } from './components/fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { SelectCustomizeDialogComponent } from './components/fields-dialog/select-customize-dialog/select-customize-dialog.component';
 import { TelFormDialogComponent } from './components/fields-dialog/tel-form-dialog/tel-form-dialog.component';
 import { DateFormDialogComponent } from './components/fields-dialog/date-form-dialog/date-form-dialog.component';
@@ -36,10 +36,10 @@ import { RowWrapperComponent } from './components/row-wrapper/row-wrapper.compon
 import { ColumnSizeComponent } from './components/column-size/column-size.component';
 import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
 import { HomeComponent } from './components/home/home.component';
-import {FormlyFieldFileComponent} from './components/fields-dialog/formly-field-file/formly-field-file.component';
-import {FileValueAccessorDirective} from './file-value-accessor.directive';
+import { FormlyFieldFileComponent } from './components/fields-dialog/formly-field-file/formly-field-file.component';
+import { FileValueAccessorDirective } from './file-value-accessor.directive';
 
-import {MatOptionModule} from '@angular/material/core';
+import { MatOptionModule } from '@angular/material/core';
 import { AddressWrapperComponent } from './components/address-wrapper/address-wrapper.component';
 import { FormPreviewCreationComponent } from './components/form-preview-creation/form-preview-creation.component';
 import { FormTableComponent } from './components/fields-dialog/form-table/form-table.component';
@@ -52,7 +52,7 @@ import { IFrameDialogComponent } from './components/fields-dialog/i-frame-dialog
 import { FormlyFieldIframeComponent } from './components/formly-field-iframe/formly-field-iframe.component';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { SidebarGenericComponent } from './components/dashbord/sidebar-generic/sidebar-generic.component';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatMenuModule } from '@angular/material/menu';
 import { SignupComponent } from './Modules/user/component/signup/signup.component';
 import { LoginComponent } from './Modules/user/component/login/login.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
@@ -80,14 +80,11 @@ import { AlertDialogComponent } from './components/fields-dialog/alert-dialog/al
 import { DraggableComponent } from './components/draggable/draggable.component';
 import { FormlyFieldPanelComponent } from './components/formly-field-panel/formly-field-panel.component';
 import { StepperWrapperComponent } from './components/stepper-wrapper/stepper-wrapper.component';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
-
-
-
 
 @NgModule({
   declarations: [
@@ -139,87 +136,121 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
     TabFieldWrapperComponent,
     AlertDialogComponent,
     DraggableComponent,
-    FormlyFieldPanelComponent
+    FormlyFieldPanelComponent,
     StepperWrapperComponent,
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
-    FormFileDialogComponent
+    FormFileDialogComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        MatSidenavModule,
-        BrowserAnimationsModule,
-        MatListModule,
-        MatIconModule,
-        MatToolbarModule,
-        DragDropModule,
-        ReactiveFormsModule,
-        FormlyModule.forRoot({
-            wrappers: [{name: 'column', component: ColumnWrapperComponent}, {
-                name: 'columnSize',
-                component: ColumnSizeComponent
-            },
-                {name: 'html', component: FormlyFieldHtmlComponent},
-                {name: 'iframe', component: FormlyFieldIframeComponent},
-                {name: 'address-wrapper', component: AddressWrapperComponent},
-                {name: 'table', component: TableWrapperComponent},
-                {name: 'tab', component: TabFieldWrapperComponent},
-                { name: 'panel', component: PanelFieldWrapperComponent },
-              {name: 'hr_stepper', component: StepperWrapperComponent},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
-            ],
-            types: [
-                {
-                    name: 'column',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {column: true}}
-                },
-                {name: 'columnSize', component: ColumnSizeComponent},
-                {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
-                {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
-                {name: 'panel', component: PanelFieldWrapperComponent, wrappers: ['form-field']},
-                {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
-                {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
-                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-                {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
-            ],
-        }),
-        FormlyModule.forChild({
-            wrappers: [{name: 'row', component: RowWrapperComponent}],
-            types: [
-                {
-                    name: 'row',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {row: true}}
-                },
-            ],
-        }),
-        FormlyBootstrapModule,
-        MatTabsModule,
-        MatDialogModule,
-        NgbModule,
-        HttpClientModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatOptionModule,
-        MatMenuModule,
-        FormsModule,
-        CommonModule,
-        ToastrModule.forRoot(),
-        MatDialogModule,
-        MatTableModule,
-        MatCardModule,
-        MatPaginatorModule,
-        MatStepperModule,
-        MatIconModule,
-        MatButtonModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    MatSidenavModule,
+    BrowserAnimationsModule,
+    MatListModule,
+    MatIconModule,
+    MatToolbarModule,
+    DragDropModule,
+    ReactiveFormsModule,
+    FormlyModule.forRoot({
+      wrappers: [
+        { name: 'column', component: ColumnWrapperComponent },
+        {
+          name: 'columnSize',
+          component: ColumnSizeComponent,
+        },
+        { name: 'html', component: FormlyFieldHtmlComponent },
+        { name: 'iframe', component: FormlyFieldIframeComponent },
+        { name: 'address-wrapper', component: AddressWrapperComponent },
+        { name: 'table', component: TableWrapperComponent },
+        { name: 'tab', component: TabFieldWrapperComponent },
+        { name: 'panel', component: PanelFieldWrapperComponent },
+        { name: 'hr_stepper', component: StepperWrapperComponent },
+        { name: 'vr_stepper', component: StepperVerticalWrapperComponent },
+      ],
+      types: [
+        {
+          name: 'column',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: { templateOptions: { column: true } },
+        },
+        { name: 'columnSize', component: ColumnSizeComponent },
+        {
+          name: 'file',
+          component: FormlyFieldFileComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'table',
+          component: TableWrapperComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'panel',
+          component: PanelFieldWrapperComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'html',
+          component: FormlyFieldHtmlComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'iframe',
+          component: FormlyFieldIframeComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'tab',
+          component: TabFieldWrapperComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'hr_stepper',
+          component: StepperWrapperComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'vr_stepper',
+          component: StepperVerticalWrapperComponent,
+          wrappers: ['form-field'],
+        },
+      ],
+    }),
+    FormlyModule.forChild({
+      wrappers: [{ name: 'row', component: RowWrapperComponent }],
+      types: [
+        {
+          name: 'row',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: { templateOptions: { row: true } },
+        },
+      ],
+    }),
+    FormlyBootstrapModule,
+    MatTabsModule,
+    MatDialogModule,
+    NgbModule,
+    HttpClientModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatMenuModule,
+    FormsModule,
+    CommonModule,
+    ToastrModule.forRoot(),
+    MatDialogModule,
+    MatTableModule,
+    MatCardModule,
+    MatPaginatorModule,
+    MatStepperModule,
+    MatIconModule,
+    MatButtonModule,
+  ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -57,7 +57,9 @@
     "save": "حفظ",
     "storageType":" نوع الملف",
     "local_storage":"التخزين المحلي",
-    "url":"الرابط"
+    "url":"الرابط",
+    "max_file_size":"الحجم الأقصى",
+    "min_file_size":"الحجم الأدنى"
   }
 
 }
