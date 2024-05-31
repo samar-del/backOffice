@@ -57,6 +57,8 @@
     "save": "Save",
     "storageType": "Storage",
     "local_storage":"Local storage",
-    "url":"Url"
+    "url":"Url",
+    "max_file_size":"Max Size",
+    "min_file_size":"Min Size"
   }
 }

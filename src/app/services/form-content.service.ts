@@ -27,4 +27,10 @@ export class FormContentService {
   public getAnswers(formTemplateId: string): Observable<any> {
     return this.httpClient.get(`http://localhost:8078/answers/getAnswersById/${formTemplateId}`);
   }
+  uploadFile(email: string, file: File): Observable<string> {
+    const formData: FormData = new FormData();
+    formData.append('email', email); // Add the email parameter
+    formData.append('file', file, file.name);
+    return this.httpClient.post<string>(`http://localhost:8078/files/upload`, formData);
+  }
 }

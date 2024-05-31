@@ -15,25 +15,6 @@ export class FormlyFieldFileComponent extends FieldType {
     super();
   }
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploadFile(file);
-    }
-  }
 
-  uploadFile(file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    this.http.post('/api/upload', formData).subscribe(
-      (response) => {
-        console.log('File uploaded successfully', response);
-      },
-      (error) => {
-        console.error('Error uploading file', error);
-      }
-    );
-  }
 
 }

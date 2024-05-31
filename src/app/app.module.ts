@@ -85,6 +85,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { StepperDialogComponent } from './components/fields-dialog/stepper-dialog/stepper-dialog.component';
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
+import { JwtModule } from '@auth0/angular-jwt';
 
 
 
@@ -211,6 +212,13 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
         FormsModule,
         CommonModule,
         ToastrModule.forRoot(),
+        JwtModule.forRoot({
+          config: {
+            tokenGetter: () => {
+              return localStorage.getItem('accessToken');
+            },
+          }
+        }),
         MatDialogModule,
         MatTableModule,
         MatCardModule,

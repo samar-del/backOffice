@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {JwtHelperService} from'@auth0/angular-jwt';
 import { DOCUMENT } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Role } from 'src/app/models/role';
 import { HttpClient } from '@angular/common/http';
 
@@ -13,7 +13,9 @@ import { HttpClient } from '@angular/common/http';
 export class AuthService {
 
   constructor(private router: Router ,
-    private http:HttpClient
+    private http:HttpClient,
+    private jwtHelper:JwtHelperService
+
    ) { }
 
   isLoggedIn(){
@@ -64,6 +66,17 @@ GetUserRole(roleType:string): Observable<any>{
   logout(): void {
     localStorage.removeItem('accessToken');
     this.router.navigate(['/login']); // Redirigez vers la page de connexion ou la page souhaitée après la déconnexion
+  }
+
+  getUserId(): Observable<string | null> {
+    const token = this.getAccessToken();
+    if (token) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      const idUser = decodedToken ? decodedToken.sub : null; // Change 'userId' to the actual key in your JWT payload
+      return of(idUser);
+    } else {
+      return of(null);
+    }
   }
 
 }

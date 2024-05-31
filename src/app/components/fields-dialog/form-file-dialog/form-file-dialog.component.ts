@@ -65,7 +65,7 @@ export class FormFileDialogComponent implements OnInit {
       tableRows: this.fb.array([]),
       storageType: ['local', Validators.required],
       minFileSize: [0, Validators.required],
-      maxFileSize: [0, Validators.required],
+      maxFileSize: [1, Validators.required],
     });
 
     // Subscribe to label changes to update property name
