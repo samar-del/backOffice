@@ -43,6 +43,7 @@ import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.compone
 import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
 import {StepperDialogComponent} from "../fields-dialog/stepper-dialog/stepper-dialog.component";
 import { FormFileDialogComponent } from '../fields-dialog/form-file-dialog/form-file-dialog.component';
+import { switchMap } from 'rxjs/operators';
 
 
 
@@ -93,6 +94,14 @@ export class ContentComponent implements OnInit, DoCheck {
       title: [''],
       description: ['']
     });
+    this.authService.getUserId().pipe(
+      switchMap(id => {
+        // Mettre à jour la valeur de l'ID utilisateur dans le formulaire
+        this.form.patchValue({ idUser: id });
+        // Retourner l'ID utilisateur pour la prochaine étape
+        return id;
+      })
+    ).subscribe();
   }
   ngDoCheck(): void {
     // if (this.arePreviewFieldsChanged()) {
