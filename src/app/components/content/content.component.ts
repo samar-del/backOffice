@@ -1671,6 +1671,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
     const templateOptions: TemplateOptions = {
       label: field.templateOptions.label,
+      placeholder: field.templateOptions.placeholder,
       label_fr: field.templateOptions.label_fr,
       label_ar: field.templateOptions.label_ar,
       disabled: field.templateOptions.disabled,

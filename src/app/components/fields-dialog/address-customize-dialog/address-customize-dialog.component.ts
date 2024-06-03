@@ -35,7 +35,6 @@ export class AddressCustomizeDialogComponent implements OnInit {
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
-      placeholder: [this.data.placeholder],
       custom_css: [this.data.custom_css],
       required: [this.data.required],
       error_label: [this.data.error_label],
@@ -150,7 +149,6 @@ export class AddressCustomizeDialogComponent implements OnInit {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
-
       // Clear existing fields
       this.fields = [];
 
@@ -161,7 +159,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
           type: 'input',
           templateOptions: {
             label: textLabel,
-            placeholder: this.form.get('placeholder').value,
+            placeholder: this.form.get('placeholder_row').value,
             custom_css: this.form.get('custom_css').value,
             error_label: this.form.get('error_label').value,
             custom_error_message: this.form.get('custom_error_message').value,
