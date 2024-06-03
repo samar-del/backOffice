@@ -413,29 +413,29 @@ export class ContentComponent implements OnInit, DoCheck {
     if ((language === 'an' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
+
       const customizationData = await this.openAddressDialog();
-      let field: FormlyFieldConfig = {};
-      const listFieldAddress = customizationData.tableRows;
-      this.shareService.emitAddressOptions(listFieldAddress);
+      console.log('data dialog :' , customizationData);
       if (customizationData) {
+
+        const listFieldAddress = customizationData.tableRows || [];
+        this.shareService.emitAddressOptions(listFieldAddress);
+
+        const newField: FormlyFieldConfig[] = [];
         const label_fr = customizationData.label_fr;
         const label_ar = customizationData.label_ar;
+        const property_name = customizationData.property_name;
+
         if (listFieldAddress.length !== 0) {
-          field = {
+          const field: FormlyFieldConfig = {
             type: 'column',
-            key: customizationData.property_name,
+            key: property_name,
             templateOptions: {
-              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label: language === 'ar' ? label_ar : label_fr,
               label_fr,
               label_ar,
-              minLength: customizationData.minLength,
-              maxLength: customizationData.maxLength,
-              required: customizationData.required,
-              disabled: customizationData.disabled,
-              hidden: customizationData.hidden,
               custom_css: customizationData.custom_css,
-              hide_label: customizationData.hide_label,
-              property_name: customizationData.property_name,
+              property_name,
               field_tags: customizationData.field_tags,
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
@@ -443,59 +443,59 @@ export class ContentComponent implements OnInit, DoCheck {
             wrappers: ['column'],
             fieldGroup: [],
           };
+
           listFieldAddress.forEach(el => {
-            const Key = this.generateRandomId();
             const fieldGroupElem = {
               type: 'input',
               wrappers: ['address-wrapper'],
-              key: customizationData.property_name,
+              key: this.generateRandomId(), // Ensure unique key for each input
               templateOptions: {
-
-                label: el.label,
-                placeholder: el.placeholder,
-                disabled: el.disabled,
-                hidden: el.hidden,
-                custom_css: el.custom_css,
-                hide_label: el.hide_label,
-                property_name: el.property_name,
-                field_tags: el.field_tags,
-                error_label: el.error_label,
-                custom_error_message: el.custom_error_message
+                label: el.label_row,
+                placeholder: el.placeholder_row,
+                custom_css: customizationData.custom_css,
+                property_name,
+                field_tags: customizationData.field_tags,
+                error_label: customizationData.error_label,
+                custom_error_message: customizationData.custom_error_message
               },
             };
             field.fieldGroup.push(fieldGroupElem);
           });
+
           newField.push(field);
-        } else {
-          field = {
+          console.log('New Field:', newField);
+
+          // Update the fields in Formly form
+          this.fields = newField;
+          this.cdr.detectChanges(); // Trigger change detection
+        }
+        else {
+          const field: FormlyFieldConfig = {
             fieldGroupClassName: 'display-flex',
             fieldGroup: [
               {
                 type: 'input',
-                key: customizationData.property_name,
+                key: property_name,
                 templateOptions: {
-                  label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+                  label: language === 'ar' ? label_ar : label_fr,
                   label_fr,
                   label_ar,
                   placeholder: customizationData.placeholder,
-                  disabled: customizationData.disabled,
-                  hidden: customizationData.hidden,
                   custom_css: customizationData.custom_css,
-                  hide_label: customizationData.hide_label,
-                  property_name: customizationData.property_name,
+                  property_name,
                   field_tags: customizationData.field_tags,
                   error_label: customizationData.error_label,
                   custom_error_message: customizationData.custom_error_message
-                },
-                // wrappers: ['column'],
-
+                }
               },
             ],
           };
           newField.push(field);
+          console.log('New Field:', newField);
         }
       }
     }
+
     if ((language === 'an' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
@@ -1008,7 +1008,7 @@ export class ContentComponent implements OnInit, DoCheck {
         },
       }];
     }*/
-    
+
     } else if (type === 'Columns') {
 
       const customizationData = await this.openColumnDialog();
@@ -1218,7 +1218,7 @@ export class ContentComponent implements OnInit, DoCheck {
         previewField.key = el.key;
         previewField.templateOptions = el.templateOptions;
         previewField.type = el.type;
-        if (el.templateOptions.condi_whenShouldDisplay !== undefined) {
+        if (el.templateOptions && el.templateOptions.condi_whenShouldDisplay !== undefined) {
           const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
           if (fieldToCheck) {
             if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value) {
@@ -1321,7 +1321,6 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
   async openHTMLDialog() {
-    async openHTMLDialog() {
     const dialogRef = this.dialog.open(HtmlDialogComponent, {
       width: '1400px',
       data: {
@@ -1389,7 +1388,9 @@ export class ContentComponent implements OnInit, DoCheck {
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
+      console.log('data dialog :' , customizationData);
       return customizationData;
+      console.log('data dialog :' , customizationData);
     } catch (error) {
       console.error('Error in dialog:', error);
       return null;

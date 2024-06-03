@@ -19,7 +19,6 @@ export class AddressCustomizeDialogComponent implements OnInit {
   model: any = {};
   selectedTabIndex = 0; // Default tab index
   translations: any = {};
-
   showTable = false; // Variable to store the state of the checkbox
   NumberOptions = 0 ;
   // @ts-ignore
@@ -37,14 +36,16 @@ export class AddressCustomizeDialogComponent implements OnInit {
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
       placeholder: [this.data.placeholder],
-      disabled : [this.data.disabled],
       custom_css: [this.data.custom_css],
       required: [this.data.required],
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label)],
       field_tags: [this.data.field_tags],
-      tableRows: this.fb.array([])
+      tableRows: this.fb.array([]),
+      label:[this.data.label],
+      label_row:[this.data.label_row],
+      placeholder_row: [this.data.placeholder_row]
     });
 
     // Subscribe to label changes to update property name
@@ -57,18 +58,20 @@ export class AddressCustomizeDialogComponent implements OnInit {
       this.loadTranslations();
     });
 
-    this.loadTranslations();
-
-    this. toggleTableVisibility();
     this.form.valueChanges.subscribe(() => {
       this.updateFields();
     });
 
     this.updateFields();
+
+    this.loadTranslations();
+
+    this.toggleTableVisibility();
+
   }
   toggleTableVisibility(): void {
     this.showTable = !this.showTable;
-    this.cdr.detectChanges();
+    //this.cdr.detectChanges();
   }
   getLabelStyles(): any {
     const customCss = this.form.get('custom_css').value;
@@ -110,8 +113,8 @@ export class AddressCustomizeDialogComponent implements OnInit {
 
   createRow(): FormGroup {
     const row = this.fb.group({
-      label: [''],
-      placeholder: [''],
+      label_row: [''],
+      placeholder_row: [''],
     });
     return row;
   }
@@ -143,64 +146,51 @@ export class AddressCustomizeDialogComponent implements OnInit {
   }
 
   updateFields(): void {
-    const labelHidden = this.form.get('hide_label').value;
-    const inputHidden = this.form.get('hidden').value;
-    const inputDisabled = this.form.get('disabled').value;
-
     this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
 
-    if ( this.NumberOptions === 0) {
-      this.newField = {
-        key: 'key',
-        type: 'input',
-        templateOptions: {
-          label:textLabel,
-          label_fr: this.form.get('label_fr').value,
-          label_ar: this.form.get('label_ar').value,
-          options: this.form.get('tableRows').value,
-          custom_css: this.form.get('custom_css').value,
-          disabled: inputDisabled,
-          error_label: this.form.get('error_label').value,
-          custom_error_message: this.form.get('custom_error_message').value,
-          labelPosition: this.form.get('label_position').value
-        },
-        hide: inputHidden,
-        expressionProperties: {
-        'templateOptions.hideLabel': () => labelHidden
-      },
-      };
-      this.fields.push(this.newField);
-    }else {
-      const addressTemplateOption: any [] = [];
-      addressTemplateOption.push(this.form.get('tableRows'));
-      for (let i = 0 ; i < this.NumberOptions ; i++ ){
-      addressTemplateOption.forEach(el => {
+      // Clear existing fields
+      this.fields = [];
+
+      // If NumberOptions is zero, create a single field using the main form labels
+      if (this.NumberOptions === 0) {
         this.newField = {
           key: 'key',
           type: 'input',
           templateOptions: {
-            label:textLabel,
-            label_fr: this.form.get('label_fr').value,
-            label_ar: this.form.get('label_ar').value,
+            label: textLabel,
             placeholder: this.form.get('placeholder').value,
             custom_css: this.form.get('custom_css').value,
-            disabled: inputDisabled,
             error_label: this.form.get('error_label').value,
             custom_error_message: this.form.get('custom_error_message').value,
-            labelPosition: this.form.get('label_position').value
-          },
-          hide: inputHidden,
-          expressionProperties: {
-            'templateOptions.hideLabel': () => labelHidden
           },
         };
         this.fields.push(this.newField);
-      });
-    }
-    }
+      } else {
+        // Iterate over each row in the tableRows array to create fields
+        const tableRowsArray = this.form.get('tableRows') as FormArray;
+        tableRowsArray.controls.forEach((row, index) => {
+          const rowFormGroup = row as FormGroup;
+          const labelRow = rowFormGroup.get('label_row').value;
+          const placeholderRow = rowFormGroup.get('placeholder_row').value;
+
+          this.newField = {
+            key: `key_${index}`,
+            type: 'input',
+            templateOptions: {
+              label: labelRow,
+              placeholder: placeholderRow,
+              custom_css: this.form.get('custom_css').value,
+              error_label: this.form.get('error_label').value,
+              custom_error_message: this.form.get('custom_error_message').value,
+            },
+          };
+          this.fields.push(this.newField);
+        });
+      }
     });
   }
+
 }
