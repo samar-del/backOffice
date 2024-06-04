@@ -466,8 +466,8 @@ export class ContentComponent implements OnInit, DoCheck {
           console.log('New Field:', newField);
 
           // Update the fields in Formly form
-          this.fields = newField;
-          this.cdr.detectChanges(); // Trigger change detection
+          this.fields = [...this.fields, ...newField];
+          //this.cdr.detectChanges(); // Trigger change detection
         }
         else {
           const field: FormlyFieldConfig = {
@@ -492,6 +492,8 @@ export class ContentComponent implements OnInit, DoCheck {
           };
           newField.push(field);
           console.log('New Field:', newField);
+
+          //this.fields = [...this.fields, ...newField];
         }
       }
     }
