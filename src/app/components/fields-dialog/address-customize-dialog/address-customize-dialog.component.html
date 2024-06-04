@@ -57,8 +57,8 @@
           </thead>
           <tbody>
           <tr *ngFor="let row of tableRows.controls; let i = index" [formGroupName]="i">
-            <td><input type="text" class="form-control" formControlName="label"></td>
-            <td><input type="text" class="form-control" formControlName="placeholder" ></td>
+            <td><input type="text" class="form-control" formControlName="label_row"></td>
+            <td><input type="text" class="form-control" formControlName="placeholder_row" ></td>
             <td><button type="button" class="btn btn-light" (click)="removeRow(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
           </tr>
           </tbody>
@@ -100,7 +100,7 @@
     </form>
   </mat-tab>
   <mat-tab label="Conditional"  [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
-    <form [formGroup]="form">
+   <!-- <form [formGroup]="form">
       <div class="form-group">
         <label for="shouldDisplay">This component should Display</label>
         <select name="shouldDisplay" id="shouldDisplay" formControlName="disabled" class="form-control">
@@ -120,7 +120,7 @@
         <label for="valueCondition">Has the value</label>
         <input type="text" id="valueCondition" class="form-control">
       </div>
-    </form>
+    </form>-->
   </mat-tab>
   <mat-tab label="Layout"  [ngClass]="{ 'active-tab': selectedTabIndex === 5 }"> Layout </mat-tab>
 </mat-tab-group>

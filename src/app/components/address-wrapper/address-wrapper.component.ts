@@ -12,7 +12,7 @@ export class AddressWrapperComponent extends FieldWrapper {
   options: any = {};
   form: any;
   @ViewChild('formlyForm') formlyForm: any;
-  addressValue = [{label: '', placeholder: ''}];
+  addressValue = [{label_row: '', placeholder_row: ''}];
 
   constructor(private shareS: ShareService) {
     super();
@@ -22,16 +22,16 @@ export class AddressWrapperComponent extends FieldWrapper {
     this.addressValue.forEach(add => {
       const newField: FormlyFieldConfig = {
         type: 'input',
-        key: add.label,
+        key: add.label_row,
         templateOptions: {
-          label: add.label,
+          label: add.label_row,
           type: 'text',
-          placeholder: add.placeholder,
+          placeholder: add.placeholder_row,
         },
         expressionProperties: {
           'templateOptions.errorState': (model: any, formState: any) => {
             // Check the length constraints and set error state accordingly
-            const value = model[add.label];
+            const value = model[add.label_row];
             if (value === undefined || value === null) {
               return false; // Value is not defined or null, so no error state
             }

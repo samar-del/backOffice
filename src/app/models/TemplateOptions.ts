@@ -3,6 +3,7 @@ import {Options} from './Options';
 export class TemplateOptions {
   id?: string;
   label ?: string;
+  placeholder ?: string;
   disabled ?: boolean;
   maxlength ?: number;
   minlength ?: number;
