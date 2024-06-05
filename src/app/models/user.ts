@@ -7,6 +7,7 @@ export interface User {
   password: string;
   email: string;
   enable: boolean;
+  adresse: string;
   roles: Role[];
   configurations: Configuration[];
 }
