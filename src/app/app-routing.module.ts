@@ -5,7 +5,6 @@ import { SignupComponent } from './Modules/user/component/signup/signup.componen
 import { ContentComponent } from './components/content/content.component';
 import { ForgotPasswordComponent } from './Modules/user/component/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './Modules/user/component/reset-password/reset-password.component';
-import { DashboardComponent } from './Modules/user/component/dashboard/dashboard.component';
 import { AuthGuard } from './Modules/user/services/auth.guard';
 import { HomeComponent } from './components/home/home.component';
 import { ListFormsComponent } from './components/modules/forms-management-module/list-forms/list-forms.component';
@@ -45,11 +44,7 @@ const routes: Routes = [
     component: ForgotPasswordComponent,
   },
   { path: 'resetpassword/:token', component: ResetPasswordComponent },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [AuthGuard],
-  },
+
   {
     path: 'gestionRole',
     component: GestionRoleComponent,
@@ -103,6 +98,13 @@ const routes: Routes = [
           import(
             './components/modules/permession-management-module/permession-management-module.module'
           ).then((m) => m.PermessionManagementModuleModule)
+      },
+      {
+        path: 'dashboardManagment',
+        loadChildren: () =>
+          import(
+            './components/modules/dashbord-module/dashbord-module.module'
+          ).then((m) => m.DashbordModuleModule)
       }
     ]
   },

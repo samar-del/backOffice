@@ -11,7 +11,7 @@ export class SidebarGenericComponent implements OnInit, AfterViewInit  {
   isSubmenuOpen: boolean[] = [];
   isExpanded = true;
   isShowing = true;
-MenuList = [{name: 'Dashbord' , items: []} ,
+MenuList = [{name: 'Dashboard' , items: ['Dashboard']} ,
  {name: 'Gestion des utilisateurs' ,route:'user', items: ['Ajouter des utilisateurs'  ]},
   {name: 'Gestion des roles', items: ['Ajouter un role' ]}  ,
   {name: 'Gestion des permissions', items: ['Ajouter une permession']},
@@ -41,13 +41,14 @@ MenuList = [{name: 'Dashbord' , items: []} ,
       this.router.navigate(['admin/formsManagement/createForm']);
     }else if (item === 'Ajouter des utilisateurs') {
       this.router.navigate(['admin/userManagement/user']);
-    }
-    else if (item === 'Ajouter un role') {
+    }else if (item === 'Ajouter un role') {
       this.router.navigate(['admin/roleManagement/role']);
     }else if (item === 'Ajouter une permession') {
       this.router.navigate(['admin/permissionManagement/permission']);
     } else if (item === 'Gestion des formulaire' ){
       this.router.navigate(['admin/formsManagement/']);
+    } else if (item === 'Dashboard' ){
+      this.router.navigate(['admin/dashboardManagment/dashboard']);
     }
   }
 }
