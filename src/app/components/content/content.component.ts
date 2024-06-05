@@ -39,11 +39,11 @@ import { Location } from '@angular/common';
 import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/Modules/user/services/auth.service';
-import {TabDialogComponent} from "../fields-dialog/tab-dialog/tab-dialog.component";
-import {AlertDialogComponent} from "../fields-dialog/alert-dialog/alert-dialog.component";
-import {StepperDialogComponent} from "../fields-dialog/stepper-dialog/stepper-dialog.component";
 import { FormFileDialogComponent } from '../fields-dialog/form-file-dialog/form-file-dialog.component';
 import { switchMap } from 'rxjs/operators';
+import {TabDialogComponent} from '../fields-dialog/tab-dialog/tab-dialog.component';
+import {AlertDialogComponent} from '../fields-dialog/alert-dialog/alert-dialog.component';
+import {StepperDialogComponent} from '../fields-dialog/stepper-dialog/stepper-dialog.component';
 
 
 
@@ -87,10 +87,12 @@ export class ContentComponent implements OnInit, DoCheck {
   draggedField: any;
   dragEvent: any = {};
   tabTag: string ;
+  columnFieldIndex: string;
+  labelStepper: string ;
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private router:Router, private loginService:LoginService,private authService:AuthService
+              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private router: Router, private loginService: LoginService, private authService: AuthService
     ,         private fbh: FormBuilder, private location: Location) {
     this.form = this.fb.group({});
     this.formHeader = this.fbh.group({});
@@ -126,11 +128,12 @@ export class ContentComponent implements OnInit, DoCheck {
   onMouseUp(event1: MouseEvent) {
     if (this.isMouseDown && this.draggedField) {
       const firstElmCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'content-container' ;
-      const panelCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table');
+      const panelCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'row');
       const tabCondition = event1.target?.__ngContext__ === undefined || (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] !== 'mat-tab-group') ;
-      const columnCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24] !== 0 && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row';
-      const tableCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table');
-      if (firstElmCondition || tabCondition || panelCondition || columnCondition ) {
+      const columnCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24] !== 0 && (event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row');
+      const tableCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel');
+      const stepperCondition =(event1.target?.firstElementChild !== undefined && event1.target?.firstElementChild !== null) && event1.target?.firstElementChild.__ngContext__ !== undefined &&  event1.target?.firstElementChild.__ngContext__.childNodes !== undefined && event1.target?.firstElementChild.__ngContext__ !== undefined && event1.target?.firstElementChild.__ngContext__[0] !== undefined && event1.target?.firstElementChild.__ngContext__[0].localName !== 'mat-step-header';
+      if (firstElmCondition || tabCondition || panelCondition || columnCondition || stepperCondition ) {
         // this.addFieldGroupToField('text');  mat-tab-label-content
         this.addField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
           }
@@ -139,7 +142,16 @@ export class ContentComponent implements OnInit, DoCheck {
         // this.addField('Panel');
         if ((event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || event1.target?.__ngContext__[23].type === 'column'  ){
          if (event1.target?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
-           this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+           if (event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== 0 && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.type === 'tab'){
+            // tab layout
+             this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+           }else {
+             this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+           }
+
+           if (event1.target?.lastChild.__ngContext__ !== undefined && event1.target?.lastChild.__ngContext__[25] !== undefined && event1.target?.lastChild.__ngContext__[25].firstChild.innerText !== undefined){
+             this.labelStepper = event1.target?.lastChild.__ngContext__[25].firstChild.innerText;
+           }
          } else if (event1.target?.__ngContext__[23].type === 'column' ) {
            this.layoutField = event1.target?.__ngContext__[23];
          }else {
@@ -147,7 +159,19 @@ export class ContentComponent implements OnInit, DoCheck {
          }
          // this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
          this.tabTag = event1.target?.__ngContext__[21].innerText ; }
+        else if (event1.target.__ngContext__ !== undefined &&  event1.target.__ngContext__[0] !== undefined && event1.target.__ngContext__[0].className === 'form-row'){
+          this.columnFieldIndex = event1.target.__ngContext__[24];
+          this.layoutField = event1.target.__ngContext__[0].__ngContext__[0].__ngContext__[0].__ngContext__[24];
+        }
+        else if ((event1.target?.firstElementChild !== undefined && event1.target?.firstElementChild !== null) &&
+          event1.target?.firstElementChild.__ngContext__ !== undefined &&  event1.target?.firstElementChild.__ngContext__[0].localName === 'mat-step-header'){
+          this.layoutField = event1.target?.firstElementChild.childNodes[1].__ngContext__[29];
+          if (event1.target?.lastChild.__ngContext__ !== undefined && event1.target?.lastChild.__ngContext__[25] !== undefined){
+            this.labelStepper = event1.target?.lastChild.__ngContext__[25].firstChild.innerText;
+          }
+        }
         else {
+          this.layoutField =  event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field;
           this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
         }
         this.addFieldGroupToField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
@@ -233,7 +257,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
     // Check if a formly-form element was found
     if (formlyForm && event) {
-      this.onMouseMove(event);
+      this.onMouseMove(event1);
       console.log('Dropped inside formly-field:');
 
       // Check if the parent field is a panel
@@ -422,9 +446,10 @@ export class ContentComponent implements OnInit, DoCheck {
     if ((language === 'an' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
-
       const customizationData = await this.openAddressDialog();
-      console.log('data dialog :' , customizationData);
+      let field: FormlyFieldConfig = {};
+      const listFieldAddress = customizationData.tableRows;
+      this.shareService.emitAddressOptions(listFieldAddress);
       if (customizationData) {
 
         const listFieldAddress = customizationData.tableRows || [];
@@ -443,6 +468,11 @@ export class ContentComponent implements OnInit, DoCheck {
               label: language === 'ar' ? label_ar : label_fr,
               label_fr,
               label_ar,
+              minLength: customizationData.minLength,
+              maxLength: customizationData.maxLength,
+              required: customizationData.required,
+              disabled: customizationData.disabled,
+              hidden: customizationData.hidden,
               custom_css: customizationData.custom_css,
               property_name,
               field_tags: customizationData.field_tags,
@@ -452,8 +482,8 @@ export class ContentComponent implements OnInit, DoCheck {
             wrappers: ['column'],
             fieldGroup: [],
           };
-
           listFieldAddress.forEach(el => {
+            const Key = this.generateRandomId();
             const fieldGroupElem = {
               type: 'input',
               wrappers: ['address-wrapper'],
@@ -470,7 +500,6 @@ export class ContentComponent implements OnInit, DoCheck {
             };
             field.fieldGroup.push(fieldGroupElem);
           });
-
           newField.push(field);
           console.log('New Field:', newField);
 
@@ -490,6 +519,8 @@ export class ContentComponent implements OnInit, DoCheck {
                   label_fr,
                   label_ar,
                   placeholder: customizationData.placeholder,
+                  disabled: customizationData.disabled,
+                  hidden: customizationData.hidden,
                   custom_css: customizationData.custom_css,
                   property_name,
                   field_tags: customizationData.field_tags,
@@ -506,7 +537,6 @@ export class ContentComponent implements OnInit, DoCheck {
         }
       }
     }
-
     if ((language === 'an' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
@@ -1026,25 +1056,23 @@ export class ContentComponent implements OnInit, DoCheck {
       if (customizationData) {
         let columnSizess = [{size: '', width: ''}];
         columnSizess = customizationData.tableRows;
+        let columnField: FormlyFieldConfig;
+        const columnFields = [];
         this.shareService.emitNumberColumn(columnSizess);
-        console.log(columnSizess);
+        for (let j = 0; j < columnSizess.length; j++) {
+          columnField = {
+            key: 'col-' + columnSizess[j].size + '-' + columnSizess[j].width,
+            type: 'column',
+            fieldGroup: [],
+            wrappers: ['column'],
+          } ;
+          columnFields.push(columnField);
+        }
         newField = [
           {
             key: customizationData.propertyName, // Key of the wrapper component for columns
             type: 'row',
-            fieldGroup: [{
-              type: 'columnSize',
-              fieldGroup: [
-                {
-                  type: 'input',
-                  key: customizationData.property_name,
-                  templateOptions: {
-                    label: 'nom',
-                    type: 'text',
-                    placeholder: 'nom',
-                  }}
-              ],
-            }],
+            fieldGroup: columnFields,
             wrappers: ['columnSize'],
           }
         ];
@@ -1159,15 +1187,17 @@ export class ContentComponent implements OnInit, DoCheck {
       if (customizationData) {
           const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
-            key: customizationData.property_name + '_' + index,
-            type: 'input', // You can change this type as needed
             templateOptions: {
               label: stepLabel.label,
             },
+            fieldGroup: [
+              {
+              }
+            ]
           };
         });
 
-        newField = [
+          newField = [
           {
             type: newFieldType,
             fieldGroup: steps,
@@ -1186,10 +1216,10 @@ export class ContentComponent implements OnInit, DoCheck {
               steps: customizationData.stepperLabels,
               orientation: customizationData.orientation
             },
-            wrappers: ['column'],
+
           },
         ];
-        console.log(newField);
+          console.log(newField);
       }
     }
 
@@ -1246,33 +1276,14 @@ export class ContentComponent implements OnInit, DoCheck {
       this.form.valueChanges.subscribe((value) => {
          this.model = { ...this.form.value };
          console.log('preview fields', this.previewfields);
-         console.log('model',this.model);
+         console.log('model', this.model);
       });
 
       // Rebuild the form group with the updated fields
-        this.fb.group({});
-        this.newfb.group({});
+      this.fb.group({});
+      this.newfb.group({});
     }
   }
-
-    generateTableFields(rows: number, columns: number): any[] {
-    const tableFields = [];
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < columns; j++) {
-        const key = `row${i}_column${j}`;
-        const field = {
-          key,
-          type: 'input', // You can adjust the type as needed
-          templateOptions: {
-            label: `Row ${i + 1} - Column ${j + 1}` // Adjust the label as needed
-          }
-        };
-        tableFields.push(field);
-      }
-    }
-    return tableFields;
-  }
-
     async openPanelDialog() {
     const dialogRef = this.dialog.open(PanelDialogComponent, {
       width: '1400px', // Adjust the width as needed
@@ -1499,7 +1510,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const dialogRef = this.dialog.open(StepperDialogComponent, {
       width: '1400px',
       data: {
-        label_fr:'',label_ar:''
+        label_fr: '', label_ar: ''
       },
     });
     try {
@@ -1716,7 +1727,7 @@ export class ContentComponent implements OnInit, DoCheck {
       steps: stepsMap,
       options: optionValues, // Store option IDs instead of values
       id: this.generateRandomId(),
-      rows: rows
+      rows
     };
 
     await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();
@@ -2408,17 +2419,32 @@ export class ContentComponent implements OnInit, DoCheck {
              }
            const columnExist = row.fieldGroup.findIndex(column => column.key === rowColumn.column);
            if (columnExist !== -1){
-             index = tables.findIndex(tablesElm => tablesElm.key === table.key);
+             index = this.fields.findIndex(tablesElm => tablesElm.key === table.key);
            }
            });
        });
        // index = tables.findIndex(field => field.fieldGroup.forEach(fieldGroupElm => {fieldGroupElm.fieldGroup.find(col => col.key === this.layoutField.key); }));
-      }else {
+      }else if (this.layoutField.type === 'hr_stepper'){
+        index = this.fields.findIndex(elm => elm.type === 'hr_stepper');
+      }
+      else {
         index = this.fields.findIndex(field => field.key === this.layoutField.key);
       }
       if (index !== -1) {
         const updatedField = {...this.fields[index]};
-
+        if (updatedField.type === 'hr_stepper'){
+          const StepperToUpdate = updatedField.fieldGroup.find(stepper => stepper.templateOptions.label === this.labelStepper);
+          if (StepperToUpdate){
+            StepperToUpdate.fieldGroup = [...StepperToUpdate.fieldGroup, el];
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
+        }
+        else
         if (updatedField.type === 'tab' && Array.isArray(updatedField.fieldGroup)) {
           // Assuming each tab has a key or label to identify them
           const tabIndex = updatedField.fieldGroup.findIndex(tab => tab.templateOptions.label === this.tabTag);
@@ -2446,7 +2472,7 @@ export class ContentComponent implements OnInit, DoCheck {
               this.dragEvent = {};
             }
           }
-        } else if (updatedField.type === 'row' && Array.isArray(updatedField.fieldArray.fieldGroup)){
+        } else if (updatedField.type === 'row' && updatedField.fieldArray !== undefined && Array.isArray(updatedField.fieldArray.fieldGroup)){
           updatedField.fieldArray.fieldGroup.push(el);
           const existingFieldIndex = updatedField.fieldArray.fieldGroup.findIndex(groupField => groupField.key === el.key);
           if (existingFieldIndex === -1) {
@@ -2495,6 +2521,26 @@ export class ContentComponent implements OnInit, DoCheck {
             ];
             this.dragEvent = {};
           }
+        }  else if (updatedField.type === 'row' && updatedField.id === this.layoutField.id && Array.isArray(updatedField.fieldGroup)) {
+          const columns = this.fields.filter( row => row.type === 'row');
+          columns.forEach(column => {
+            if (column.id === this.layoutField.id){
+              let fieldAdded = false;
+              const columnToUpdate = column.fieldGroup.find( col => col.key === this.columnFieldIndex);
+              if (columnToUpdate){
+                columnToUpdate.fieldGroup = [...columnToUpdate.fieldGroup , el];
+                fieldAdded = true;
+              }
+              if (fieldAdded) {
+                this.fields = [
+                  ...this.fields.slice(0, index),
+                  updatedField,
+                  ...this.fields.slice(index + 1)
+                ];
+                this.dragEvent = {};
+              }
+            }
+          });
         }
         else {
           if (!updatedField.fieldGroup) {
@@ -2516,6 +2562,7 @@ export class ContentComponent implements OnInit, DoCheck {
               ...this.fields.slice(index + 1)
             ];
             this.dragEvent = {};
+            this.layoutField = {};
           }
         }
       }

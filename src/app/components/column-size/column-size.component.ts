@@ -23,7 +23,7 @@ export class ColumnSizeComponent extends FieldWrapper {
   contentComponent: ContentComponent;
   constructor( private shareService: ShareService) {
     super();
-    console.log("im here");
+    console.log("im here", this.columns);
 
     this.subscription = this.shareService.currentNomberOfColumns.subscribe(data => this.columns = data);
   }

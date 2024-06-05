@@ -6,20 +6,17 @@ import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
   selector: 'app-stepper-wrapper',
   template: `
       <mat-horizontal-stepper [linear]="true" #stepper>
-      <ng-container *ngFor="let step of field.fieldGroup; let index = index">
-        <mat-step [label]="step.templateOptions.label">
+        <mat-step *ngFor="let step of field.fieldGroup; let index = index" [label]="step.templateOptions.label">
           <ng-template matStepLabel>{{ step.templateOptions.label }}</ng-template>
-          <div>
-            <h2>{{ step.templateOptions.label }}</h2>
-            <p>Step content for {{ step.templateOptions.label }}</p>
+          <div class="stepper-content">
+              <formly-field [field]="step"></formly-field>
           </div>
-          <div>
+          <div style="margin-top: 3rem;">
             <button mat-button matStepperPrevious *ngIf="index > 0">Back</button>
             <button mat-button matStepperNext *ngIf="index < field.fieldGroup.length - 1">Next</button>
             <button mat-button *ngIf="index === field.fieldGroup.length - 1" (click)="onComplete()">Finish</button>
           </div>
         </mat-step>
-      </ng-container>
     </mat-horizontal-stepper>
  `,
 })

@@ -1,8 +1,7 @@
-<div class="row" >
+<div  class="form-row" >
   <ng-container *ngFor="let columnSize of columns let i = index;">
     <div class="col-{{columnSize.size}}-{{columnSize.width}}" >
       <ng-container #fieldComponent></ng-container>
-      <formly-field *ngFor="let field of field.fieldGroup" [field]="field" [options]="options"></formly-field>
     </div>
   </ng-container>
 </div>
