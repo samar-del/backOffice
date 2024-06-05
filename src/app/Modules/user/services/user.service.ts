@@ -2,6 +2,7 @@ import { Role } from './../../../models/role';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Permission } from 'src/app/models/permission';
 import { User } from 'src/app/models/user';
 import { UserRequest } from 'src/app/models/user-request';
@@ -19,6 +20,27 @@ export class UserService {
 
   getAllUSers(): Observable<User[]>{
     return this.http.get<User[]>('http://localhost:8078/auth/allUsers');
+  }
+  getUserAddressesCount(): Observable<{ [key: string]: number }> {
+    return this.getAllUSers().pipe(
+      map(users => {
+        return users.reduce((acc, user) => {
+          acc[user.adresse] = (acc[user.adresse] || 0) + 1;
+          return acc;
+        }, {} as { [key: string]: number });
+      })
+    );
+  }
+
+  getUserRolesCount(): Observable<{ [key: string]: number }> {
+    return this.getAllRoles().pipe(
+      map(roles => {
+        return roles.reduce((acc, role) => {
+          acc[role.roleType] = (acc[role.roleType] || 0) + 1;
+          return acc;
+        }, {} as { [key: string]: number });
+      })
+    );
   }
 
 
