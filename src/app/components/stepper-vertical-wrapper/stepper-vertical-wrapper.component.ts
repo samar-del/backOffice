@@ -9,10 +9,10 @@ import {FieldType} from "@ngx-formly/core";
         <mat-step [label]="step.templateOptions.label">
           <ng-template matStepLabel>{{ step.templateOptions.label }}</ng-template>
           <div>
-            <h2>{{ step.templateOptions.label }}</h2>
-            <p>Step content for {{ step.templateOptions.label }}</p>
+            <ng-container #fieldComponent></ng-container>
+            <formly-field *ngFor="let field of step.fieldGroup" [field]="field" [options]="options"></formly-field>
           </div>
-          <div>
+          <div style="margin-top: 3rem;">
             <button mat-button matStepperPrevious *ngIf="index > 0">Back</button>
             <button mat-button matStepperNext *ngIf="index < field.fieldGroup.length - 1">Next</button>
             <button mat-button *ngIf="index === field.fieldGroup.length - 1" (click)="onComplete()">Finish</button>

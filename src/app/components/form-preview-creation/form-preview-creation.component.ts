@@ -22,21 +22,9 @@ export class FormPreviewCreationComponent implements DoCheck {
     this.previewForm = this.fb.group({});
   }
   ngDoCheck(): void {
-    // this.previewfields.forEach(field => {
-    //   const formControlName = field.key ;
-    //   this.previewForm = this.fb.group({
-    //     formControlName: [field.model],
-    //   });
-    // });
-
     this.shareService.fieldsPreviewList$.subscribe(data => {
       this.previewfields = data;
     });
-    this.previewfields.forEach(el => console.log(el.model));
-    // if (this.arePreviewFieldsChanged()) {
-    //   console.log('this.previewmodel', this.previewModel);
-    //   this.updatePreviewFields();
-    // }
     if (this.previewfields != null){
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < this.previewfields.length; i++) {
