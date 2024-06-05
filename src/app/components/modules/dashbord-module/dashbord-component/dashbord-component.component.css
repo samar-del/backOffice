@@ -19,3 +19,48 @@
   width: 100% !important; /* Pour que les graphiques prennent la largeur disponible */
   height: auto !important;
 }
+.charts-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  flex: 1;
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid #000;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.data-container {
+  flex: 1;
+  margin: 10px;
+  padding: 20px;
+  border: 2px solid #000;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  min-width: 200px; /* Assure une largeur minimale pour chaque conteneur */
+}
+
+.data-container h3 {
+  margin-top: 0;
+}
+
+.data-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.data-container li {
+  margin: 5px 0;
+}

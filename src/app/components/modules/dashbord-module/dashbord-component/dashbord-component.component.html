@@ -1,4 +1,12 @@
-<p>dashbord-component works!</p>
+
+<div class="data-container">
+  <h3>Nombre de formulaires remplis</h3>
+  <ul>
+    <li *ngFor="let form of formCountsByUser | keyvalue">
+      {{ form.key }}: {{ form.value }}
+    </li>
+  </ul>
+</div>
 <div class="charts-row">
   <div class="chart-container">
     <canvas  id="canvas" >{{ chart }}</canvas>
@@ -6,4 +14,8 @@
   <div class="chart-container">
     <canvas  id="roleCanvas" >{{ roleChart }}</canvas>
   </div>
+  <div class="chart-container">
+    <canvas  id="formCanvas" >{{ formChart }}</canvas>
+  </div>
+
 </div>
