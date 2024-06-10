@@ -159,6 +159,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
           type: 'input',
           templateOptions: {
             label: textLabel,
+            type:'address',
             placeholder: this.form.get('placeholder_row').value,
             custom_css: this.form.get('custom_css').value,
             error_label: this.form.get('error_label').value,
@@ -179,6 +180,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
             type: 'input',
             templateOptions: {
               label: labelRow,
+              type:'address',
               placeholder: placeholderRow,
               custom_css: this.form.get('custom_css').value,
               error_label: this.form.get('error_label').value,

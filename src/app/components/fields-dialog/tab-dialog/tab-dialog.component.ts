@@ -49,7 +49,7 @@ export class TabDialogComponent implements OnInit {
       hide_label_ar: [this.data.hide_label_ar],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tabLabels: this.fb.array([])
+      tabLabels: this.fb.array(this.data.tabLabels.map(row => this.createRow(row)))
     });
 
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
@@ -136,11 +136,10 @@ export class TabDialogComponent implements OnInit {
     }));
   }
 
-  createRow(): FormGroup {
-    const row = this.fb.group({
-      label: [''],
+  createRow(rowData: any = {}): FormGroup {
+    return this.fb.group({
+      label: [rowData.label || '']
     });
-    return row;
   }
   addRow(): void {
     const tabLabels = this.form.get('tabLabels') as FormArray;

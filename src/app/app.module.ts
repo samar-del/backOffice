@@ -86,6 +86,7 @@ import { StepperDialogComponent } from './components/fields-dialog/stepper-dialo
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 import { JwtModule } from '@auth0/angular-jwt';
+import { SelectMultipleDialogComponent } from './components/fields-dialog/select-multiple-dialog/select-multiple-dialog.component';
 
 
 
@@ -144,7 +145,8 @@ import { JwtModule } from '@auth0/angular-jwt';
     StepperWrapperComponent,
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
-    FormFileDialogComponent
+    FormFileDialogComponent,
+    SelectMultipleDialogComponent
   ],
     imports: [
         BrowserModule,

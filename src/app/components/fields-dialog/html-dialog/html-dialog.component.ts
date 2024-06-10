@@ -43,7 +43,7 @@ export class HtmlDialogComponent implements OnInit {
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
       html_tag: [this.data.html_tag],
-      html_content: [this.data.html_tag],
+      html_content: [this.data.html_content],
       minLength: [this.data.minLength, Validators.min(0)],
       maxLength: [this.data.maxLength, Validators.min(0)],
       label_position: [this.data.label_position || 'top'],

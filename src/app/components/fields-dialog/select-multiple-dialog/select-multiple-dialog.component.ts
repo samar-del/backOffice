@@ -1,15 +1,16 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {TranslationService} from "../../../services/translation.service";
 
 @Component({
-  selector: 'app-select-customize-dialog',
-  templateUrl: './select-customize-dialog.component.html',
-  styleUrls: ['./select-customize-dialog.component.css']
+  selector: 'app-select-multiple-dialog',
+  templateUrl: './select-multiple-dialog.component.html',
+  styleUrls: ['./select-multiple-dialog.component.css']
 })
-export class SelectCustomizeDialogComponent implements OnInit {
+export class SelectMultipleDialogComponent implements OnInit {
+
   form: FormGroup;
   previewForm: FormGroup;
   newField: FormlyFieldConfig;
@@ -21,7 +22,7 @@ export class SelectCustomizeDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<SelectCustomizeDialogComponent>,
+    public dialogRef: MatDialogRef<SelectMultipleDialogComponent>,
     private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -40,7 +41,9 @@ export class SelectCustomizeDialogComponent implements OnInit {
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row)))
+      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
+      multiple:true,
+      type:'select-multiple'
     });
 
     // Subscribe to label changes to update property name
@@ -133,22 +136,25 @@ export class SelectCustomizeDialogComponent implements OnInit {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const selectLabel = currentLanguage === 'ar' ? label_ar : label_fr;
-    this.newField = {
-      key: 'key',
+      this.newField = {
+        key: 'key',
         type: 'select',
-      templateOptions : {
-        label: selectLabel,
-        options : this.form.get('tableRows').value,
-        custom_css: this.form.get('custom_css').value,
-        error_label: this.form.get('error_label').value,
-        custom_error_message: this.form.get('custom_error_message').value,
-        disabled: inputDisabled,
-    },
-      hide: inputHidden,
-      expressionProperties: {
-        'templateOptions.hideLabel': () => labelHidden
-      },
-    };
+        templateOptions : {
+          label: selectLabel,
+          options : this.form.get('tableRows').value,
+          custom_css: this.form.get('custom_css').value,
+          error_label: this.form.get('error_label').value,
+          custom_error_message: this.form.get('custom_error_message').value,
+          disabled: inputDisabled,
+          multiple: true,
+          type: 'select-multiple',
+        },
+        hide: inputHidden,
+        expressionProperties: {
+          'templateOptions.hideLabel': () => labelHidden
+        },
+      };
     });
   }
+
 }

@@ -34,6 +34,7 @@ export class TemplateOptions {
   rows?: Array<Array<{ columns: any[] }>> = [];
   htmlElement ?: string;
   link_iframe ?: string;
+  html_content ?: string;
   stepper_orientation ?: string;
   storageType ?: string;
   minFileSize ?: number;

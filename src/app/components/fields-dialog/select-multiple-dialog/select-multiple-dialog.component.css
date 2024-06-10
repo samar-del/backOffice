@@ -1,4 +1,3 @@
-@import "~bootstrap/dist/css/bootstrap.min.css";
 @import '~bootstrap-icons/font/bootstrap-icons.css';
 .dialog-field {
   display: flex; /* Use Flexbox */
@@ -26,5 +25,3 @@
   background-color: #309ec2; /* Set background color for active tab */
   font-weight: bold;
 }
-
-

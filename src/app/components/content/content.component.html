@@ -20,7 +20,7 @@
             </formly-form>
           </div>
           <div class="button-container">
-            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon buttonField" (click)="openCustomizationDialog(field.key)">
+            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon buttonField" (click)="openCustomizationDialog(field.key, field.templateOptions.type)">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon buttonField" (click)="deleteField(field.key)">
