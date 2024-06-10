@@ -13,7 +13,7 @@ export class DashbordComponentComponent implements OnInit {
   public roleChart: any;
   public formChart: any;
   public formCountsByUser: { [key: string]: number } = {};
-
+  public simpleUserCountWithInscription: { [key: string]: number } = {};
 
   constructor(
     private userService: UserService,
@@ -27,11 +27,14 @@ export class DashbordComponentComponent implements OnInit {
     this.userService.getUserRolesCount().subscribe((userRoleCounts) => {
       this.createRoleChart(userRoleCounts);
     });
-    this.formService.getFormCountsByUser().subscribe((formCountsByUser) => {
-      this.createFormChart(formCountsByUser);
-    });
+
     this.formService.getFormCountsByUser().subscribe(formCountsByUser => {
+      this.createFormChart(formCountsByUser);
+
       this.formCountsByUser = formCountsByUser;
+    });
+    this.userService.getSimpleUserCountWithInscription().subscribe(count => {
+      this.simpleUserCountWithInscription = count;
     });
   }
 

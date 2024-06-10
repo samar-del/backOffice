@@ -1,12 +1,22 @@
+  <div class="data-container">
 
-<div class="data-container">
-  <h3>Nombre de formulaires remplis</h3>
-  <ul>
-    <li *ngFor="let form of formCountsByUser | keyvalue">
-      {{ form.key }}: {{ form.value }}
-    </li>
-  </ul>
-</div>
+
+  <div class="data-container">
+    <h3>Available Forms </h3>
+    <ul>
+      <li *ngFor="let form of formCountsByUser | keyvalue">
+        {{ form.key }}: {{ form.value }}
+      </li>
+    </ul>
+  </div>
+  <div class="data-container">
+    <h3>Simple Users Number</h3>
+    <ul>
+      <li *ngFor="let user of simpleUserCountWithInscription | keyvalue">
+        {{ user.key }}: {{ user.value }}
+      </li>
+    </ul>
+  </div>
 <div class="charts-row">
   <div class="chart-container">
     <canvas  id="canvas" >{{ chart }}</canvas>
@@ -19,3 +29,4 @@
   </div>
 
 </div>
+  </div>

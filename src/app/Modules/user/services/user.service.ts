@@ -1,8 +1,8 @@
 import { Role } from './../../../models/role';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Permission } from 'src/app/models/permission';
 import { User } from 'src/app/models/user';
 import { UserRequest } from 'src/app/models/user-request';
@@ -39,6 +39,23 @@ export class UserService {
           acc[role.roleType] = (acc[role.roleType] || 0) + 1;
           return acc;
         }, {} as { [key: string]: number });
+      })
+    );
+  }
+
+  getSimpleUserCountWithInscription(): Observable<{ [key: string]: number }> {
+    return this.getAllUSers().pipe(
+      tap(users => console.log('Users:', users)),
+      map(users => {
+        const simpleUserCount: { [key: string]: number } = {};
+        simpleUserCount['SimpleUser'] = users.filter(user => user.roles && user.roles.some(role => role.roleType === 'USER')).length;
+        console.log('Simple User Count:', simpleUserCount);
+        return simpleUserCount;
+      }),
+      catchError(error => {
+        console.error('Error fetching users:', error);
+        // Return a default value or rethrow the error
+        return of({ SimpleUser: 0 }); // Return an empty object or another default value
       })
     );
   }
