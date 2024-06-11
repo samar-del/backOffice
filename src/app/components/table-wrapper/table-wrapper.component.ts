@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
 
 @Component({
@@ -8,7 +8,7 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
       <table class="table table-bordered">
           <tr *ngFor="let f of field.fieldGroup" [ngClass]="f.className">
             <td *ngFor="let col of f.fieldGroup" [ngClass]="f.className" >
-              <formly-field [field]="col"></formly-field>
+              <formly-field [field]="col" ></formly-field>
             </td>
           </tr>
       </table>
@@ -18,8 +18,16 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
 export class TableWrapperComponent extends FieldType {
   @Input() to: any; // Access the field's template options
   @Input() field: FormlyFieldConfig; // Access the field configuration
+  mouseX = 0;
+  mouseY = 0;
+  isMouseDown = false;
+  layoutField: FormlyFieldConfig = {};
+  draggedField: any;
+
 
   get tableField(): FormlyFieldConfig {
     return this.field as FormlyFieldConfig;
   }
+
+
 }

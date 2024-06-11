@@ -1,14 +1,14 @@
 <h2 class="header-title">Add New Role</h2>
-<form [formGroup]="form" (ngSubmit)="addRoleWithPermissions()">
+<form [formGroup]="form" (ngSubmit)="associatePermissionToRole()">
   <div>
     <label class="form-label" for="roleType">Role Type:</label>
     <input class="form-control" id="roleType" formControlName="roleType" />
   </div>
   <div>
     <label class="form-label" for="permissions">Permissions Name:</label>
-    <select id="permissions"  multiple (change)="assignPermissions($event.target.options)">
-      <option  *ngFor="let permission of permissions" [value]="permission.idPermission">
-        {{ permission.permissionName }}
+    <select id="permissions"  (change)="assignPermissions($event.target.options)" multiple>
+      <option  *ngFor="let permission of permissions" [value]="permission?.idPermission">
+        {{ permission?.permissionName }}
       </option>
     </select>
   </div>

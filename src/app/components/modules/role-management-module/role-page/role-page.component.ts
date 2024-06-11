@@ -9,8 +9,9 @@ import { Role } from 'src/app/models/role';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { GestionRoleComponent } from '../gestion-role/gestion-role.component';
-import { RoleUpdateDialogComponent } from '../role-update-dialog/role-update-dialog.component';
 import { PermissionService } from 'src/app/Modules/user/services/permission.service';
+import { PermissionDialogComponent } from '../permission-dialog/permission-dialog.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-role-page',
@@ -59,22 +60,35 @@ export class RolePageComponent implements OnInit {
     );
   }
 
- 
-  updateRole(){
-    const dialogRef = this.dialog.open(RoleUpdateDialogComponent, {
-      width: '500px',
-      data: {} // Vous pouvez passer des données au dialogue si nécessaire
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-        this.loadRoles();  // Recharger la liste des rôles après ajout
-        this.toastr.success('User added successfully!');
-      } else {
-        this.toastr.info('User addition cancelled.');
-      }
-    })
+  dialogPEr(idRole: string) {
+    forkJoin({
+      roles: this.roleService.getAllRoles(),
+      permissions: this.permissionService.getAllPermissions()
+    }).subscribe(data => {
+      const dialogRef = this.dialog.open(PermissionDialogComponent, {
+        width: '500px',
+        data: { idRole: idRole, permissions: data.permissions }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.loadRoles();  // Reload the list of roles after addition
+          this.toastr.success('Permissions associated successfully!');
+        } else {
+          this.toastr.info('Permissions association cancelled.');
+        }
+      }, error => {
+        console.error('Error occurred while subscribing to dialog close:', error);
+        // Handle error, if necessary
+      });
+    }, error => {
+      console.error('Error occurred while fetching data:', error);
+      // Handle error, if necessary
+    });
   }
+
+
   loadPermissions(): void {
     this.permissionService.getAllPermissions().subscribe(
       permissions => {
