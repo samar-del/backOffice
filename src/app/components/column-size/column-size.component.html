@@ -1,7 +1,6 @@
-<div  class="form-row" >
-  <ng-container *ngFor="let columnSize of columns let i = index;">
-    <div class="col-{{columnSize.size}}-{{columnSize.width}}" >
+
+
+    <div  class="{{field.key}}" >
+      {{field.key}}
       <ng-container #fieldComponent></ng-container>
     </div>
-  </ng-container>
-</div>
