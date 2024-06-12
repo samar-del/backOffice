@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Role } from 'src/app/models/role';
+import { any } from 'codelyzer/util/function';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,11 @@ export class RoleService {
   updateRole(role:Role): Observable<any>{
     return this.http.put('http://localhost:8078/Role/', role);
   }
-  associatePermissionToRole(roleId: string, permissionId: string): Observable<string> {
-    return this.http.post<string>(`http://localhost:8078/Role/ajouterPermissionToRole/${roleId}/${permissionId}`, {});
+  associatePermissionToRole(roleId: string, permissionId: string): Observable<boolean> {
+    return this.http.post<boolean>(`http://localhost:8078/Role/ajouterPermissionToRole/${roleId}/${permissionId}`, {});
   }
+
+getRoleById(roleId: string): Observable<any>{
+  return this.http.get<boolean>(`http://localhost:8078/Role/unrole/${roleId}`);
+}
 }

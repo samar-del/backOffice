@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RoleUpdateDialogComponent } from './role-update-dialog/role-update-dialog.component';
+import { PermissionDialogComponent } from './permission-dialog/permission-dialog.component';
 
 
 
 @NgModule({
-  declarations: [RoleUpdateDialogComponent],
+  declarations: [ PermissionDialogComponent],
   imports: [
     CommonModule
   ]

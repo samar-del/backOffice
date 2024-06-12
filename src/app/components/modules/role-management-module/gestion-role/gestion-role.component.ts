@@ -45,7 +45,8 @@ export class GestionRoleComponent implements OnInit {
   save(){
     if(this.form.valid){
       const newRole: Role = this.form.value;
-      this.roleService.addRole(newRole).subscribe(res=>{
+      this.roleService.addRole(newRole).subscribe(
+        res=>{
         this.loadRoles();
         this.dialogRef.close(res);
       }, error => {

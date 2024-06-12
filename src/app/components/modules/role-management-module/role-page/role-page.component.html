@@ -21,7 +21,7 @@
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <select>
-                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">
+                <option *ngFor="let permission of element?.permissions" [value]="permission?.idPermission">
                   {{ permission.permissionType }} - {{ permission.permissionName }}
                 </option>
               </select>
@@ -32,8 +32,9 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <button *ngIf="element.roleType" (click)="updateRole(element.idRole)" class="btn btn-outline-info mb-2">Update</button>
+              <button *ngIf="element.roleType" (click)="dialogPEr(element.idRole)" class="btn btn-outline-info mb-2">Update</button>
             </td>
+
           </ng-container>
 
           <!-- Delete Column -->
