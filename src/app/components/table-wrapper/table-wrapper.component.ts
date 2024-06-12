@@ -5,11 +5,11 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-table-wrapper',
   template: `
-    <div class="table-layout-wrapper" cdkDropList (cdkDropListDropped)="drop($event)">
+    <div cdkDropList class="table-layout-wrapper" (cdkDropListDropped)="drop($event)">
       <table class="table table-bordered">
-        <tr *ngFor="let f of field.fieldGroup; let rowIndex = index" cdkDrag [ngClass]="f.className">
-          <td *ngFor="let col of f.fieldGroup" cdkDrag [ngClass]="col.className">
-            <formly-field [field]="col"></formly-field>
+        <tr *ngFor="let f of field.fieldGroup; let rowIndex = index"  [ngClass]="f.className">
+          <td *ngFor="let col of f.fieldGroup"  [ngClass]="col.className">
+            <formly-field [field]="col" cdkDrag></formly-field>
           </td>
         </tr>
       </table>
