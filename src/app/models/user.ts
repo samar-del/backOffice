@@ -8,6 +8,6 @@ export interface User {
   email: string;
   enable: boolean;
   adresse: string;
-  roles: Role[];
+  roles?: Role[];
   configurations: Configuration[];
 }

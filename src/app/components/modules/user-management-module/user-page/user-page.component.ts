@@ -23,11 +23,12 @@ export class UserPageComponent implements OnInit{
   havedelete: any;
 
   roles:any;
-  users:User[]=[];
+  users: User[]=[];
   roleList: Role[] = [];
   userList: any;
-  dataSource: any;
+  dataSource= new MatTableDataSource<User>(this.users);
   selectedRole: string | undefined;
+  displayedColumns: string[] = ['username', 'email', 'role', 'action', 'delete'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -40,8 +41,7 @@ export class UserPageComponent implements OnInit{
    // public dialogRef: MatDialogRef<AdminPageComponent>
 
   ) {
-    this.loadUser();
-    this.loadRoles();
+
   }
   ngOnInit(): void {
     this.loadUser();
@@ -57,7 +57,7 @@ export class UserPageComponent implements OnInit{
       this.dataSource.sort = this.sort;
     },
     error => {
-      console.error('Error fetching roles:', error);
+      console.error('Error fetching users:', error);
     }
   );
   }
@@ -68,12 +68,11 @@ export class UserPageComponent implements OnInit{
         this.roles = roles;
       },
       error => {
-        console.error('Error loading permissions:', error);
+        console.error('Error loading roles:', error);
       }
     );
   }
 
-  displayedColumns: string[] = ['username', 'email', 'role', 'action', 'delete'];
 
  /* updateUser(): void {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
