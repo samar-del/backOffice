@@ -1062,9 +1062,8 @@ export class ContentComponent implements OnInit, DoCheck {
         for (let j = 0; j < columnSizess.length; j++) {
           columnField = {
             key: 'col-' + columnSizess[j].size + '-' + columnSizess[j].width,
-            type: 'column',
+            type: 'columnSize',
             fieldGroup: [],
-            wrappers: ['column'],
           } ;
           columnFields.push(columnField);
         }
@@ -1073,7 +1072,6 @@ export class ContentComponent implements OnInit, DoCheck {
             key: customizationData.propertyName, // Key of the wrapper component for columns
             type: 'row',
             fieldGroup: columnFields,
-            wrappers: ['columnSize'],
           }
         ];
 
@@ -1628,7 +1626,7 @@ export class ContentComponent implements OnInit, DoCheck {
                     }
                   }
                   const fieldGroupOptionsElm = await this.saveFieldOptions(fieldGroup.fieldGroup[i]);
-                  const fieldGroupElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i], fieldGroupOptionsElm);
+                  const fieldGroupElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i], fieldGroupOptionsElm, fieldGroupOfFieldGroup);
                   // GETfIELDbYiD AFTER SAVe and push it inside fieldGroup
                   FieldGroupFieldId.push(fieldGroupElmId.id);
                 }
@@ -1770,7 +1768,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res.id;
   }
-  async saveFieldsGroupElementWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions): Promise<Field> {
+  async saveFieldsGroupElementWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, listFieldGroup: string[]): Promise<Field> {
     const fieldsGroupId: any [] = [];
     const mappedField: Field = {
       type: field.type,
@@ -1780,6 +1778,9 @@ export class ContentComponent implements OnInit, DoCheck {
       fieldGroupId: [],
       //
     };
+    if (field.type === 'column'){
+      mappedField.fieldGroupId = listFieldGroup;
+    }
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res;
   }

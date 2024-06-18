@@ -177,6 +177,12 @@ import { JwtModule } from '@auth0/angular-jwt';
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
                 },
+              {
+                name: 'columnSize',
+                extends: 'formly-group',
+                wrappers: ['form-field'],
+                defaultOptions: {templateOptions: {column: true}}
+              },
                 {name: 'columnSize', component: ColumnSizeComponent},
                 {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
                 {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
