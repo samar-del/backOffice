@@ -87,6 +87,7 @@ import { StepperVerticalWrapperComponent } from './components/stepper-vertical-w
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 import { JwtModule } from '@auth0/angular-jwt';
 import { SelectMultipleDialogComponent } from './components/fields-dialog/select-multiple-dialog/select-multiple-dialog.component';
+import { DayFormDialogComponent } from './components/fields-dialog/day-form-dialog/day-form-dialog.component';
 
 
 
@@ -146,7 +147,8 @@ import { SelectMultipleDialogComponent } from './components/fields-dialog/select
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
     FormFileDialogComponent,
-    SelectMultipleDialogComponent
+    SelectMultipleDialogComponent,
+    DayFormDialogComponent
   ],
     imports: [
         BrowserModule,
@@ -155,6 +157,7 @@ import { SelectMultipleDialogComponent } from './components/fields-dialog/select
         BrowserAnimationsModule,
         MatListModule,
         MatIconModule,
+        MatInputModule,
         MatToolbarModule,
         DragDropModule,
         ReactiveFormsModule,
@@ -171,6 +174,7 @@ import { SelectMultipleDialogComponent } from './components/fields-dialog/select
                 { name: 'panel', component: PanelFieldWrapperComponent },
               {name: 'hr_stepper', component: StepperWrapperComponent},
               {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
+              { name: 'input', component: MatInputModule },
             ],
             types: [
                 {

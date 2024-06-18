@@ -50,7 +50,8 @@ export class FormTableComponent implements OnInit {
       hide_label_fr: [this.data.hide_label_fr],
       hide_label_ar: [this.data.hide_label_ar],
       property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
+      type: [this.data.type],
     });
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
@@ -151,6 +152,7 @@ export class FormTableComponent implements OnInit {
         label: textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
+        type: 'table',
         custom_css: this.form.get('custom_css').value,
         number_rows: this.form.get('number_rows').value,
         number_columns: this.form.get('number_columns').value,

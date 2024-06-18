@@ -32,7 +32,6 @@ export class DateFormDialogComponent implements OnInit {
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
-      placeholder: [this.data.placeholder],
       label_position: [this.data.label_position],
       custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
@@ -43,7 +42,8 @@ export class DateFormDialogComponent implements OnInit {
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
+      type: 'datetime-local',
     });
 
     // Subscribe to label changes to update property name
@@ -130,8 +130,7 @@ export class DateFormDialogComponent implements OnInit {
         label:textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
-        placeholder: this.form.get('placeholder').value,
+        type: 'datetime-local',
         disabled: inputDisabled,
         custom_css: this.form.get('custom_css').value,
         error_label: this.form.get('error_label').value,

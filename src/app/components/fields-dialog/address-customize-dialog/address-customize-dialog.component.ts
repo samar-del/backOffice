@@ -41,7 +41,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label)],
       field_tags: [this.data.field_tags],
-      tableRows: this.fb.array([]),
+      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
       label:[this.data.label],
       label_row:[this.data.label_row],
       placeholder_row: [this.data.placeholder_row]
@@ -110,12 +110,11 @@ export class AddressCustomizeDialogComponent implements OnInit {
     return this.form.get('tableRows') as FormArray;
   }
 
-  createRow(): FormGroup {
-    const row = this.fb.group({
-      label_row: [''],
-      placeholder_row: [''],
+  createRow(rowData: any = {}): FormGroup {
+    return this.fb.group({
+      label_row: [rowData.label_row || ''],
+      placeholder_row: [rowData.placeholder_row || '']
     });
-    return row;
   }
   addRow(): void {
     const tableRowsArray = this.form.get('tableRows') as FormArray;

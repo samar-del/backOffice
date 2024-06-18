@@ -56,6 +56,7 @@ export class IFrameDialogComponent implements OnInit {
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
+      type: [this.data.type],
     });
 
     // Subscribe to label changes to update property name

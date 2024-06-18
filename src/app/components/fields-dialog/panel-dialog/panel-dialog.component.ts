@@ -41,7 +41,8 @@ export class PanelDialogComponent implements OnInit {
       property_name: [this.generatePropertyName(this.data.label)],
       field_tags: [this.data.field_tags],
       collapsible: [this.data.collapsible],
-      initiallyCollapsed: [this.data.initiallyCollapsed]
+      initiallyCollapsed: [this.data.initiallyCollapsed],
+      type: [this.data.type],
 
     });
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {

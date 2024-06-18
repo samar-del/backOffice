@@ -40,7 +40,8 @@ export class SelectCustomizeDialogComponent implements OnInit {
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row)))
+      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
+      type: [this.data.type],
     });
 
     // Subscribe to label changes to update property name

@@ -46,6 +46,7 @@ import {TabDialogComponent} from '../fields-dialog/tab-dialog/tab-dialog.compone
 import {AlertDialogComponent} from '../fields-dialog/alert-dialog/alert-dialog.component';
 import {StepperDialogComponent} from '../fields-dialog/stepper-dialog/stepper-dialog.component';
 import {SelectMultipleDialogComponent} from "../fields-dialog/select-multiple-dialog/select-multiple-dialog.component";
+import {DayFormDialogComponent} from "../fields-dialog/day-form-dialog/day-form-dialog.component";
 
 
 
@@ -78,7 +79,7 @@ export class ContentComponent implements OnInit, DoCheck {
   roles = '';
   isLoggedIn = false;
   customizationDataMap: Map<string, any> = new Map();
-
+  private previousFields: FormlyFieldConfig[] = [];
   private previousPreviewFields: FormlyFieldConfig[] = [];
   formHeader: FormGroup;
   layoutField: FormlyFieldConfig = {};
@@ -118,6 +119,8 @@ export class ContentComponent implements OnInit, DoCheck {
         return id;
       })
     ).subscribe();
+
+    this.previousFields = JSON.parse(JSON.stringify(this.fields));
   }
   @HostListener('document:mousemove', ['$event'])
   // tslint:disable-next-line:typedef
@@ -196,8 +199,20 @@ export class ContentComponent implements OnInit, DoCheck {
     //   this.updatePreviewFields();
     // }
     this.shareService.emitPreviewFieldList(this.previewfields);
-  }
+    const currentFields = JSON.parse(JSON.stringify(this.fields));
 
+    if (this.haveFieldsChanged(currentFields)) {
+      console.log('Fields have changed');
+
+      // Update previousFields
+      this.previousFields = currentFields;
+
+    }
+  }
+  private haveFieldsChanged(currentFields: FormlyFieldConfig[]): boolean {
+    // Implement deep comparison between previousFields and currentFields
+    return JSON.stringify(this.previousFields) !== JSON.stringify(currentFields);
+  }
   chacklogedInUser() {
     this.isLoggedIn = this.authService.isLoggedIn();
     this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
@@ -317,7 +332,7 @@ export class ContentComponent implements OnInit, DoCheck {
         this.customizationDataMap = new Map();
         this.customizationDataMap.set(customizationData.property_name, customizationData);
         console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
+        console.log('type :' , customizationData.type);
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -834,7 +849,7 @@ export class ContentComponent implements OnInit, DoCheck {
     if ((language === 'an' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
-      const customizationData = await this.openDateDialog();
+      const customizationData = await this.openDayDialog();
       // @ts-ignore
       if (customizationData) {
         this.customizationDataMap = new Map();
@@ -1229,8 +1244,7 @@ export class ContentComponent implements OnInit, DoCheck {
       if (customizationData) {
         this.customizationDataMap = new Map();
         this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
+        console.log(this.customizationDataMap.get(customizationData.property_name));
         const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
           return {
             templateOptions: { label: tabLabel.label,type: 'tab' },
@@ -1254,9 +1268,9 @@ export class ContentComponent implements OnInit, DoCheck {
               field_tags: customizationData.field_tags,
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
-              tabs: customizationData.tabLabels,
+              tabs: customizationData.tabs,
             },
-            wrappers: ['column'],
+            //wrappers: ['column'],
           },
         ];
         console.log(newField);
@@ -1518,7 +1532,22 @@ export class ContentComponent implements OnInit, DoCheck {
     async openDateDialog() {
     const dialogRef = this.dialog.open(DateFormDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar: '', placeholder: ''},
+      data: {label_fr: '', label_ar: '',type: 'datetime-local',},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+
+  async openDayDialog() {
+    const dialogRef = this.dialog.open(DayFormDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '',type: 'date',},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -1653,6 +1682,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
   async openCustomizationDialog(fieldKey: string, fieldType: string) {
     const existingData = this.customizationDataMap.get(fieldKey);
+    console.log('this is the old data :', existingData);
     if (!existingData) {
       console.error(`No customization data found for field with key ${fieldKey}`);
       return;
@@ -1660,6 +1690,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
     let dialogRef;
     const dataToPass = { ...existingData, type: existingData.type || fieldType }; // Ensure type is passed
+    console.log('Data passed to dialog:', dataToPass);
     switch(fieldType) {
       case 'text':
       case 'email':
@@ -1684,8 +1715,13 @@ export class ContentComponent implements OnInit, DoCheck {
         });
         break;
       case 'datetime-local':
-      case 'date':
         dialogRef = this.dialog.open(DateFormDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'date':
+        dialogRef = this.dialog.open(DayFormDialogComponent, {
           width: '1400px',
           data: dataToPass,
         });
@@ -1772,7 +1808,6 @@ export class ContentComponent implements OnInit, DoCheck {
       console.error('Error in dialog:', error);
     }
   }
-
   // tslint:disable-next-line:typedef
   updateFieldConfiguration(fieldKey: string, customizationData: any) {
     const field = this.fields.find(f => f.key === fieldKey);
@@ -1822,23 +1857,18 @@ export class ContentComponent implements OnInit, DoCheck {
     field.templateOptions.html_tag = customizationData.html_tag;
     field.templateOptions.html_content = customizationData.html_content;
     field.templateOptions.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`;
-    // Check and update steps if defined
-    if (customizationData.stepperLabels && Array.isArray(customizationData.stepperLabels)) {
-      field.templateOptions.steps = customizationData.stepperLabels.map(stepLabel => ({ label: stepLabel.label }));
-    } else {
-      console.error('Stepper labels are not defined or not an array');
-    }
-    // Check and update tabs if defined
+// Update tabs if defined
     if (customizationData.tabLabels && Array.isArray(customizationData.tabLabels)) {
-      field.templateOptions.tabs = customizationData.tabLabels.map(tab => ({ label: tab.label }));
+      field.templateOptions.tabs = customizationData.tabLabels.map(tab => tab.label);
       console.log(field.templateOptions.tabs);
     } else {
+      console.log('this is the tab :', customizationData.tabLabels);
       console.error('Tab labels are not defined or not an array');
     }
 
-    // Trigger a re-render if necessary
-    this.cdr.markForCheck();
-    this.cdr.detectChanges();
+    // Trigger a change detection cycle to ensure the form is updated
+    this.fields = [...this.fields];
+
   }
 
     async openAlertDialog() {

@@ -66,6 +66,7 @@ export class FormFileDialogComponent implements OnInit {
       storageType: ['local', Validators.required],
       minFileSize: [0, Validators.required],
       maxFileSize: [1, Validators.required],
+      type: [this.data.type],
     });
 
     // Subscribe to label changes to update property name
