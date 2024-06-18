@@ -48,7 +48,7 @@ export class UserService {
       tap(users => console.log('Users:', users)),
       map(users => {
         const simpleUserCount: { [key: string]: number } = {};
-        simpleUserCount['SimpleUser'] = users.filter(user => user.roles && user.roles.some(role => role.roleType === 'USER')).length;
+        simpleUserCount['SimpleUser'] = users.filter(user => user.role && user.role.some(role => role.roleType === 'USER')).length;
         console.log('Simple User Count:', simpleUserCount);
         return simpleUserCount;
       }),

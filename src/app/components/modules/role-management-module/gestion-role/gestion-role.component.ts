@@ -34,7 +34,7 @@ export class GestionRoleComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       roleType: new FormControl('', Validators.required),
-      permissionName: new FormControl('')
+      permissions: new FormControl('')
     });
     this.permissionService.getAllPermissions().subscribe(
       (data: any)=>{
@@ -85,8 +85,9 @@ export class GestionRoleComponent implements OnInit {
     if (this.form.valid) {
       const formValue = this.form.value;
       const selectedPermissions = formValue.permissions.map((permissionId: string) =>
-        this.permissions.find(permission => permission.idPermission === permissionId)
-      );
+        this.permissions.find(permission => permission.id === permissionId)
+      ).filter(permission => permission); // Filter out undefined values
+
       const newRole: Role = {
         roleType: formValue.roleType,
         permissions: selectedPermissions
@@ -109,7 +110,8 @@ export class GestionRoleComponent implements OnInit {
   }
 
 
- assignPermissions(options: HTMLOptionsCollection): void {
+
+  assignPermissions(options: HTMLOptionsCollection): void {
     const selectedIds: string[] = [];
     for (let i = 0; i < options.length; i++) {
       if (options[i].selected) {
@@ -118,6 +120,7 @@ export class GestionRoleComponent implements OnInit {
     }
     this.form.get('permissions')?.setValue(selectedIds);
   }
+
 
   getSelectedPermissionIds(options: HTMLOptionsCollection): string[] {
     const selectedIds: string[] = [];

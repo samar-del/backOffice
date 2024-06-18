@@ -23,8 +23,8 @@
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <select>
-                <option *ngFor="let permission of element?.permissions" [value]="permission?.idPermission">
-                  {{ permission.permissionType }} - {{ permission.permissionName }}
+                <option *ngFor="let permission of element?.permissions" [value]="permission?.id">
+                  {{ permission?.permissionType }} - {{ permission?.permissionName }}
                 </option>
               </select>
             </td>
@@ -43,7 +43,7 @@
           <ng-container matColumnDef="delete">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <a *ngIf="element.roleType !== 'SUPER-ADMIN'" (click)="deleteRole(element.idRole)" class="btn btn-outline-secondary mb-2">Delete Role</a>
+              <a (click)="deleteRole(element.id)" class="btn btn-outline-secondary mb-2">Delete Role</a>
             </td>
           </ng-container>
 
