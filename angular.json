@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+
             "outputPath": "dist/backOffice",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -28,8 +29,7 @@
               "./node_modules/bootstrap/scss/bootstrap.scss",
               "./node_modules/ngx-toastr/toastr.css",
               "src/styles.css"
-            ],
-            "scripts": []
+            ]
           },
           "configurations": {
             "production": {

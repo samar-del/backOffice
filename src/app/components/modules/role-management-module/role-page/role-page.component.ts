@@ -36,14 +36,17 @@ export class RolePageComponent implements OnInit {
     private permissionService:PermissionService,
     private toastr: ToastrService,
     public dialog: MatDialog
-  ) {}
+  ) {
+
+  }
 
   ngOnInit(): void {
     this.roleForm = this.fb.group({
-      roleType: ['', Validators.required],
-      // Ajoutez d'autres contrôles de formulaire si nécessaire
+      roleType: ['', Validators.required]
+            // Ajoutez d'autres contrôles de formulaire si nécessaire
     });
     this.loadRoles();
+    this.loadPermissions();
   }
 
   loadRoles(): void {
