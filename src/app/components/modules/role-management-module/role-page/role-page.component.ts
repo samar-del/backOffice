@@ -36,19 +36,28 @@ export class RolePageComponent implements OnInit {
     private permissionService:PermissionService,
     private toastr: ToastrService,
     public dialog: MatDialog
-  ) {}
+  ) {
+
+  }
 
   ngOnInit(): void {
     this.roleForm = this.fb.group({
-      roleType: ['', Validators.required],
-      // Ajoutez d'autres contrôles de formulaire si nécessaire
+      roleType: ['', Validators.required]
+            // Ajoutez d'autres contrôles de formulaire si nécessaire
     });
     this.loadRoles();
+    this.loadPermissions();
   }
 
   loadRoles(): void {
     this.roleService.getAllRoles().subscribe(
       (data: Role[]) => {
+        // Ensure that each role has a permissions array
+        data.forEach(role => {
+          if (!role.permissions) {
+            role.permissions = [];
+          }
+        });
         this.roles = data;
         this.dataSource = new MatTableDataSource<Role>(this.roles);
         this.dataSource.paginator = this.paginator;
@@ -61,14 +70,15 @@ export class RolePageComponent implements OnInit {
   }
 
 
-  dialogPEr(idRole: string) {
+
+  dialogPEr(id: string) {
     forkJoin({
       roles: this.roleService.getAllRoles(),
       permissions: this.permissionService.getAllPermissions()
     }).subscribe(data => {
       const dialogRef = this.dialog.open(PermissionDialogComponent, {
         width: '500px',
-        data: { idRole: idRole, permissions: data.permissions }
+        data: { id: id, permissions: data.permissions }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -119,9 +129,9 @@ export class RolePageComponent implements OnInit {
 
 
 
-  deleteRole(idRole: string): void {
-    this.roleService.deleteRole(idRole).subscribe(()=>{
-      this.toastr.success('deleted successfully');
+  deleteRole(id: string): void {
+    this.roleService.deleteRole(id).subscribe(()=>{
+      this.toastr.success('Deleted Role successfully');
       this.loadRoles();
     })
 

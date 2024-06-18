@@ -29,7 +29,7 @@ export class AdminPageComponent implements OnInit {
       userName: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
-      roleType: new FormControl('')
+      role: new FormControl('')
      // permissionType: new FormControl('')
 
         });

@@ -6,12 +6,13 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   selector: 'app-tab-field-wrapper',
   template: `
     <mat-tab-group>
-      <mat-tab
-        *ngFor="let tab of field.fieldGroup; let i = index; let last = last"
-        [label]="tab.templateOptions.label">
-        <div cdkDropList (cdkDropListDropped)="drop($event)">
+      <mat-tab *ngFor="let tab of field.fieldGroup; let i = index">
+        <ng-template mat-tab-label>{{ tab.templateOptions.label }}</ng-template>
+        <div cdkDropList [cdkDropListData]="tab.fieldGroup" (cdkDropListDropped)="drop($event, i)">
           <ng-container *ngFor="let subField of tab.fieldGroup; let j = index">
-            <formly-field [field]="subField" cdkDrag cdkDragPreview></formly-field>
+            <div cdkDrag [cdkDragData]="subField">
+              <formly-field [field]="subField"></formly-field>
+            </div>
           </ng-container>
         </div>
       </mat-tab>
@@ -20,13 +21,10 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class TabFieldWrapperComponent extends FieldType implements OnInit {
   ngOnInit(): void {
-    console.log("im in tab,", this.field);
+    console.log('im in tab,', this.field);
   }
 
-  drop(event: CdkDragDrop<FormlyFieldConfig[]>) {
-    const tabIndex = this.field.fieldGroup.findIndex(tab => tab.fieldGroup.includes(event.item.data));
-    if (tabIndex !== -1) {
-      moveItemInArray(this.field.fieldGroup[tabIndex].fieldGroup, event.previousIndex, event.currentIndex);
-    }
+  drop(event: CdkDragDrop<FormlyFieldConfig[]>, tabIndex: number) {
+    moveItemInArray(this.field.fieldGroup[tabIndex].fieldGroup, event.previousIndex, event.currentIndex);
   }
 }

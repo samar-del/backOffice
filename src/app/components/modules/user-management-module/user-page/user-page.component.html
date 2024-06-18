@@ -1,53 +1,51 @@
+<!-- user-page.component.html -->
 <div class="full-page">
   <mat-card class="user-list-card">
     <mat-card-header class="header">
-      <h2 class="title">User Listing &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
-      <br>
-      <br>
-
+      <h2 class="title">User Listing</h2>
+      <br><br>
       <a class="btn btn-secondary mb-2" style="cursor:pointer" (click)="AddAdminDialog()">Add New Admin</a>
-
     </mat-card-header>
     <mat-card-content class="content">
       <div class="mat-elevation-z8">
         <table mat-table class="table" matSort [dataSource]="dataSource">
-
-          <!-- Position Column -->
+          <!-- Username Column -->
           <ng-container matColumnDef="username">
             <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Username </th>
             <td mat-cell class="cell" *matCellDef="let element"> {{element.userName}} </td>
           </ng-container>
 
-          <!-- Weight Column -->
+          <!-- Email Column -->
           <ng-container matColumnDef="email">
             <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Email </th>
             <td mat-cell class="cell" *matCellDef="let element"> {{element.email}} </td>
           </ng-container>
 
+          <!-- Role Column -->
           <ng-container matColumnDef="role">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Role </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <select >
-                <option *ngFor="let role of roles" [value]="role.idRole">
+              <select>
+                <option *ngFor="let role of element.role" [value]="role.id">
                   {{ role.roleType }}
                 </option>
               </select>
-             </td>
-          </ng-container>
-          <ng-container matColumnDef="action">
-            <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
-            <td mat-cell class="cell" *matCellDef="let element">
-              <button *ngIf="element.roles != 'SUPER-ADMIN'" (click)="updateUser()"
-                         class="btn btn-outline-info mb-2">Update</button>
             </td>
           </ng-container>
 
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
+            <td mat-cell class="cell" *matCellDef="let element">
+              <button (click)="updateUser(element.idUser)" class="btn btn-outline-info mb-2">Update</button>
+            </td>
+          </ng-container>
 
-
+          <!-- Delete Column -->
           <ng-container matColumnDef="delete">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <a *ngIf="element.roles != 'SUPER-ADMIN'" (click)="deleteUser(element.idUser)" class="btn btn-outline-secondary mb-2">Delete User</a>
+              <a (click)="deleteUser(element.idUser)" class="btn btn-outline-secondary mb-2">Delete User</a>
             </td>
           </ng-container>
 
@@ -55,9 +53,7 @@
           <tr mat-row class="data-row" *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
-        <mat-paginator class="paginator" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-          aria-label="Select page of periodic elements">
-        </mat-paginator>
+        <mat-paginator class="paginator" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements"></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>
