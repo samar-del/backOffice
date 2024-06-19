@@ -86,8 +86,7 @@ import { StepperDialogComponent } from './components/fields-dialog/stepper-dialo
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 import { JwtModule } from '@auth0/angular-jwt';
-
-
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 
 @NgModule({
@@ -237,4 +236,5 @@ import { JwtModule } from '@auth0/angular-jwt';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
