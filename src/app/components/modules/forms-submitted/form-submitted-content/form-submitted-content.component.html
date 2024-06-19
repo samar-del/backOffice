@@ -1,0 +1,8 @@
+<form [formGroup]="form" >
+  <div class="formHeader">
+    <h4>Nom du formulaire : <span>{{data.formStructure.title}}</span></h4>
+    <p>Description : <span>{{data.formStructure.description}}</span></p>
+    <p>UserId : <span>{{data.formModel.userId}}</span></p>
+  </div>
+  <formly-form  [fields]="fields" [options]="options" [form]="form" [model]="this.data.formModel.answersObject" ></formly-form>
+</form>

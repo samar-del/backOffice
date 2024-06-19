@@ -243,6 +243,7 @@ export class ContentComponent implements OnInit, DoCheck {
   //   // Handle mouse leave event
   //   console.log('Mouse left the component.');
   // }
+  // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>, droppedItem: any) {
     this.dragEvent = event ;
     this.isMouseDown = true;
@@ -1185,6 +1186,7 @@ export class ContentComponent implements OnInit, DoCheck {
       if (customizationData) {
           const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
+            key: stepLabel.label,
             templateOptions: {
               label: stepLabel.label,
             },
@@ -1621,7 +1623,7 @@ export class ContentComponent implements OnInit, DoCheck {
                   if (fieldGroup.fieldGroup[i].fieldGroup && fieldGroup.fieldGroup[i].fieldGroup.length > 0){
                     for (let j = 0 ; j < fieldGroup.fieldGroup[i].fieldGroup.length ; j++){
                       const fieldGroupOfFieldOptions =  await this.saveFieldOptions(fieldGroup.fieldGroup[i].fieldGroup[j]);
-                      const fieldGroupOfFieldElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i].fieldGroup[j], fieldGroupOfFieldOptions);
+                      const fieldGroupOfFieldElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i].fieldGroup[j], fieldGroupOfFieldOptions, []);
                       fieldGroupOfFieldGroup.push(fieldGroupOfFieldElmId.id);
                     }
                   }
@@ -1778,9 +1780,9 @@ export class ContentComponent implements OnInit, DoCheck {
       fieldGroupId: [],
       //
     };
-    if (field.type === 'column'){
-      mappedField.fieldGroupId = listFieldGroup;
-    }
+    // if (field.type === 'column'){
+    //   mappedField.fieldGroupId = listFieldGroup;
+    // }
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res;
   }

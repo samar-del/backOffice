@@ -7,6 +7,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
 import {FormCreationService} from '../../../../services/form-creation.service';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-list-forms',
@@ -19,7 +20,7 @@ export class ListFormsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private formcreation: FormCreationService, private route: Router) {
+  constructor(private formcreation: FormCreationService, private route: Router, private dialog: MatDialog) {
   }
 
   ngOnInit(): void {

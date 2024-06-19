@@ -12,10 +12,11 @@ export class SidebarGenericComponent implements OnInit, AfterViewInit  {
   isExpanded = true;
   isShowing = true;
 MenuList = [{name: 'Dashboard' , items: ['Dashboard']} ,
- {name: 'Gestion des utilisateurs' ,route:'user', items: ['Ajouter des utilisateurs'  ]},
+ {name: 'Gestion des utilisateurs' , route: 'user', items: ['Ajouter des utilisateurs'  ]},
   {name: 'Gestion des roles', items: ['Ajouter un role' ]}  ,
   {name: 'Gestion des permissions', items: ['Ajouter une permession']},
-  {name: 'Gestion des formulaire' , route: 'createForm', items: ['Ajouter un formulaire' , 'Modifier un formulaire' , 'Supprimer un formulaire']}];
+  {name: 'Gestion des formulaire' , route: 'createForm', items: ['Ajouter un formulaire' , 'Modifier un formulaire' , 'Supprimer un formulaire']},
+  {name: 'List des formulaires soumis', route: ''}];
   constructor(private router: Router) { }
 
   ngOnInit(): void {
@@ -49,6 +50,8 @@ MenuList = [{name: 'Dashboard' , items: ['Dashboard']} ,
       this.router.navigate(['admin/formsManagement/']);
     } else if (item === 'Dashboard' ){
       this.router.navigate(['admin/dashboardManagment/dashboard']);
+    }else if ( item === 'List des formulaires soumis'){
+      this.router.navigate(['admin/forms-submitted/formsList']);
     }
   }
 }

@@ -105,6 +105,11 @@ const routes: Routes = [
           import(
             './components/modules/dashbord-module/dashbord-module.module'
           ).then((m) => m.DashbordModuleModule)
+      },
+      {
+        path: 'forms-submitted',
+        loadChildren: () => import('./components/modules/forms-submitted/forms-submitted.module')
+          .then(m => m.FormsSubmittedModule)
       }
     ]
   },
