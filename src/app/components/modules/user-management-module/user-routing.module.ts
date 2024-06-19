@@ -7,7 +7,6 @@ import { UserPageComponent } from './user-page/user-page.component';
 
 
 const routes: Routes = [
-  { path: '', component: ListFormsComponent },
   { path: 'user', component: UserPageComponent },
 ];
 

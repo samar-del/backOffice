@@ -496,7 +496,10 @@ export class ContentComponent implements OnInit, DoCheck {
                 property_name,
                 field_tags: customizationData.field_tags,
                 error_label: customizationData.error_label,
-                custom_error_message: customizationData.custom_error_message
+                custom_error_message: customizationData.custom_error_message,
+                condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                condi_value: customizationData.condi_value
               },
             };
             field.fieldGroup.push(fieldGroupElem);
@@ -526,7 +529,10 @@ export class ContentComponent implements OnInit, DoCheck {
                   property_name,
                   field_tags: customizationData.field_tags,
                   error_label: customizationData.error_label,
-                  custom_error_message: customizationData.custom_error_message
+                  custom_error_message: customizationData.custom_error_message,
+                  condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                  condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                  condi_value: customizationData.condi_value
                 }
               },
             ],
@@ -572,6 +578,9 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
 
           },
           // wrappers: ['column'],
@@ -623,7 +632,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -671,7 +683,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -724,6 +739,9 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
           },
           // wrappers: ['column'],
 
@@ -769,7 +787,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -813,7 +834,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -863,7 +887,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -900,7 +927,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -928,7 +958,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
 
           },
           // wrappers: ['column'],
@@ -959,7 +992,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
 
         }];
@@ -988,7 +1024,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -1023,7 +1062,10 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             storageType: customizationData.storageType,
             minFileSize: customizationData.minFileSize,
-            maxFileSize: customizationData.maxFileSize
+            maxFileSize: customizationData.maxFileSize,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
         }];
       }
@@ -1133,6 +1175,9 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             hide_label_fr: customizationData.hide_label_fr,
             hide_label_ar: customizationData.hide_label_ar,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
         }];
@@ -1169,6 +1214,9 @@ export class ContentComponent implements OnInit, DoCheck {
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
               tabs: customizationData.tabLabels,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
             },
             wrappers: ['column'],
           },
@@ -1214,7 +1262,10 @@ export class ContentComponent implements OnInit, DoCheck {
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
               steps: customizationData.stepperLabels,
-              orientation: customizationData.orientation
+              orientation: customizationData.orientation,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
             },
 
           },
@@ -1238,7 +1289,10 @@ export class ContentComponent implements OnInit, DoCheck {
               custom_css: customizationData.custom_css,
               property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
-            collapsible: customizationData.collapsible
+            collapsible: customizationData.collapsible,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
           },
           fieldGroup: [
           ],
