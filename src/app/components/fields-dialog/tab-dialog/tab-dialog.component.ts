@@ -49,7 +49,10 @@ export class TabDialogComponent implements OnInit {
       hide_label_ar: [this.data.hide_label_ar],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tabLabels: this.fb.array([])
+      tabLabels: this.fb.array([]),
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
     });
 
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
