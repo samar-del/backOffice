@@ -1,3 +1,4 @@
+import { TemplateOptions } from './../../../models/TemplateOptions';
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -40,7 +41,10 @@ export class SelectCustomizeDialogComponent implements OnInit {
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tableRows: this.fb.array([])
+
+      tableRows: this.fb.array([]),
+      storageType: [this.data.storageType, Validators.required] // Ajoutez le champ storageType
+
     });
 
     // Subscribe to label changes to update property name
@@ -144,11 +148,13 @@ export class SelectCustomizeDialogComponent implements OnInit {
         error_label: this.form.get('error_label').value,
         custom_error_message: this.form.get('custom_error_message').value,
         disabled: inputDisabled,
+        storageType: this.form.get('storageType').value
     },
       hide: inputHidden,
       expressionProperties: {
         'templateOptions.hideLabel': () => labelHidden
       },
+
     };
     });
   }

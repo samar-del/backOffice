@@ -39,6 +39,23 @@
       </table>
     </div>
     <button type="button" (click)="addTableRow()" class="btn btn-success">Add Column</button>
+
+    <div class="form-group">
+      <label for="custom_css" >Custom CSS</label>
+      <input id="custom_css" formControlName="custom_css" type="text"  class="form-control" />
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+      <label class="form-check-label" for="hidden">
+        Hidden
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="hide_label" formControlName="hide_label">
+      <label class="form-check-label" for="hide_label">
+        Hide label
+      </label>
+    </div>
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="cancel()" class="btn btn-sm btn-outline-danger">Cancel</button>

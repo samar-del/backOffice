@@ -78,6 +78,14 @@
         </table>
         <button type="button" class="btn btn-light" (click)="addRow()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
       </div>
+      <div class="form-group">
+        <label for="storageType">Storage Type</label>
+        <select id="storageType" formControlName="storageType" class="form-control">
+          <option value="string">String</option>
+          <option value="number">Number</option>
+          <option value="boolean">Boolean</option>
+        </select>
+      </div>
     </form>
   </mat-tab>
   <mat-tab label="Validation" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">
