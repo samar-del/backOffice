@@ -1,5 +1,5 @@
-@import '~bootstrap-icons/font/bootstrap-icons.css';
-.dialog-field {
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import '~bootstrap-icons/font/bootstrap-icons.css';.dialog-field {
   display: flex; /* Use Flexbox */
 }
 
