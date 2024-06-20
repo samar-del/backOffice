@@ -1,18 +1,19 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {FormContentService} from '../../../../services/form-content.service';
-import {forkJoin} from 'rxjs';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
-import {Router} from '@angular/router';
-import {FormCreationService} from '../../../../services/form-creation.service';
-import {MatDialog} from '@angular/material/dialog';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormContentService } from '../../../../services/form-content.service';
+import { forkJoin } from 'rxjs';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
+import { FormCreationService } from '../../../../services/form-creation.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-list-forms',
   templateUrl: './list-forms.component.html',
-  styleUrls: ['./list-forms.component.css']
+  styleUrls: ['./list-forms.component.css'],
 })
 export class ListFormsComponent implements OnInit {
   allFormTemplateList = new MatTableDataSource<any>();
@@ -20,8 +21,12 @@ export class ListFormsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private formcreation: FormCreationService, private route: Router, private dialog: MatDialog) {
-  }
+  constructor(
+    private formcreation: FormCreationService,
+    private route: Router,
+    private dialog: MatDialog,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.loadFormTemplates();
@@ -30,11 +35,11 @@ export class ListFormsComponent implements OnInit {
   // tslint:disable-next-line:typedef
   loadFormTemplates() {
     this.formcreation.getAllFormTemplate().subscribe(
-      res => {
+      (res) => {
         this.allFormTemplateList.data = res;
         this.allFormTemplateList.paginator = this.paginator;
       },
-      error => {
+      (error) => {
         console.log('No form template available');
       }
     );
@@ -45,9 +50,15 @@ export class ListFormsComponent implements OnInit {
     this.route.navigate([`home/forms/:`, idForm]);
   }
 
+  deleteForm(id: string): void {
+    this.formcreation.deleteFormTemplateById(id).subscribe(() => {
+      this.toastr.success('Deleted form successfully!');
+      this.loadFormTemplates();
+    });
+  }
+
   // tslint:disable-next-line:typedef
   navigateTo(id) {
     this.route.navigate([`/home/forms/form`, id]);
-
   }
 }
