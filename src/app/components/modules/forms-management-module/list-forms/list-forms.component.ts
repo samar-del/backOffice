@@ -54,7 +54,7 @@ export class ListFormsComponent implements OnInit {
     this.formcreation.deleteFormTemplateById(id).subscribe(() => {
       this.toastr.success('Deleted form successfully!');
       this.loadFormTemplates();
-    });
+       });
   }
 
   // tslint:disable-next-line:typedef
