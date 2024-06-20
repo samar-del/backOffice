@@ -87,8 +87,45 @@
         </form>
       </mat-tab>
       <!-- Conditional Tab -->
-      <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
-        <!-- Leave this tab empty -->
+      <mat-tab label="Conditional"  [ngClass]="{ 'active-tab': selectedTabIndex === 4 }">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="shouldDisplay">{{ translations?.translations?.shouldDisplay }}</label>
+            <select class="form-select"id="shouldDisplay" formControlName="condi_shouldDisplay" >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="whenShouldDisplay">{{ translations?.translations?.whenShouldDisplay }}</label>
+            <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay"  >
+              <option *ngFor="let f of fieldsList" [value]="f">{{f}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="condi-value">{{ translations?.translations?.condi_value }}</label>
+            <input id="condi-value" formControlName="condi_value" type="text" class="form-control" />
+          </div>
+          <div class="form-group" formArrayName="tableRows">
+            <table>
+              <thead>
+              <tr>
+                <th for="table_when_condi">{{ translations?.translations?.table_when_condi }}</th>
+                <th for="table_has_value">{{ translations?.translations?.table_has_value }}</th>
+                <th for="table_action">{{ translations?.translations?.table_action }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let row of tableRows.controls; let i = index" [formGroupName]="i">
+                <td><input type="text" class="form-control" formControlName="keyCondition"></td>
+                <td><input type="text" class="form-control" formControlName="valueCondition" ></td>
+                <td><button type="button" class="btn btn-light" (click)="removeRow(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
+              </tr>
+              </tbody>
+            </table>
+            <button type="button" class="btn btn-light" (click)="addRowCondi()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
+          </div>
+        </form>
       </mat-tab>
       <!-- Layout Tab -->
       <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">

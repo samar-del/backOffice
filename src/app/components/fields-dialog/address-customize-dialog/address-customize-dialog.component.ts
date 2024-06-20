@@ -21,6 +21,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
   translations: any = {};
   showTable = false; // Variable to store the state of the checkbox
   NumberOptions = 0 ;
+  fieldsList: any[] = [];
   // @ts-ignore
   // @ts-ignore
   constructor(
@@ -44,7 +45,10 @@ export class AddressCustomizeDialogComponent implements OnInit {
       tableRows: this.fb.array([]),
       label:[this.data.label],
       label_row:[this.data.label_row],
-      placeholder_row: [this.data.placeholder_row]
+      placeholder_row: [this.data.placeholder_row],
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
     });
 
     // Subscribe to label changes to update property name

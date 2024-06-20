@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormColumnLayoutDialogComponent } from '../form-column-layout-dialog/form-column-layout-dialog.component';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -20,6 +20,9 @@ export class PanelDialogComponent implements OnInit {
   selectedTabIndex = 0;
   model: any = {};
   fields: FormlyFieldConfig[] = [];
+  NumberOptions = 0 ;
+  fieldsList: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<FormColumnLayoutDialogComponent>,
@@ -36,7 +39,11 @@ export class PanelDialogComponent implements OnInit {
       property_name: [this.generatePropertyName(this.data.label)],
       field_tags: [this.data.field_tags],
       collapsible: [this.data.collapsible],
-      initiallyCollapsed: [this.data.initiallyCollapsed]
+      initiallyCollapsed: [this.data.initiallyCollapsed],
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
+      tableRows: this.fb.array([])
 
     });
     this.form.get('label').valueChanges.subscribe((label: string) => {
@@ -59,7 +66,25 @@ export class PanelDialogComponent implements OnInit {
       return {};
     }
   }
-
+  addRow(): void {
+    const tableRowsArray = this.form.get('tableRows') as FormArray;
+    tableRowsArray.push(this.createRow());
+    this.NumberOptions++ ;
+  }
+  createRow(): FormGroup {
+    const row = this.fb.group({
+      keyCondition: [''],
+      valueCondition: [''],
+    });
+    return row;
+  }
+  removeRow(index: number): void {
+    this.tableRows.removeAt(index);
+    this.NumberOptions--;
+  }
+  get tableRows(): FormArray {
+    return this.form.get('tableRows') as FormArray;
+  }
   generatePropertyName(label: string): string {
     const words = label.split(/\s+/); // Split label into words
     let propertyName = '';

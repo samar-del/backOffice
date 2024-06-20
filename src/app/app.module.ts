@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { FormDialogComponent } from './components/fields-dialog/form-dialog/form-dialog.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -19,7 +19,7 @@ import {
 } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FormlyModule } from '@ngx-formly/core';
+import {FormlyFieldConfig, FormlyModule} from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -87,6 +87,7 @@ import { StepperVerticalWrapperComponent } from './components/stepper-vertical-w
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 import { JwtModule } from '@auth0/angular-jwt';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import { RestrictInputDirective } from './restrict-input.directive';
 
 
 @NgModule({
@@ -143,7 +144,8 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
     StepperWrapperComponent,
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
-    FormFileDialogComponent
+    FormFileDialogComponent,
+    RestrictInputDirective
   ],
     imports: [
         BrowserModule,
