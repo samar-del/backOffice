@@ -1,0 +1,53 @@
+<div class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+  <form [formGroup]="formHeader" class="row g-3">
+    <div class="col-auto">
+      <label>Titre du formulaire</label>
+      <input type="text" class="form-control" placeholder="titre du formulaire" formControlName="title">
+    </div>
+    <div class="col-auto">
+      <label>Description du formulaire</label>
+      <input type="text" class="form-control" placeholder="description du formulaire" formControlName="description">
+    </div>
+  </form>
+  <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
+    <ng-container *ngFor="let field of fields; let i = index">
+      <div class="row align-items-center" cdkDrag cdkDragBoundary=".content-container"> <!-- Add cdkDrag directive here to make the row draggable -->
+        <div class="col-12">
+          <div class="formly-form-container">
+            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"   (mousemove)="onMouseMove($event)" >
+
+              <formly-field *ngIf="field.templateOptions.custom_css" [field]="field" ></formly-field>
+            </formly-form>
+          </div>
+          <div class="button-container">
+            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon buttonField" (click)="openCustomizationDialog(field.key)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon buttonField" (click)="deleteField(field.key)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="submit-button-container">
+      <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">Submit</button>
+      <button type="button" class="btn btn-default" (click)="options.resetModel()">Reset</button>
+
+    </div>
+
+  </form>
+</div>
+
+<!--<app-list-forms></app-list-forms>-->
+<!--<div class="preview-tab">-->
+<!--  <h4>Preview Form</h4>-->
+<!--  <hr>-->
+<!--  <form [formGroup]="previewForm">-->
+<!--  <div class="formly-form-container">-->
+
+<!--    <formly-form [model]="previewModel" [fields]="previewfields" [form]="previewForm"></formly-form>-->
+<!--  </div>-->
+<!--  </form>-->
+<!--</div>-->
+<app-form-preview-creation [field]="previewfields"></app-form-preview-creation>

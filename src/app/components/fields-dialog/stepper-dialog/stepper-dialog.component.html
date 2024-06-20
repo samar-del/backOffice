@@ -1,0 +1,108 @@
+<!-- customize-dialog.component.html -->
+
+<div class="dialog-field">
+  <div class="form-tab">
+    <h3 mat-dialog-title>Customize Tab</h3>
+    <hr>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <!-- Display Tab -->
+      <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
+        <form [formGroup]="form">
+          <div mat-dialog-content>
+            <div class="row">
+              <div class="col form-group" [hidden]="form.get('hide_label_fr').value">
+                <label for="label_fr">{{ translations?.translations?.label_fr }}</label>
+                <input id="label_fr" formControlName="label_fr" class="form-control" />
+              </div>
+              <div class="col form-group" [hidden]="form.get('hide_label_ar').value">
+                <label for="label_ar">{{ translations?.translations?.label_ar }}</label>
+                <input id="label_ar" formControlName="label_ar" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="stepper_orientation">Stepper Orientation</label>
+                <select id="stepper_orientation" formControlName="stepper_orientation" class="form-control">
+                  <option value="horizontal">Horizontal</option>
+                  <option value="vertical">Vertical</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" formArrayName="stepperLabels">
+              <table>
+                <thead>
+                <tr>
+                  <th>Step Label</th>
+                  <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let row of stepperLabels.controls; let i = index" [formGroupName]="i">
+                  <td><input type="text" class="form-control" formControlName="label"></td>
+                  <td><button type="button" class="btn btn-light" (click)="removeStep(i)"><i class="bi bi-trash3" style="color: red;"></i></button></td>
+                </tr>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-light" (click)="addRow()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
+            </div>
+            <div class="form-group">
+              <label for="custom_css">Custom CSS</label>
+              <input id="custom_css" formControlName="custom_css" class="form-control" />
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hidden" formControlName="hidden">
+              <label class="form-check-label" for="hidden">
+                Hidden
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hide_label_fr" formControlName="hide_label_fr">
+              <label class="form-check-label" for="hide_label_fr">
+                Hide label fr
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="hide_label_ar" formControlName="hide_label_ar">
+              <label class="form-check-label" for="hide_label_ar">
+                Hide label ar
+              </label>
+            </div>
+          </div>
+          <div mat-dialog-actions>
+            <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">Cancel</button>
+            <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+          </div>
+        </form>
+      </mat-tab>
+      <!-- API Tab -->
+      <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="property_name">Property Name</label>
+            <input id="property_name" formControlName="property_name" type="text" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="field_tags">Field Tags</label>
+            <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+            <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+          </div>
+        </form>
+      </mat-tab>
+      <!-- Conditional Tab -->
+      <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+        <!-- Leave this tab empty -->
+      </mat-tab>
+      <!-- Layout Tab -->
+      <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">
+        <!-- Leave this tab empty -->
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div class="preview-tab">
+    <h4>Preview input</h4>
+    <hr>
+    <div class="formly-form-container">
+      <formly-form #formlyForm [model]="model" [fields]="[newField]" [form]="previewForm" [options]="options" [ngStyle]="getLabelStyles()"></formly-form>
+    </div>
+
+  </div>
+</div>

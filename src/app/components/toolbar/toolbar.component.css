@@ -1,0 +1,49 @@
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+.toolbar{
+  background-color: white;
+}
+
+.custom-select {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-select .options {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.custom-select .options div {
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.custom-select .options div:hover {
+  background-color: #ddd;
+}
+select{
+  border-color: white;
+}
+select:hover{
+  border-color: white;
+}
+
+img{
+  width: 220px !important;
+}
+i{
+  color: #00719D;
+}
+option:hover{
+  background-color: #00719D !important;
+}
+
+/*.input-group{*/
+/*  width: 150%;*/
+/*}*/
+

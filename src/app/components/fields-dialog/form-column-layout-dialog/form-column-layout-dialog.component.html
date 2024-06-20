@@ -1,0 +1,72 @@
+<div class="dialog-field">
+  <div class="form-tab">
+    <h3 mat-dialog-title>Customize Table</h3>
+    <hr>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <!-- Display Tab -->
+      <mat-tab label="Display" [ngClass]="{ 'active-tab': selectedTabIndex === 0 }">
+      <form [formGroup]="form">
+  <h2 mat-dialog-title>Customize Column</h2>
+  <div mat-dialog-content>
+    <div class="form-group">
+      <label for="label">Label</label>
+      <input id="label" formControlName="label" class="form-control" />
+    </div>
+    <div class="form-group">
+      <table class="table datagrid-table table-bordered">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Size</th>
+          <th>Width</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody formArrayName="tableRows">
+        <tr *ngFor="let row of form.get('tableRows')['controls']; let i = index" [formGroupName]="i">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <select id="size" formControlName="size" class="form-control">
+              <option *ngFor="let size of sizes" [value]="size">{{ size }}</option>
+            </select>
+          </td>
+          <td>
+            <input formControlName="width" type="text" class="form-control" />
+          </td>
+          <td><button type="button" (click)="removeTableRow(i)" class="btn btn-danger">-</button></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <button type="button" (click)="addTableRow()" class="btn btn-success">Add Column</button>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="cancel()" class="btn btn-sm btn-outline-danger">Cancel</button>
+    <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>Save</button>
+  </div>
+      </form>
+      </mat-tab>
+  <mat-tab label="API" [ngClass]="{ 'active-tab': selectedTabIndex === 1 }">
+    <form [formGroup]="form">
+      <div class="form-group">
+        <label for="property_name">{{ translations?.translations?.property_name }}</label>
+        <input id="property_name" formControlName="property_name" type="text" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="field_tags">{{ translations?.translations?.field_tags }}</label>
+        <input id="field_tags" formControlName="field_tags" type="text" class="form-control" (input)="updateTags($event.target.value)" />
+        <small class="form-text text-muted">Separate tags with commas (e.g., tag1, tag2, tag3)</small>
+      </div>
+    </form>
+  </mat-tab>
+  <!-- Conditional Tab -->
+  <mat-tab label="Conditional" [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+    <!-- Leave this tab empty -->
+  </mat-tab>
+  <!-- Layout Tab -->
+  <mat-tab label="Layout" [ngClass]="{ 'active-tab': selectedTabIndex === 3 }">
+    <!-- Leave this tab empty -->
+  </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

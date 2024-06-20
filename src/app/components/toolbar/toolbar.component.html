@@ -1,0 +1,56 @@
+<!--<mat-toolbar style="background: #1d8cf8">-->
+<!--  <button mat-list-icon aria-label="Menu icon" >-->
+<!--    <mat-icon>menu</mat-icon>-->
+<!--  </button>-->
+<!--  <h1>Responsive Material Sidenavigation</h1>-->
+<!--  <div class="d-flex align-items-center">-->
+<!--  <img src="./../../../assets/img/Logo%20Numeryx.png" style="width:8%">-->
+<!--    <button (click)="changeLanguage('fr')">French (FR)</button>-->
+<!--    <button (click)="changeLanguage('ar')">Arabic (AR)</button>-->
+<!--    <button (click)="changeLanguage('an')">English (EN)</button>-->
+<!--    <button type="button" class="btn btn-link px-3 me-2">-->
+<!--    <a  routerLink="">Logout</a>-->
+<!--  </button>-->
+<!--  </div>-->
+<!--</mat-toolbar>-->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<mat-toolbar *ngIf="ismenurequired">
+  
+
+<nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
+  <div class="container-fluid">
+    <div class="d-flex align-items-center">
+      <img src="./../../../assets/img/Logo%20Numeryx.png" width="50%" style="width:8%">
+<!--      <button (click)="changeLanguage('fr')">French (FR)</button>-->
+<!--      <button (click)="changeLanguage('ar')">Arabic (AR)</button>-->
+<!--      <button (click)="changeLanguage('an')">English (EN)</button>-->
+    </div>
+
+    <i class="bi bi-globe"></i>
+    <select (change)="changeLanguage($event.target.value)">
+      <option value="en">En <img src="path_to_en_icon.png" alt="English" width="20"></option>
+      <option value="fr">Fr <img src="path_to_fr_icon.png" alt="French" width="20"></option>
+      <option value="ar">Ar <img src="path_to_ar_icon.png" alt="Arabic" width="20"></option>
+    </select>
+    <form class="d-flex align-items-center">
+
+      <div class="form-group mb-0">
+        <div class="input-group input-group-alternative">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+          </div>
+          <input class="form-control" placeholder="Search" type="text">
+        </div>
+      </div>
+    </form>
+
+    <!-- User -->
+  </div>
+
+  <button type="button" class="btn btn-link px-3 me-2">
+    <a  (click)="handleLogout()" style="cursor:pointer"><i class="bi bi-box-arrow-right"></i></a>
+  </button>
+
+</nav>
+</mat-toolbar>
