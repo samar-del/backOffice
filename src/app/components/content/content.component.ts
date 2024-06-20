@@ -302,6 +302,7 @@ export class ContentComponent implements OnInit, DoCheck {
     this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
       language = currentLang;
     });
+
     let newField: FormlyFieldConfig[] = [{}];
 
     if ((language === 'an' && type === 'Text') ||
@@ -314,6 +315,7 @@ export class ContentComponent implements OnInit, DoCheck {
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
         const placeholder_ar = customizationData.placeholder_ar;
+
         newField = [{
 
           type: 'input',
@@ -355,7 +357,7 @@ export class ContentComponent implements OnInit, DoCheck {
               }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !pattern.test(value);
             },
             'templateOptions.hidden': (model: any, formState: any) => {
               if (!customizationData.condi_whenShouldDisplay) {
@@ -480,7 +482,7 @@ export class ContentComponent implements OnInit, DoCheck {
               error_label: customizationData.error_label,
               custom_error_message: customizationData.custom_error_message
             },
-            wrappers: ['column'],
+            //wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
@@ -580,8 +582,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-
+            condi_value: customizationData.condi_value,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
           },
           // wrappers: ['column'],
 
@@ -593,9 +595,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
@@ -635,7 +638,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -644,7 +648,8 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
-              return value;
+              const isValidIFrame = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              return value || !isValidIFrame;
             },
           },
           // Customize other properties as needed
@@ -686,7 +691,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -697,9 +703,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed
@@ -908,7 +915,8 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Radio button') ||
+    }
+    else if ((language === 'an' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
@@ -2123,6 +2131,7 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
 
           },
           // wrappers: ['column'],
@@ -2135,9 +2144,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
@@ -2176,7 +2186,8 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -2187,9 +2198,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed
