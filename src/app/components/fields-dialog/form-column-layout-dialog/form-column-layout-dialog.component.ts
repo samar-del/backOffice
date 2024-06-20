@@ -23,7 +23,10 @@ export class FormColumnLayoutDialogComponent implements OnInit {
     this.form = this.fb.group({
       label: [this.data.label, Validators.required],
       property_name: [this.data.label],
-      tableRows: this.fb.array([]) // Initialize form array for table rows
+      tableRows: this.fb.array([]), // Initialize form array for table rows
+      custom_css: [this.data.custom_css],
+      hidden: [this.data.hidden],
+      hide_label: [this.data.hide_label],
     });
 
     // If there are existing table rows, populate them
@@ -62,6 +65,10 @@ export class FormColumnLayoutDialogComponent implements OnInit {
     }));
   }
 
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+  }
   saveColumnLayout() {
     const columnLayout = {
       label: this.form.value.label,

@@ -963,6 +963,7 @@ export class ContentComponent implements OnInit, DoCheck {
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
+            storageType : customizationData.storageType,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,

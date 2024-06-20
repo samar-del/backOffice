@@ -22,9 +22,15 @@
           <ng-container matColumnDef="Permissions">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
+<<<<<<< Updated upstream
               <select>
                 <option *ngFor="let permission of element?.permissions" [value]="permission?.id">
                   {{ permission?.permissionType }} - {{ permission?.permissionName }}
+=======
+              <select formControlName="permissionType">
+                <option *ngFor="let permission of element?.permissions" [value]="permission?.idPermission">
+                  {{ permission?.permissionType ? permission.permissionType : 'Unknown Permission Type' }} - {{ permission?.permissionName }}
+>>>>>>> Stashed changes
                 </option>
               </select>
             </td>

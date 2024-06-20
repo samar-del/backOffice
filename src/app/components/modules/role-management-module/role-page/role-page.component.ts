@@ -1,3 +1,4 @@
+import { PermissionDialogComponent } from './../permission-dialog/permission-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,7 +11,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { GestionRoleComponent } from '../gestion-role/gestion-role.component';
 import { PermissionService } from 'src/app/Modules/user/services/permission.service';
-import { PermissionDialogComponent } from '../permission-dialog/permission-dialog.component';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -70,7 +70,6 @@ export class RolePageComponent implements OnInit {
   }
 
 
-
   dialogPEr(id: string) {
     forkJoin({
       roles: this.roleService.getAllRoles(),
@@ -96,7 +95,7 @@ export class RolePageComponent implements OnInit {
       console.error('Error occurred while fetching data:', error);
       // Handle error, if necessary
     });
-  }
+  }*/
 
 
   loadPermissions(): void {

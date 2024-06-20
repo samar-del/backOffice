@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <h2 class="header-title">Add New Role</h2>
 <form [formGroup]="form" (ngSubmit)="addRoleWithPermissions()">
   <div>
@@ -11,8 +12,37 @@
         {{ permission?.permissionName }}
       </option>
     </select>
+=======
+<form [formGroup]="form" >
+<h2 mat-dialog-title>Add Role and Permission</h2>
+<div mat-dialog-content>
+  <div>
+    <label class="form-label" for="roleType">Role Type:</label>
+    <input class="form-control" id="roleType" [(ngModel)]="roleType" />
+>>>>>>> Stashed changes
   </div>
+  <br>
+  <p>Select a permission to associate with the role:</p>
+  <mat-form-field>
+    <mat-label>Permissions</mat-label>
+    <mat-select class="form-select" formControlName="permission">
 
+<<<<<<< Updated upstream
   <button (click)="onNoClick()" class="btn btn-outline-info mb-2">Cancel</button>
   <button class="btn btn-outline-info mb-2" type="submit">Add Role</button>
+=======
+      <mat-option *ngFor="let permission of permissions" [value]="permission.permissionType">
+        {{ permission.permissionType }}
+      </mat-option>
+    </mat-select>
+
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button color="primary" (click)="addRoleAndAssociatePermission()">
+    Add Role & Associate
+  </button>
+</div>
+>>>>>>> Stashed changes
 </form>

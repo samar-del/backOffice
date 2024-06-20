@@ -50,8 +50,8 @@
         </div>
       </div>
       <div mat-dialog-actions>
-        <button mat-button class="btn btn-outline-dark" (click)="onNoClick()">{{ translations?.translations?.cancel }}</button>
-        <button mat-button class="btn btn-info" [mat-dialog-close]="form.value" cdkFocusInitial >{{ translations?.translations?.save }}</button>
+        <button mat-button (click)="onNoClick()" class="btn btn-sm btn-outline-danger">{{ translations?.translations?.cancel }}</button>
+        <button mat-button [mat-dialog-close]="form.value" class="btn btn-sm btn-outline-success" cdkFocusInitial>{{ translations?.translations?.save }}</button>
       </div>
     </form>
 
@@ -77,6 +77,14 @@
           </tbody>
         </table>
         <button type="button" class="btn btn-light" (click)="addRow()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
+      </div>
+      <div class="form-group">
+        <label for="storageType">Storage Type</label>
+        <select id="storageType" formControlName="storageType" class="form-control">
+          <option value="string">String</option>
+          <option value="number">Number</option>
+          <option value="boolean">Boolean</option>
+        </select>
       </div>
     </form>
   </mat-tab>

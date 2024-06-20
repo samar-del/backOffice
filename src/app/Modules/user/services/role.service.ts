@@ -5,12 +5,17 @@ import { Observable } from 'rxjs';
 import { Role } from 'src/app/models/role';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoleService {
 
+<<<<<<< Updated upstream
   constructor(private http: HttpClient) { }
 
+=======
+
+  constructor(private http: HttpClient) {}
+>>>>>>> Stashed changes
   getAllRoles(): Observable<Role[]> {
     return this.http.get<Role[]>('http://localhost:8078/Role/AllRoles');
   }
@@ -28,12 +33,19 @@ export class RoleService {
   }
 
   getListPermissionByIdRole(id: string): Observable<Permission[]> {
+<<<<<<< Updated upstream
     return this.http.get<Permission[]>(`http://localhost:8078/Role/getListPByR/${id}`);
+=======
+    return this.http.get<Permission[]>(
+      `http://localhost:8078/Role/getListPByR/${id}`
+    );
+>>>>>>> Stashed changes
   }
 
   updateRole(role: Role): Observable<any> {
     return this.http.put('http://localhost:8078/Role/', role);
   }
+<<<<<<< Updated upstream
 
   associatePermissionToRole(roleId: string, permissionId: string): Observable<boolean> {
     return this.http.post<boolean>(`http://localhost:8078/Role/ajouterPermissionToRole/${roleId}/${permissionId}`, {});
@@ -41,5 +53,26 @@ export class RoleService {
 
   getRoleById(roleId: string): Observable<any> {
     return this.http.get<boolean>(`http://localhost:8078/Role/unrole/${roleId}`);
+=======
+  /*associatePermissionToRole(
+    roleId: string,
+    permissionId: string
+  ): Observable<boolean> {
+    return this.http.post<boolean>(
+      `http://localhost:8078/Role/ajouterPermissionToRole/${roleId}/${permissionId}`,
+      {}
+    );
+  }*/
+
+  getRoleById(roleId: string): Observable<any> {
+    return this.http.get<boolean>(
+      `http://localhost:8078/Role/unrole/${roleId}`
+    );
+  }
+  addRoleAndAssociatePermission(roleRequest: any, permissionId: string): Observable<boolean> {
+    // Example assuming backend supports combined creation and association
+    return this.http.post<boolean>(`http://localhost:8078/Role/ajouterPermissionToRole/${permissionId}`, roleRequest);
+    // Adjust the API endpoint and HTTP method as per your backend implementation
+>>>>>>> Stashed changes
   }
 }
