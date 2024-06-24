@@ -2,12 +2,13 @@ import { Configuration } from "./configuration";
 import { Role } from "./role";
 
 export interface User {
-  idUser: string;
+  id: string;
   userName: string;
   password: string;
   email: string;
   enable: boolean;
   adresse: string;
-  role?: Role[];
+  role?: string[];
   configurations: Configuration[];
+  gender?: string;
 }

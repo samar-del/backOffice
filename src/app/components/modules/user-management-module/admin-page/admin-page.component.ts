@@ -55,7 +55,7 @@ export class AdminPageComponent implements OnInit {
       userName: formValue.userName,
       password: formValue.password,
       email: formValue.email,
-      role: selectedRole ? [selectedRole] : []
+      role: selectedRole ? [selectedRole.id] : []
     };
 
     this.userService.addUserAndAssignRole(userRequest).subscribe(
