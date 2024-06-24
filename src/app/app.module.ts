@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { FormDialogComponent } from './components/fields-dialog/form-dialog/form-dialog.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AbstractControl, FormControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -88,7 +88,16 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
 import { JwtModule } from '@auth0/angular-jwt';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import { RestrictInputDirective } from './restrict-input.directive';
+import {TranslationService} from "./services/translation.service";
+import {FieldValidatorFn} from "@ngx-formly/core/lib/services/formly.config";
 
+const regexValidator: FieldValidatorFn = (control: AbstractControl, field: FormlyFieldConfig): ValidationErrors | null => {
+  const pattern = field.templateOptions?.pattern;
+  if (pattern && !new RegExp(pattern).test(control.value)) {
+    return { regexValidation: true }; // Return an object indicating the validation error
+  }
+  return null; // Return null if the validation passes
+};
 
 @NgModule({
   declarations: [
@@ -195,6 +204,12 @@ import { RestrictInputDirective } from './restrict-input.directive';
                 {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
               {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
+          validators: [
+            {
+              name: 'regexValidation',
+              validation: regexValidator
+            }
+          ],
         }),
         FormlyModule.forChild({
             wrappers: [{name: 'row', component: RowWrapperComponent}],
@@ -235,7 +250,7 @@ import { RestrictInputDirective } from './restrict-input.directive';
         MatIconModule,
         MatButtonModule,
     ],
-  providers: [],
+  providers: [TranslationService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
