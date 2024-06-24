@@ -88,6 +88,7 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
 import { JwtModule } from '@auth0/angular-jwt';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import { RestrictInputDirective } from './restrict-input.directive';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -167,9 +168,9 @@ import { RestrictInputDirective } from './restrict-input.directive';
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
-                { name: 'panel', component: PanelFieldWrapperComponent },
-              {name: 'hr_stepper', component: StepperWrapperComponent},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
+                {name: 'panel', component: PanelFieldWrapperComponent},
+                {name: 'hr_stepper', component: StepperWrapperComponent},
+                {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
             ],
             types: [
                 {
@@ -178,12 +179,12 @@ import { RestrictInputDirective } from './restrict-input.directive';
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
                 },
-              {
-                name: 'columnSize',
-                extends: 'formly-group',
-                wrappers: ['form-field'],
-                defaultOptions: {templateOptions: {column: true}}
-              },
+                {
+                    name: 'columnSize',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                },
                 {name: 'columnSize', component: ColumnSizeComponent},
                 {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
                 {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
@@ -191,9 +192,9 @@ import { RestrictInputDirective } from './restrict-input.directive';
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
                 {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-              {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
+                {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
                 {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
+                {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
         }),
         FormlyModule.forChild({
@@ -221,11 +222,11 @@ import { RestrictInputDirective } from './restrict-input.directive';
         CommonModule,
         ToastrModule.forRoot(),
         JwtModule.forRoot({
-          config: {
-            tokenGetter: () => {
-              return localStorage.getItem('accessToken');
-            },
-          }
+            config: {
+                tokenGetter: () => {
+                    return localStorage.getItem('accessToken');
+                },
+            }
         }),
         MatDialogModule,
         MatTableModule,
@@ -234,6 +235,7 @@ import { RestrictInputDirective } from './restrict-input.directive';
         MatStepperModule,
         MatIconModule,
         MatButtonModule,
+        MatCheckboxModule,
     ],
   providers: [],
   bootstrap: [AppComponent]

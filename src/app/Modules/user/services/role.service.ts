@@ -15,16 +15,16 @@ export class RoleService {
     return this.http.get<Role[]>('http://localhost:8078/Role/AllRoles');
   }
 
-  addRole(role: Role): Observable<Role> {
-    return this.http.post<Role>('http://localhost:8078/Role/AjouterRole', role);
+  addRole(role: any): Observable<any> {
+    return this.http.post<any>('http://localhost:8078/Role/addRole', role);
   }
 
   deleteRole(id: string): Observable<any> {
     return this.http.delete<any>(`http://localhost:8078/Role/deleteRole/${id}`);
   }
 
-  addRoleWithPermissions(role: Role): Observable<Role> {
-    return this.http.post<Role>('http://localhost:8078/Role/roles', role);
+  addRoleWithPermissions(role: any): Observable<any> {
+    return this.http.post<any>('http://localhost:8078/Role/addRole', role);
   }
 
   getListPermissionByIdRole(id: string): Observable<Permission[]> {
