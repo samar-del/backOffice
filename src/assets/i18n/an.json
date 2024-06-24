@@ -14,6 +14,8 @@
     }
   ],
   "translations": {
+    "title" : "Form Title",
+    "description" : "Form description",
     "label": "Label",
     "label_fr": "Label in french",
     "label_ar": "Label in arabic",
@@ -55,10 +57,13 @@
     "table_has_value": "Has the value",
     "cancel": "Cancel",
     "save": "Save",
+    "Submit": "Submit",
+    "Reset": "Reset",
     "storageType": "Storage",
     "local_storage":"Local storage",
     "url":"Url",
     "max_file_size":"Max Size",
-    "min_file_size":"Min Size"
+    "min_file_size":"Min Size",
+    "sidebar_title" : "Drag items to the right"
   }
 }
