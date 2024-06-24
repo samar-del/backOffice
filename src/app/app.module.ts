@@ -90,6 +90,8 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import { RestrictInputDirective } from './restrict-input.directive';
 import {TranslationService} from "./services/translation.service";
 import {FieldValidatorFn} from "@ngx-formly/core/lib/services/formly.config";
+import {MatCheckboxModule} from '@angular/material/checkbox';
+
 
 const regexValidator: FieldValidatorFn = (control: AbstractControl, field: FormlyFieldConfig): ValidationErrors | null => {
   const pattern = field.templateOptions?.pattern;
@@ -176,9 +178,9 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
-                { name: 'panel', component: PanelFieldWrapperComponent },
-              {name: 'hr_stepper', component: StepperWrapperComponent},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
+                {name: 'panel', component: PanelFieldWrapperComponent},
+                {name: 'hr_stepper', component: StepperWrapperComponent},
+                {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
             ],
             types: [
                 {
@@ -187,12 +189,12 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
                 },
-              {
-                name: 'columnSize',
-                extends: 'formly-group',
-                wrappers: ['form-field'],
-                defaultOptions: {templateOptions: {column: true}}
-              },
+                {
+                    name: 'columnSize',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                },
                 {name: 'columnSize', component: ColumnSizeComponent},
                 {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
                 {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
@@ -200,9 +202,9 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
                 {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-              {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
+                {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
                 {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
+                {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
           validators: [
             {
@@ -236,11 +238,11 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
         CommonModule,
         ToastrModule.forRoot(),
         JwtModule.forRoot({
-          config: {
-            tokenGetter: () => {
-              return localStorage.getItem('accessToken');
-            },
-          }
+            config: {
+                tokenGetter: () => {
+                    return localStorage.getItem('accessToken');
+                },
+            }
         }),
         MatDialogModule,
         MatTableModule,
@@ -249,6 +251,7 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
         MatStepperModule,
         MatIconModule,
         MatButtonModule,
+        MatCheckboxModule,
     ],
   providers: [TranslationService],
   bootstrap: [AppComponent]

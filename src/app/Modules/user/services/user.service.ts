@@ -83,7 +83,7 @@ updateUser(idUser: string, user:User){
     return this.http.get<any>(`http://localhost:8078/auth/getbyId/${idUser}`);
   }
 
-  getAccessByRole(roleType: string){
+  getAccessByRole (roleType: string){
     return this.http.get<string>(`http://localhost:8078/auth/roleT/${roleType}`)
   }
 
@@ -93,7 +93,7 @@ updateUser(idUser: string, user:User){
   }
 
 
-  addUserAndAssignRole(userRequest:UserRequest):Observable<User>{
-    return this.http.post<User>(`http://localhost:8078/auth/addUserWithRoles`,userRequest);
+  addUserAndAssignRole(userRequest: UserRequest): Observable<any> {
+    return this.http.post<any>(`http://localhost:8078/auth/addUser`, userRequest);
   }
 }

@@ -38,6 +38,7 @@ export class TabDialogComponent implements OnInit {
   }
 
 
+  // tslint:disable-next-line:typedef
   ngOnInit() {
     console.log(this.fieldsList);
     this.form = this.fb.group({

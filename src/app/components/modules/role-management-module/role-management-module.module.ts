@@ -1,13 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PermissionDialogComponent } from './permission-dialog/permission-dialog.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import { RoleUpdateComponent } from './role-update/role-update.component';
+import {MatSelectModule} from '@angular/material/select';
 
 
 
 @NgModule({
-  declarations: [ PermissionDialogComponent],
+  declarations: [ RoleUpdateComponent],
   imports: [
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatSelectModule
   ]
 })
 export class RoleManagementModuleModule { }

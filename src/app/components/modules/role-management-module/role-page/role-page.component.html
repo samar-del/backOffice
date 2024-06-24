@@ -34,7 +34,7 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <button *ngIf="element.roleType" (click)="dialogPEr(element.idRole)" class="btn btn-outline-info mb-2">Update</button>
+              <button *ngIf="element.roleType" (click)="dialogPEr(element.id, element.permissions)" class="btn btn-outline-info mb-2">Update</button>
             </td>
 
           </ng-container>
