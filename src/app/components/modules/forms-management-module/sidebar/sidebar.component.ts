@@ -24,7 +24,7 @@ export class SidebarComponent implements OnInit {
   @Output() itemDragged = new EventEmitter<{ item: string, position: DOMRect }>();
   isSubmenuOpen: boolean[] = [];
   containerDraggedOver = false;
-
+  translations: any = {};
   // Define categories with their respective items
   categories = [
     { name: 'Basics', items: ['Text', 'Number', 'Radio button', 'Checkbox',  'Select', 'Button'] },
@@ -54,6 +54,21 @@ export class SidebarComponent implements OnInit {
           this.categories = translations.categories;
         }
       );
+    });
+
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+
+    this.loadTranslations();
+  }
+
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
     });
   }
 

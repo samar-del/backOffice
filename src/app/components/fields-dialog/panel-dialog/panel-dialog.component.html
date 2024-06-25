@@ -75,6 +75,43 @@
           </div>
         </form>
       </mat-tab>
+      <mat-tab label="Conditional"  [ngClass]="{ 'active-tab': selectedTabIndex === 2 }">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="shouldDisplay">This component should Display</label>
+            <select class="form-select"id="shouldDisplay" formControlName="condi_shouldDisplay" >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="whenShouldDisplay">When the form component:</label>
+            <select class="form-select"id="whenShouldDisplay" formControlName="condi_whenShouldDisplay"  >
+              <option *ngFor="let f of fieldsList" [value]="f">{{f}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="condi-value">Has the value:</label>
+            <input id="condi-value" formControlName="condi_value" type="text" class="form-control" />
+          </div>
+          <div class="form-group" formArrayName="tableRows">
+            <table>
+              <thead>
+              <tr>
+                <th for="table_when_condi">When the form component</th>
+                <th for="table_has_value">Has the value</th>
+                <th for="table_action">Action</th>
+              </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+            <button type="button" class="btn btn-light" (click)="addRow()"><i class="bi bi-file-plus-fill"  style="color: lightseagreen;"></i></button>
+          </div>
+        </form>
+      </mat-tab>
+
     </mat-tab-group>
   </div>
   <div class="preview-tab">

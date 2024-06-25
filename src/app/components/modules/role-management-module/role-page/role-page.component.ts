@@ -10,8 +10,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { GestionRoleComponent } from '../gestion-role/gestion-role.component';
 import { PermissionService } from 'src/app/Modules/user/services/permission.service';
-import { PermissionDialogComponent } from '../permission-dialog/permission-dialog.component';
 import { forkJoin } from 'rxjs';
+import {RoleUpdateComponent} from '../role-update/role-update.component';
 
 @Component({
   selector: 'app-role-page',
@@ -24,7 +24,7 @@ export class RolePageComponent implements OnInit {
   dataSource = new MatTableDataSource<Role>(this.roles);
   roleForm: FormGroup;
   showAddRoleModal: boolean = false; // Ajout d'une variable pour contrôler l'affichage du modal
-
+  listPermissions = [];
   role : Role[];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -33,7 +33,7 @@ export class RolePageComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private roleService: RoleService,
-    private permissionService:PermissionService,
+    private permissionService: PermissionService,
     private toastr: ToastrService,
     public dialog: MatDialog
   ) {
@@ -56,6 +56,14 @@ export class RolePageComponent implements OnInit {
         data.forEach(role => {
           if (!role.permissions) {
             role.permissions = [];
+          }else {
+            const permessionsByRole = [];
+            role.permissions.forEach(permession => {
+               this.permissionService.getPermissionToRole(permession).subscribe(res => {
+                 permessionsByRole.push(res) ;
+              });
+            });
+            role.permissions = permessionsByRole;
           }
         });
         this.roles = data;
@@ -71,34 +79,38 @@ export class RolePageComponent implements OnInit {
 
 
 
-  dialogPEr(id: string) {
-    forkJoin({
-      roles: this.roleService.getAllRoles(),
-      permissions: this.permissionService.getAllPermissions()
-    }).subscribe(data => {
-      const dialogRef = this.dialog.open(PermissionDialogComponent, {
-        width: '500px',
-        data: { id: id, permissions: data.permissions }
-      });
+  dialogPEr(id: string, permission: string[]) {
+    this.roleService.getRoleById(id).subscribe(roleInfo => {
+      const permissionObservables = permission.map((permissionId: any) =>
+        this.permissionService.getPermissionToRole(permissionId.id)
+      );
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.loadRoles();  // Reload the list of roles after addition
-          this.toastr.success('Permissions associated successfully!');
-        } else {
-          this.toastr.info('Permissions association cancelled.');
-        }
+      forkJoin(permissionObservables).subscribe(permissionsByRole => {
+        const dialogRef = this.dialog.open(RoleUpdateComponent, {
+          width: '500px',
+          data: { role: roleInfo, permissions: permissionsByRole }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.loadRoles();  // Reload the list of roles after addition
+            this.toastr.success('Permissions associated successfully!');
+          } else {
+            this.toastr.info('Permissions association cancelled.');
+          }
+        }, error => {
+          console.error('Error occurred while subscribing to dialog close:', error);
+          // Handle error, if necessary
+        });
       }, error => {
-        console.error('Error occurred while subscribing to dialog close:', error);
+        console.error('Error occurred while fetching permissions:', error);
         // Handle error, if necessary
       });
     }, error => {
-      console.error('Error occurred while fetching data:', error);
+      console.error('Error occurred while fetching role:', error);
       // Handle error, if necessary
     });
   }
-
-
   loadPermissions(): void {
     this.permissionService.getAllPermissions().subscribe(
       permissions => {

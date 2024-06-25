@@ -1,85 +1,76 @@
-import { PermissionService } from 'src/app/Modules/user/services/permission.service';
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RoleService } from 'src/app/Modules/user/services/role.service';
-import { Role } from 'src/app/models/role';
-import { Permission } from 'src/app/models/permission';
+import {Component, Inject, OnInit} from '@angular/core';
+import {Role} from '../../../../models/role';
+import {Permission} from '../../../../models/permission';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {PermissionService} from '../../../../Modules/user/services/permission.service';
+import {RoleService} from '../../../../Modules/user/services/role.service';
 
 @Component({
-  selector: 'app-permission-dialog',
-  templateUrl: './permission-dialog.component.html',
-  styleUrls: ['./permission-dialog.component.css']
+  selector: 'app-role-update',
+  templateUrl: './role-update.component.html',
+  styleUrls: ['./role-update.component.css']
 })
-export class PermissionDialogComponent implements OnInit {
+export class RoleUpdateComponent implements OnInit {
+
   selectedRole: Role; // Variable to store the selected role
 
   selectedPermissions: string[] = [];
   roles: Role[];
-  permissions: Permission[];
+  permissions: any[];
   form: FormGroup;
   idRole: string; // Variable to store the idRole passed from the parent component
-
+  allPermissions: any[];
   constructor(
-    public dialogRef: MatDialogRef<PermissionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { idRole: string, permissions: any[] },
+    @Inject(MAT_DIALOG_DATA) public data: {
+      permissions: any[]
+      role: any;
+    },
     private permissionService: PermissionService,
     private fb: FormBuilder,
     private roleService: RoleService
   ) {
 
-
+    this.idRole = this.data.role.id;
     this.form = this.fb.group({
-     idRole: ['', Validators.required],
+      idRole: ['', Validators.required],
       permissions: [[], Validators.required]
     });
     this.form.patchValue({
-      idRole: data.idRole
+      idRole: data.role.id,
     });
-
+    this.permissions = this.data.permissions ;
     console.log("Data received in dialog component:", data);
 
   }
 
   ngOnInit(): void {
-    this.loadPermissions();
+    this.idRole = this.data.role.id;
+    this.permissions = this.data.permissions;
     this.roleService.getRoleById(this.idRole);
+    this.permissionService.getAllPermissions().subscribe(res => {
+      this.allPermissions = res;
+    });
 
   }
-
+  isPermissionSelected(permissionId: string): boolean {
+    return this.permissions.some(permission => permission.id === permissionId);
+  }
   onPermissionSelect(event: any) {
     const selectedPermissionId = event.target.value;
     if (selectedPermissionId) {
       this.selectedPermissions = [selectedPermissionId];
     }
   }
-
-  loadRoles() {
-    this.roleService.getAllRoles().subscribe(roles => {
-      this.roles = roles;
-    });
-  }
-
-  loadPermissions(): void {
-    this.permissionService.getAllPermissions().subscribe(
-      permissions => {
-        this.permissions = permissions;
-      },
-      error => {
-        console.error('Error loading permissions:', error);
-      }
-    );
-  }
-
   onCancelClick() {
     this.dialogRef.close();
   }
 
   onConfirmClick() {
     const idRole = this.form.get('idRole').value;
-    console.log("idrole" ,idRole);
+    console.log("idrole" , idRole);
     const permissionId = this.selectedPermissions[0]; // Get the ID of the selected permission
-    console.log("perm" ,permissionId);
+    console.log("perm" , permissionId);
 
     if (permissionId && idRole) {
       this.roleService.associatePermissionToRole(idRole, permissionId).subscribe(success => {
@@ -93,5 +84,4 @@ export class PermissionDialogComponent implements OnInit {
       });
     }
   }
-
 }

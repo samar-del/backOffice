@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import {TranslationService} from "../../../services/translation.service";
@@ -24,6 +24,7 @@ export class FormTableComponent implements OnInit {
   translations: any = {};
   fieldsList: any[] = [];
   private fieldsListSub: Subscription;
+  NumberOptions = 0 ;
 
   constructor(
     private fb: FormBuilder,
@@ -50,7 +51,10 @@ export class FormTableComponent implements OnInit {
       hide_label_fr: [this.data.hide_label_fr],
       hide_label_ar: [this.data.hide_label_ar],
       property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
     });
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
@@ -115,6 +119,25 @@ export class FormTableComponent implements OnInit {
     });
   }
 
+  addRow(): void {
+    const tableRowsArray = this.form.get('tableRows') as FormArray;
+    tableRowsArray.push(this.createRow());
+    this.NumberOptions++ ;
+  }
+  createRow(): FormGroup {
+    const row = this.fb.group({
+      keyCondition: [''],
+      valueCondition: [''],
+    });
+    return row;
+  }
+  removeRow(index: number): void {
+    this.tableRows.removeAt(index);
+    this.NumberOptions--;
+  }
+  get tableRows(): FormArray {
+    return this.form.get('tableRows') as FormArray;
+  }
   updateTags(inputValue: string): void {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);

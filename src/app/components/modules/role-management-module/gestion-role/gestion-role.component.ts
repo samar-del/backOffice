@@ -86,11 +86,14 @@ export class GestionRoleComponent implements OnInit {
       const formValue = this.form.value;
       const selectedPermissions = formValue.permissions.map((permissionId: string) =>
         this.permissions.find(permission => permission.id === permissionId)
-      ).filter(permission => permission); // Filter out undefined values
-
+      ).filter(permission => permission.id); // Filter out undefined values
+      const listPermissionsId = [];
+      selectedPermissions.forEach(el => {
+        listPermissionsId.push(el.id);
+      });
       const newRole: Role = {
         roleType: formValue.roleType,
-        permissions: selectedPermissions
+        permissions: listPermissionsId,
       };
 
       this.roleService.addRoleWithPermissions(newRole).subscribe(
@@ -108,9 +111,6 @@ export class GestionRoleComponent implements OnInit {
       );
     }
   }
-
-
-
   assignPermissions(options: HTMLOptionsCollection): void {
     const selectedIds: string[] = [];
     for (let i = 0; i < options.length; i++) {
@@ -138,5 +138,11 @@ export class GestionRoleComponent implements OnInit {
     this.dialogRef.close();
 
   }
-
+  toUpperCaseInput() {
+    const roleType = this.form.get('roleType');
+    if (roleType) {
+      const upperCaseValue = roleType.value.toUpperCase().replace(/\s/g, '');
+      roleType.setValue(upperCaseValue, { emitEvent: false });
+    }
+  }
 }

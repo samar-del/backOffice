@@ -8,7 +8,7 @@
       </div>
       <div class="col form-group">
         <label for="permissionType">Permission Type</label>
-        <input id="permissionType" formControlName="permissionType" class="form-control" />
+        <input id="permissionType" formControlName="permissionType" class="form-control" (input)="toUpperCaseInput()" />
       </div>
     </div>
   </mat-dialog-content>

@@ -22,6 +22,7 @@ export class StepperDialogComponent implements OnInit {
   selectedTabIndex = 0;
   translations: any = {};
   fieldsList: any[] = [];
+  NumberOptions = 0 ;
   private fieldsListSub: Subscription;
 
   constructor(
@@ -50,7 +51,11 @@ export class StepperDialogComponent implements OnInit {
       stepper_orientation: [this.data.stepper_orientation || 'horizontal'], // default to horizontal
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      stepperLabels: this.fb.array([])
+      stepperLabels: this.fb.array([]),
+      tableRows: this.fb.array([]),
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
     });
 
     if (this.data.steps) {
@@ -100,6 +105,25 @@ export class StepperDialogComponent implements OnInit {
     }
   }
 
+  addRowCondi(): void {
+    const tableRowsArray = this.form.get('tableRows') as FormArray;
+    tableRowsArray.push(this.createRow());
+    this.NumberOptions++ ;
+  }
+  createRowCondi(): FormGroup {
+    const row = this.fb.group({
+      keyCondition: [''],
+      valueCondition: [''],
+    });
+    return row;
+  }
+  removeRow(index: number): void {
+    this.tableRows.removeAt(index);
+    this.NumberOptions--;
+  }
+  get tableRows(): FormArray {
+    return this.form.get('tableRows') as FormArray;
+  }
   generatePropertyName(label: string): string {
     const words = label.split(/\s+/); // Split label into words
     let propertyName = '';

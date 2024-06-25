@@ -7,7 +7,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
@@ -82,12 +82,17 @@ export class ContentComponent implements OnInit, DoCheck {
   mouseX = 0;
   mouseY = 0;
   isMouseDown = false;
-
+  regexPatterns = {
+    'an': /^[A-Za-z0-9]*$/, // Define the regex pattern for language 'an'
+    'fr': /^[A-Za-z0-9éèàçùâêîôûëïü]*$/, // Define the regex pattern for French
+    'ar': /^[\u0621-\u064A0-9]*$/, // Define the regex pattern for Arabic
+  };
   // Track the dragged field
   draggedField: any;
   dragEvent: any = {};
   tabTag: string ;
   columnFieldIndex: string;
+  translations: any = {};
   labelStepper: string ;
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private formService: FormCreationService, private fieldService: FieldService,
@@ -114,6 +119,12 @@ export class ContentComponent implements OnInit, DoCheck {
         return id;
       })
     ).subscribe();
+
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+
+    this.loadTranslations();
   }
   @HostListener('document:mousemove', ['$event'])
   // tslint:disable-next-line:typedef
@@ -192,6 +203,15 @@ export class ContentComponent implements OnInit, DoCheck {
     //   this.updatePreviewFields();
     // }
     this.shareService.emitPreviewFieldList(this.previewfields);
+  }
+
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
   }
 
   chacklogedInUser() {
@@ -294,6 +314,23 @@ export class ContentComponent implements OnInit, DoCheck {
     return position;
   }
 
+  handleInput(event: Event, language: string): void {
+    const inputElement = event.target as HTMLInputElement;
+    const pattern = this.regexPatterns[language] || /.*/;
+
+    // Filter the input value
+    inputElement.value = inputElement.value.split('').filter(char => pattern.test(char)).join('');
+  }
+
+  regexValidator(language: string) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const pattern = this.regexPatterns[language] || /.*/;
+      if (control.value && !pattern.test(control.value)) {
+        return { regexValidation: true };
+      }
+      return null;
+    };
+  }
   // tslint:disable-next-line:typedef
   async addField(type: any) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
@@ -302,6 +339,7 @@ export class ContentComponent implements OnInit, DoCheck {
     this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
       language = currentLang;
     });
+
     let newField: FormlyFieldConfig[] = [{}];
 
     if ((language === 'an' && type === 'Text') ||
@@ -314,6 +352,7 @@ export class ContentComponent implements OnInit, DoCheck {
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
         const placeholder_ar = customizationData.placeholder_ar;
+
         newField = [{
 
           type: 'input',
@@ -341,10 +380,16 @@ export class ContentComponent implements OnInit, DoCheck {
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value,
+            attributes: {
+              oninput: (event) => this.handleInput(event, language)
+            },
             condition: listeCondition.forEach(el => {
               const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
               return conditionValues;
             })
+          },
+          validators: {
+            validation: [this.regexValidator(language)]
           },
           // wrappers: ['column'],
           expressionProperties: {
@@ -355,7 +400,7 @@ export class ContentComponent implements OnInit, DoCheck {
               }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength ;
             },
             'templateOptions.hidden': (model: any, formState: any) => {
               if (!customizationData.condi_whenShouldDisplay) {
@@ -478,9 +523,15 @@ export class ContentComponent implements OnInit, DoCheck {
               property_name,
               field_tags: customizationData.field_tags,
               error_label: customizationData.error_label,
-              custom_error_message: customizationData.custom_error_message
+              custom_error_message: customizationData.custom_error_message,
+              attributes: {
+                oninput: (event) => this.handleInput(event, language)
+              },
             },
-            wrappers: ['column'],
+            validators: {
+              validation: [this.regexValidator(language)]
+            },
+            //wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
@@ -499,7 +550,10 @@ export class ContentComponent implements OnInit, DoCheck {
                 custom_error_message: customizationData.custom_error_message,
                 condi_shouldDisplay: customizationData.condi_shouldDisplay,
                 condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-                condi_value: customizationData.condi_value
+                condi_value: customizationData.condi_value,
+              },
+              validators: {
+                validation: [this.regexValidator(language)]
               },
             };
             field.fieldGroup.push(fieldGroupElem);
@@ -532,8 +586,14 @@ export class ContentComponent implements OnInit, DoCheck {
                   custom_error_message: customizationData.custom_error_message,
                   condi_shouldDisplay: customizationData.condi_shouldDisplay,
                   condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-                  condi_value: customizationData.condi_value
-                }
+                  condi_value: customizationData.condi_value,
+                  attributes: {
+                    oninput: (event) => this.handleInput(event, language)
+                  },
+                },
+                validators: {
+                  validation: [this.regexValidator(language)]
+                },
               },
             ],
           };
@@ -580,8 +640,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-
+            condi_value: customizationData.condi_value,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
           },
           // wrappers: ['column'],
 
@@ -593,9 +653,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
@@ -635,7 +696,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -644,7 +706,8 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
-              return value;
+              const isValidIFrame = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              return value || !isValidIFrame;
             },
           },
           // Customize other properties as needed
@@ -686,7 +749,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -697,9 +761,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed
@@ -908,7 +973,8 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Radio button') ||
+    }
+    else if ((language === 'an' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
@@ -933,6 +999,9 @@ export class ContentComponent implements OnInit, DoCheck {
             condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
 
         }];
       }
@@ -965,7 +1034,9 @@ export class ContentComponent implements OnInit, DoCheck {
 
           },
           // wrappers: ['column'],
-
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
         }];
       }
     } else if ((language === 'an' && type === 'Select Multiple') ||
@@ -2123,6 +2194,7 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
 
           },
           // wrappers: ['column'],
@@ -2135,9 +2207,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
@@ -2176,7 +2249,8 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -2187,9 +2261,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed

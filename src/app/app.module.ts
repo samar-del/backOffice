@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { FormDialogComponent } from './components/fields-dialog/form-dialog/form-dialog.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {AbstractControl, FormControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -19,7 +19,7 @@ import {
 } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FormlyModule } from '@ngx-formly/core';
+import {FormlyFieldConfig, FormlyModule} from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -87,7 +87,19 @@ import { StepperVerticalWrapperComponent } from './components/stepper-vertical-w
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 import { JwtModule } from '@auth0/angular-jwt';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import { RestrictInputDirective } from './restrict-input.directive';
+import {TranslationService} from "./services/translation.service";
+import {FieldValidatorFn} from "@ngx-formly/core/lib/services/formly.config";
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
+
+const regexValidator: FieldValidatorFn = (control: AbstractControl, field: FormlyFieldConfig): ValidationErrors | null => {
+  const pattern = field.templateOptions?.pattern;
+  if (pattern && !new RegExp(pattern).test(control.value)) {
+    return { regexValidation: true }; // Return an object indicating the validation error
+  }
+  return null; // Return null if the validation passes
+};
 
 @NgModule({
   declarations: [
@@ -143,7 +155,8 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
     StepperWrapperComponent,
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
-    FormFileDialogComponent
+    FormFileDialogComponent,
+    RestrictInputDirective
   ],
     imports: [
         BrowserModule,
@@ -165,9 +178,9 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
-                { name: 'panel', component: PanelFieldWrapperComponent },
-              {name: 'hr_stepper', component: StepperWrapperComponent},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
+                {name: 'panel', component: PanelFieldWrapperComponent},
+                {name: 'hr_stepper', component: StepperWrapperComponent},
+                {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
             ],
             types: [
                 {
@@ -176,12 +189,12 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
                 },
-              {
-                name: 'columnSize',
-                extends: 'formly-group',
-                wrappers: ['form-field'],
-                defaultOptions: {templateOptions: {column: true}}
-              },
+                {
+                    name: 'columnSize',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                },
                 {name: 'columnSize', component: ColumnSizeComponent},
                 {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
                 {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
@@ -189,10 +202,16 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
                 {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-              {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
+                {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
                 {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
-              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
+                {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
+          validators: [
+            {
+              name: 'regexValidation',
+              validation: regexValidator
+            }
+          ],
         }),
         FormlyModule.forChild({
             wrappers: [{name: 'row', component: RowWrapperComponent}],
@@ -219,11 +238,11 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
         CommonModule,
         ToastrModule.forRoot(),
         JwtModule.forRoot({
-          config: {
-            tokenGetter: () => {
-              return localStorage.getItem('accessToken');
-            },
-          }
+            config: {
+                tokenGetter: () => {
+                    return localStorage.getItem('accessToken');
+                },
+            }
         }),
         MatDialogModule,
         MatTableModule,
@@ -232,8 +251,9 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
         MatStepperModule,
         MatIconModule,
         MatButtonModule,
+        MatCheckboxModule,
     ],
-  providers: [],
+  providers: [TranslationService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
