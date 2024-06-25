@@ -1344,8 +1344,8 @@ export class ContentComponent implements OnInit, DoCheck {
               theme: customizationData.theme,
               disabled: customizationData.disabled,
               hidden: customizationData.hidden,
-              hide_label: customizationData.hide_label,
-              custom_css: customizationData.custom_css,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,              custom_css: customizationData.custom_css,
               property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             collapsible: customizationData.collapsible
