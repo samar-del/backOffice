@@ -160,20 +160,28 @@ export class TabDialogComponent implements OnInit {
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
       const tabLabels = this.form.get('tabLabels') as FormArray;
 
-      const fields: FormlyFieldConfig[] = tabLabels.controls.map((control: FormGroup, index: number) => {
-        const tabLabel = control.get('label').value;
+      const updatedTabLabels = tabLabels.controls.map((control: FormGroup) => {
+        return {
+           label: control.get('label').value
+           };
+      });
+
+      const tabs: FormlyFieldConfig[] = updatedTabLabels.map((tabLabel: any, index: number) => {
         return {
           key: 'tab_' + index,
           type: 'input',
           templateOptions: {
-            label: tabLabel,
+            label: tabLabel.label,
+          },
+          expressionProperties: {
+            'templateOptions.label': () => tabLabels.at(index).get('label').value,
           },
         };
       });
 
       this.newField = {
         type: 'tab',
-        fieldGroup: fields,
+        fieldGroup: tabs,
         templateOptions : {
           label: textLabel,
           tabs: tabLabels.value.map(tab => tab.label)

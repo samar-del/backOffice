@@ -134,7 +134,9 @@ export class PanelDialogComponent implements OnInit {
       },
       hide: inputHidden,
       expressionProperties: {
-        'templateOptions.hideLabel': () => labelHidden
+        'templateOptions.label_fr': () => label_fr,
+        'templateOptions.label_ar': () => label_ar
+
       },
       validators: {
         minLength: {

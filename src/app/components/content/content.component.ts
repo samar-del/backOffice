@@ -1858,14 +1858,14 @@ export class ContentComponent implements OnInit, DoCheck {
     field.templateOptions.html_content = customizationData.html_content;
     field.templateOptions.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`;
 // Update tabs if defined
-    if (customizationData.tabLabels && Array.isArray(customizationData.tabLabels)) {
+    /*if (customizationData.tabLabels && Array.isArray(customizationData.tabLabels)) {
       field.templateOptions.tabs = customizationData.tabLabels.map(tab => tab.label);
       console.log(field.templateOptions.tabs);
     } else {
-      console.log('this is the tab :', customizationData.tabLabels);
+  console.log('Tab labels:', customizationData.tabLabels);
       console.error('Tab labels are not defined or not an array');
     }
-
+*/
     // Trigger a change detection cycle to ensure the form is updated
     this.fields = [...this.fields];
 
