@@ -1,4 +1,4 @@
-import { Component, DoCheck } from '@angular/core';
+import { Component, OnInit, DoCheck } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
 import { LoginService } from 'src/app/Modules/user/services/login.service';
 import { Router } from '@angular/router';
@@ -8,27 +8,36 @@ import { Router } from '@angular/router';
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.css'],
 })
-export class ToolbarComponent implements DoCheck {
+export class ToolbarComponent implements OnInit, DoCheck {
   isLoggedIn: boolean = false;
+  ismenurequired = false;
+  currentLanguage: string;
 
-  ismenurequired=false;
   constructor(
     private translationService: TranslationService,
     private loginService: LoginService,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.translationService.getCurrentLanguage().subscribe((language) => {
+      this.currentLanguage = language;
+    });
+  }
+
   ngDoCheck(): void {
-let currenturl= this.router.url;
-if(currenturl=='/login' || currenturl=='/signup'){
-this.ismenurequired=false;
-}else{
-  this.ismenurequired=true;
-}
+    let currenturl = this.router.url;
+    if (currenturl === '/login' || currenturl === '/signup') {
+      this.ismenurequired = false;
+    } else {
+      this.ismenurequired = true;
+    }
   }
 
   changeLanguage(language: string): void {
     this.translationService.changeLanguage(language);
   }
+
   handleLogout() {
     this.loginService.logout();
     this.router.navigate(['/login']);

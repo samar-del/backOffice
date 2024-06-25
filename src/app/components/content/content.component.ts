@@ -331,6 +331,34 @@ export class ContentComponent implements OnInit, DoCheck {
       return null;
     };
   }
+
+  restrictInput(event: KeyboardEvent, language: string) {
+    const arabicCharUnicodeRange = /[\u0600-\u06FF]/;
+    const englishCharUnicodeRange = /[A-Za-z]/;
+    const frenchCharUnicodeRange = /[\u00C0-\u017F]/;
+
+    let regex;
+    switch (language) {
+      case 'ar':
+        regex = arabicCharUnicodeRange;
+        break;
+      case 'fr':
+        regex = frenchCharUnicodeRange;
+        break;
+      case 'en':
+        regex = englishCharUnicodeRange;
+        break;
+      default:
+        regex = /./; // allow everything by default
+    }
+
+    const inputChar = String.fromCharCode(event.charCode);
+    if (!regex.test(inputChar)) {
+      event.preventDefault();
+    }
+  }
+
+
   // tslint:disable-next-line:typedef
   async addField(type: any) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
@@ -381,7 +409,7 @@ export class ContentComponent implements OnInit, DoCheck {
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value,
             attributes: {
-              oninput: (event) => this.handleInput(event, language)
+              oninput: `this.restrictInput(event, '${language}')` // make sure to bind the context correctly
             },
             condition: listeCondition.forEach(el => {
               const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};

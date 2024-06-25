@@ -9,7 +9,8 @@ export class TranslationService {
   private currentLanguageSubject: BehaviorSubject<string>;
 
   constructor(private http: HttpClient) {
-    this.currentLanguageSubject = new BehaviorSubject<string>('an'); // Default language is French
+    const savedLanguage = localStorage.getItem('language') || 'en'; // Default language is 'en'
+    this.currentLanguageSubject = new BehaviorSubject<string>(savedLanguage);
   }
 
   loadTranslations(language: string) {
@@ -18,7 +19,8 @@ export class TranslationService {
 
   changeLanguage(language: string) {
     console.log('Language changed to:', language);
-    this.currentLanguageSubject.next(language);
+    localStorage.setItem('language', language); // Save the selected language to local storage
+    this.currentLanguageSubject.next(language); // Update the current language
   }
 
   getCurrentLanguage() {
