@@ -538,7 +538,7 @@ export class ContentComponent implements OnInit, DoCheck {
             const Key = this.generateRandomId();
             const fieldGroupElem = {
               type: 'input',
-              wrappers: ['address-wrapper'],
+             wrappers: ['address-wrapper'],
               key: this.generateRandomId(), // Ensure unique key for each input
               templateOptions: {
                 label: el.label_row,
