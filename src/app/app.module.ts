@@ -91,6 +91,8 @@ import { RestrictInputDirective } from './restrict-input.directive';
 import {TranslationService} from "./services/translation.service";
 import {FieldValidatorFn} from "@ngx-formly/core/lib/services/formly.config";
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {UpdateFormComponent} from "./components/modules/forms-management-module/update-form/update-form.component";
+import {FormsManagementModuleModule} from "./components/modules/forms-management-module/forms-management-module.module";
 
 
 const regexValidator: FieldValidatorFn = (control: AbstractControl, field: FormlyFieldConfig): ValidationErrors | null => {
@@ -156,103 +158,104 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
     FormFileDialogComponent,
-    RestrictInputDirective
+    RestrictInputDirective,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        MatSidenavModule,
-        BrowserAnimationsModule,
-        MatListModule,
-        MatIconModule,
-        MatToolbarModule,
-        DragDropModule,
-        ReactiveFormsModule,
-        FormlyModule.forRoot({
-            wrappers: [{name: 'column', component: ColumnWrapperComponent}, {
-                name: 'columnSize',
-                component: ColumnSizeComponent
-            },
-                {name: 'html', component: FormlyFieldHtmlComponent},
-                {name: 'iframe', component: FormlyFieldIframeComponent},
-                {name: 'address-wrapper', component: AddressWrapperComponent},
-                {name: 'table', component: TableWrapperComponent},
-                {name: 'tab', component: TabFieldWrapperComponent},
-                {name: 'panel', component: PanelFieldWrapperComponent},
-                {name: 'hr_stepper', component: StepperWrapperComponent},
-                {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
-            ],
-            types: [
-                {
-                    name: 'column',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {column: true}}
-                },
-                {
-                    name: 'columnSize',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {column: true}}
-                },
-                {name: 'columnSize', component: ColumnSizeComponent},
-                {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
-                {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
-                {name: 'panel', component: PanelFieldWrapperComponent, wrappers: ['form-field']},
-                {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
-                {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
-                {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-                {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
-                {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
-                {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
-            ],
-          validators: [
-            {
-              name: 'regexValidation',
-              validation: regexValidator
-            }
-          ],
-        }),
-        FormlyModule.forChild({
-            wrappers: [{name: 'row', component: RowWrapperComponent}],
-            types: [
-                {
-                    name: 'row',
-                    extends: 'formly-group',
-                    wrappers: ['form-field'],
-                    defaultOptions: {templateOptions: {row: true}}
-                },
-            ],
-        }),
-        FormlyBootstrapModule,
-        MatTabsModule,
-        MatDialogModule,
-        NgbModule,
-        HttpClientModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatOptionModule,
-        MatMenuModule,
-        FormsModule,
-        CommonModule,
-        ToastrModule.forRoot(),
-        JwtModule.forRoot({
-            config: {
-                tokenGetter: () => {
-                    return localStorage.getItem('accessToken');
-                },
-            }
-        }),
-        MatDialogModule,
-        MatTableModule,
-        MatCardModule,
-        MatPaginatorModule,
-        MatStepperModule,
-        MatIconModule,
-        MatButtonModule,
-        MatCheckboxModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    MatSidenavModule,
+    BrowserAnimationsModule,
+    MatListModule,
+    MatIconModule,
+    MatToolbarModule,
+    DragDropModule,
+    ReactiveFormsModule,
+    FormlyModule.forRoot({
+      wrappers: [{name: 'column', component: ColumnWrapperComponent}, {
+        name: 'columnSize',
+        component: ColumnSizeComponent
+      },
+        {name: 'html', component: FormlyFieldHtmlComponent},
+        {name: 'iframe', component: FormlyFieldIframeComponent},
+        {name: 'address-wrapper', component: AddressWrapperComponent},
+        {name: 'table', component: TableWrapperComponent},
+        {name: 'tab', component: TabFieldWrapperComponent},
+        {name: 'panel', component: PanelFieldWrapperComponent},
+        {name: 'hr_stepper', component: StepperWrapperComponent},
+        {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
+      ],
+      types: [
+        {
+          name: 'column',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {column: true}}
+        },
+        {
+          name: 'columnSize',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {column: true}}
+        },
+        {name: 'columnSize', component: ColumnSizeComponent},
+        {name: 'file', component: FormlyFieldFileComponent, wrappers: ['form-field']},
+        {name: 'table', component: TableWrapperComponent, wrappers: ['form-field']},
+        {name: 'panel', component: PanelFieldWrapperComponent, wrappers: ['form-field']},
+        {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
+        {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
+        {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
+        {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
+        {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
+        {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
+      ],
+      validators: [
+        {
+          name: 'regexValidation',
+          validation: regexValidator
+        }
+      ],
+    }),
+    FormlyModule.forChild({
+      wrappers: [{name: 'row', component: RowWrapperComponent}],
+      types: [
+        {
+          name: 'row',
+          extends: 'formly-group',
+          wrappers: ['form-field'],
+          defaultOptions: {templateOptions: {row: true}}
+        },
+      ],
+    }),
+    FormlyBootstrapModule,
+    MatTabsModule,
+    MatDialogModule,
+    NgbModule,
+    HttpClientModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatMenuModule,
+    FormsModule,
+    CommonModule,
+    ToastrModule.forRoot(),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: () => {
+          return localStorage.getItem('accessToken');
+        },
+      }
+    }),
+    MatDialogModule,
+    MatTableModule,
+    MatCardModule,
+    MatPaginatorModule,
+    MatStepperModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    FormsManagementModuleModule,
+  ],
   providers: [TranslationService],
   bootstrap: [AppComponent]
 })

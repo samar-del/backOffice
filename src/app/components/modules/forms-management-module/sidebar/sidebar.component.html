@@ -19,5 +19,10 @@
       </ng-container>
     </mat-nav-list>
   </mat-sidenav>
-  <app-content></app-content>
+  <ng-container *ngIf="!edit">
+    <app-content></app-content>
+  </ng-container>
+  <ng-container *ngIf="edit">
+    <app-update-form></app-update-form>
+  </ng-container>
 </mat-sidenav-container>

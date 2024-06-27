@@ -59,6 +59,7 @@ export class ListFormsComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   navigateTo(id) {
-    this.route.navigate([`/home/forms/form`, id]);
+    localStorage.setItem('edit', JSON.stringify(true));
+    this.route.navigate([`/admin/formsManagement/updateForm`, id]);
   }
 }

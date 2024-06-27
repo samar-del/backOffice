@@ -4,6 +4,7 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ContentComponent } from '../../../content/content.component';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {TranslationService} from '../../../../services/translation.service';
+import {UpdateFormComponent} from "../update-form/update-form.component";
 
 @Component({
   selector: 'app-sidebar',
@@ -18,6 +19,7 @@ export class SidebarComponent implements OnInit {
   }
   @ViewChild('sidenav') sidenav: MatSidenav;
   @ViewChild(ContentComponent) contentComponent: ContentComponent;
+  @ViewChild(UpdateFormComponent) updateFormComponent: UpdateFormComponent;
   isExpanded = true;
   isShowing = true;
   showSubSubMenu: boolean[] = []; // Array to store the state of each submenu
@@ -25,6 +27,7 @@ export class SidebarComponent implements OnInit {
   isSubmenuOpen: boolean[] = [];
   containerDraggedOver = false;
   translations: any = {};
+  edit: boolean = false;
   // Define categories with their respective items
   categories = [
     { name: 'Basics', items: ['Text', 'Number', 'Radio button', 'Checkbox',  'Select', 'Button'] },
@@ -61,6 +64,10 @@ export class SidebarComponent implements OnInit {
     });
 
     this.loadTranslations();
+
+    this.edit = JSON.parse(localStorage.getItem('edit') || 'false');
+
+    localStorage.removeItem('edit');
   }
 
   loadTranslations() {

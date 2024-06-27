@@ -1,143 +1,309 @@
-
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {FormContentService} from "../../../../services/form-content.service";
+import {ActivatedRoute} from "@angular/router";
+import {TranslationService} from "../../../../services/translation.service";
+import {ShareService} from "../../../../services/share.service";
+import {forkJoin, Observable} from "rxjs";
+import {Options} from "../../../../models/Options";
+import {map} from "rxjs/operators";
+import {CdkDragDrop} from "@angular/cdk/drag-drop";
+import {PanelDialogComponent} from "../../../fields-dialog/panel-dialog/panel-dialog.component";
+import {FormTableComponent} from "../../../fields-dialog/form-table/form-table.component";
+import {FormDialogCheckboxComponent} from "../../../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component";
+import {FormFileDialogComponent} from "../../../fields-dialog/form-file-dialog/form-file-dialog.component";
+import {HtmlDialogComponent} from "../../../fields-dialog/html-dialog/html-dialog.component";
+import {IFrameDialogComponent} from "../../../fields-dialog/i-frame-dialog/i-frame-dialog.component";
+import {FormDialogComponent} from "../../../fields-dialog/form-dialog/form-dialog.component";
 import {
-  ChangeDetectorRef,
-  Component, DoCheck, HostListener, NgZone,
-  OnInit,
-  ViewChild,
-  ViewEncapsulation
-} from '@angular/core';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
-import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
-import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
-import {RadioCustomizeDialogComponent} from '../fields-dialog/radio-customize-dialog/radio-customize-dialog.component';
-import {FormCreationService} from '../../services/form-creation.service';
-import {Field} from '../../models/Field';
-import {TemplateOptions} from '../../models/TemplateOptions';
-import {Options} from '../../models/Options';
-import {forkJoin, Observable, Subscription} from 'rxjs';
-import {SelectCustomizeDialogComponent} from '../fields-dialog/select-customize-dialog/select-customize-dialog.component';
-import {TelFormDialogComponent} from '../fields-dialog/tel-form-dialog/tel-form-dialog.component';
-import {FieldService} from '../../services/field.service';
-import {OptionsService} from '../../services/options.service';
-import {TemplateOptionsService} from '../../services/template-options.service';
-import {DateFormDialogComponent} from '../fields-dialog/date-form-dialog/date-form-dialog.component';
-import {FormColumnLayoutDialogComponent} from '../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component';
-import {AddressCustomizeDialogComponent} from '../fields-dialog/address-customize-dialog/address-customize-dialog.component';
-import {element, error, promise} from 'protractor';
-import {ShareService} from '../../services/share.service';
-import { FormTableComponent } from '../fields-dialog/form-table/form-table.component';
-import { TableWrapperComponent } from '../table-wrapper/table-wrapper.component';
-import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
-import { PanelDialogComponent } from '../fields-dialog/panel-dialog/panel-dialog.component';
-import {TranslationService} from '../../services/translation.service';
-import {HtmlDialogComponent} from '../fields-dialog/html-dialog/html-dialog.component';
-import {IFrameDialogComponent} from '../fields-dialog/i-frame-dialog/i-frame-dialog.component';
-import { Location } from '@angular/common';
-import { LoginService } from 'src/app/Modules/user/services/login.service';
-import { Router } from '@angular/router';
-import { AuthService } from 'src/app/Modules/user/services/auth.service';
-import { FormFileDialogComponent } from '../fields-dialog/form-file-dialog/form-file-dialog.component';
-import { switchMap } from 'rxjs/operators';
-import {TabDialogComponent} from '../fields-dialog/tab-dialog/tab-dialog.component';
-import {AlertDialogComponent} from '../fields-dialog/alert-dialog/alert-dialog.component';
-import {StepperDialogComponent} from '../fields-dialog/stepper-dialog/stepper-dialog.component';
-
-
+  AddressCustomizeDialogComponent
+} from "../../../fields-dialog/address-customize-dialog/address-customize-dialog.component";
+import {DateFormDialogComponent} from "../../../fields-dialog/date-form-dialog/date-form-dialog.component";
+import {TelFormDialogComponent} from "../../../fields-dialog/tel-form-dialog/tel-form-dialog.component";
+import {
+  FormColumnLayoutDialogComponent
+} from "../../../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component";
+import {
+  RadioCustomizeDialogComponent
+} from "../../../fields-dialog/radio-customize-dialog/radio-customize-dialog.component";
+import {
+  SelectCustomizeDialogComponent
+} from "../../../fields-dialog/select-customize-dialog/select-customize-dialog.component";
+import {TabDialogComponent} from "../../../fields-dialog/tab-dialog/tab-dialog.component";
+import {StepperDialogComponent} from "../../../fields-dialog/stepper-dialog/stepper-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
+import {AlertDialogComponent} from "../../../fields-dialog/alert-dialog/alert-dialog.component";
+import {TemplateOptions} from "../../../../models/TemplateOptions";
+import {Field} from "../../../../models/Field";
 
 @Component({
-  selector: 'app-content',
-  templateUrl: './content.component.html',
-  styleUrls: ['./content.component.css'],
-  encapsulation: ViewEncapsulation.None,
+  selector: 'app-update-form',
+  templateUrl: './update-form.component.html',
+  styleUrls: ['./update-form.component.css']
 })
-export class ContentComponent implements OnInit, DoCheck {
+export class UpdateFormComponent implements OnInit {
 
-  @ViewChild('tableWrapper') tableWrapper: TableWrapperComponent;
-  previewForm: FormGroup;
-  fields: FormlyFieldConfig[] = [];
-  previewfields: FormlyFieldConfig[] = [];
-  @ViewChild('formlyForm') formlyForm: any;
+  selectedFile: File | null = null;
+  //fileUrl: string;
   form: FormGroup;
-  model: any = {};
-  previewModel: any = {};
-  options: FormlyFormOptions = {};
-  containerDraggedOver = false;
-  columnSize: any [ ] = [];
-  recentListFields: any[] = [];
-  categories: { name: string, fields: FormlyFieldConfig[] }[] = [
-    {name: 'Category 1', fields: []},
-    {name: 'Category 2', fields: []},
-
-  ];
-  roles = '';
-  isLoggedIn = false;
-
-  private previousPreviewFields: FormlyFieldConfig[] = [];
   formHeader: FormGroup;
-  layoutField: FormlyFieldConfig = {};
-  fieldGroup: Field = {} ;
+  formExist = false;
+  fields: FormlyFieldConfig[] = [];
+  newFields: FormlyFieldConfig[] = [];
+  previewfields: FormlyFieldConfig[] = [];
+  options: FormlyFormOptions = {};
+  model: any = {};
+  translations: any = {};
+  @ViewChild('formlyForm') formlyForm: any;
+  formId: string;
+  fileUrl: string;
+  langue: string;
+  formTitle: string;
+  formDescription: string;
+  containerDraggedOver = false;
   mouseX = 0;
   mouseY = 0;
   isMouseDown = false;
+  draggedField: any;
+  labelStepper: string ;
+  columnSize: any [ ] = [];
+  recentListFields: any[] = [];
+  previewModel: any = {};
   regexPatterns = {
     'an': /^[A-Za-z0-9]*$/, // Define the regex pattern for language 'an'
     'fr': /^[A-Za-z0-9éèàçùâêîôûëïü]*$/, // Define the regex pattern for French
     'ar': /^[\u0621-\u064A0-9]*$/, // Define the regex pattern for Arabic
   };
-  // Track the dragged field
-  draggedField: any;
-  dragEvent: any = {};
+  layoutField: FormlyFieldConfig = {};
   tabTag: string ;
   columnFieldIndex: string;
-  translations: any = {};
-  labelStepper: string ;
-  // tslint:disable-next-line:max-line-length
-  constructor(private fb: FormBuilder,
-              private newfb: FormBuilder,
-              private dialog: MatDialog,
-              private formService: FormCreationService,
-              private fieldService: FieldService,
-              private optionService: OptionsService,
-              private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService,
-              private translationService: TranslationService,
-              private cdr: ChangeDetectorRef,
-              private ngZone: NgZone,
-              private router: Router,
-              private loginService: LoginService,
-              private authService: AuthService
-    ,         private fbh: FormBuilder,
-              private location: Location) {
+  dragEvent: any = {};
+  private changes = false;
+  constructor(
+    private fb: FormBuilder,
+    private newfb: FormBuilder,
+    private formService: FormContentService,
+    private route: ActivatedRoute,
+    private translationService: TranslationService,
+    private shareService: ShareService,
+    private formservice: FormContentService,
+    private dialog: MatDialog
+  ) {
     this.form = this.fb.group({});
-    this.formHeader = this.fbh.group({});
-    // this.previewForm = this.fb.group({});
-    this.authService.getUserRoles();
   }
 
   ngOnInit(): void {
-    this.chacklogedInUser();
-    this.formHeader = this.fb.group({
-      title: [''],
-      description: ['']
+     this.translationService.getCurrentLanguage().subscribe((language: string) => {
+       this.loadTranslations();
+     });
+    this.langue = localStorage.getItem('language');
+    this.route.params.subscribe((params) => {
+      this.formId = params['id']; // (+) converts string 'id' to a number
+      this.getFormTemplateById();
     });
-    this.authService.getUserId().pipe(
-      switchMap(id => {
-        // Mettre à jour la valeur de l'ID utilisateur dans le formulaire
-        this.form.patchValue({ idUser: id });
-        // Retourner l'ID utilisateur pour la prochaine étape
-        return id;
-      })
-    ).subscribe();
-
-    this.translationService.getCurrentLanguage().subscribe((language: string) => {
-      this.loadTranslations();
+    this.translationService
+      .getCurrentLanguage()
+      .subscribe((language: string) => {
+        this.langue = language;
+        // Update form fields on language change
+        this.updateFormLabel(language);
+      });
+    this.form.valueChanges.subscribe((values) => {
+      console.log('Form Values:', values);
+      console.log('Model:', this.model);
     });
 
     this.loadTranslations();
   }
+  endDrag() {
+    this.isMouseDown = false;
+    this.draggedField = null;
+  }
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
+  }
+
+  updateFormLabel(langue: string) {
+    this.fields.forEach((el) => {
+      if (langue === 'ar') {
+        el.templateOptions.label = el.templateOptions.label_ar;
+        el.templateOptions.placeholder = el.templateOptions.placeholder_ar;
+      } else if (langue === 'fr' || langue === 'an') {
+        el.templateOptions.label = el.templateOptions.label_fr;
+        el.templateOptions.placeholder = el.templateOptions.placeholder_fr;
+      }
+    });
+  }
+  async getFormTemplateById() {
+    try {
+      const res = await this.formService.getFormTemplateById(this.formId).toPromise();
+
+      this.formTitle = res.title;
+      this.formDescription = res.description;
+      this.formExist = true;
+
+      if (!res.fieldIds || res.fieldIds.length === 0) {
+        return;
+      }
+
+      const fieldObservables = res.fieldIds.map((el: string) => this.formService.getFieldById(el));
+      const fields = await forkJoin(fieldObservables).toPromise();
+
+      await this.processFields(fields);
+
+      this.fields = fields;
+      this.initializeFormControls(fields);
+
+      console.log('Form Controls:', this.form.controls);
+      console.log('Initial Model:', this.model);
+      console.log('Fields:', this.fields);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private async processFields(fields: any[]): Promise<void> {
+    for (let field of fields) {
+      if (field.templateOptions.options) {
+        field.templateOptions.disabled = false;
+
+        if (field.type === 'iframe') {
+          const link_iframe = field.templateOptions.link_iframe;
+          this.shareService.changeUrl(link_iframe);
+        }
+
+        const optionsObservables = field.templateOptions.options.map(
+          (op: string) => this.formService.getOptionsById(op)
+        );
+        const options = await forkJoin(optionsObservables).toPromise();
+
+        const newFieldOptions: Options[] = field.templateOptions.options.map((op: string) => {
+          return options.find((opt) => opt.id === op);
+        }).filter(opt => opt !== undefined);
+
+        field.templateOptions.options = newFieldOptions;
+        this.options = field.templateOptions.options;
+      }
+
+      if (field.fieldGroup && field.fieldGroup.length > 0) {
+        let fieldGroupObservables = [] ;
+        field.fieldGroup.map((el) => {
+          if ( el && el.id !== undefined ){
+            fieldGroupObservables.push(this.formService.getFieldById(el?.id));
+          }else {
+            fieldGroupObservables.push(this.formService.getFieldById(el));
+          }
+        } );
+        let fieldGroup = await forkJoin(fieldGroupObservables).toPromise();
+
+        for (const fieldGroupElement of fieldGroup) {
+          if (fieldGroupElement.fieldGroupId && fieldGroupElement.fieldGroupId.length > 0) {
+            let fieldGroupElmObservables = fieldGroupElement.fieldGroupId.map((el: string) => this.formService.getFieldById(el));
+            let fieldGroupFields = await forkJoin(fieldGroupElmObservables).toPromise();
+            fieldGroupElement.fieldGroup= [...fieldGroupFields] ;
+            console.log(fieldGroupElement);
+            fieldGroupElmObservables = null ;
+            fieldGroupFields = null ;
+          }
+        }
+
+        field.fieldGroup = fieldGroup;
+        fieldGroupObservables = null ;
+        fieldGroup = null;
+        await this.processFields(field.fieldGroup); // Recursively process nested fields
+        this.changes = true;
+
+      }
+    }
+  }
+  // tslint:disable-next-line:typedef
+  initializeFormControls(fields: FormlyFieldConfig[]) {
+    const initializeFieldControl = (field: FormlyFieldConfig, parentKey: string = '') => {
+      const key = parentKey ? `${parentKey}.${field.key}` : field.key;
+
+      if (field.fieldGroup && field.fieldGroup.length > 0) {
+        field.fieldGroup.forEach((nestedField) => initializeFieldControl(nestedField, key));
+      } else {
+        const control = this.fb.control(field.defaultValue || '');
+        this.form.addControl(key.toString(), control);
+
+        // Update model when control value changes
+        control.valueChanges.subscribe((value) => {
+          this.setModelValue(key.toString(), value);
+        });
+
+        // Set initial model value
+        this.setModelValue(key.toString(), control.value);
+      }
+    };
+
+    fields.forEach((field) => initializeFieldControl(field));
+
+    // Log the model after form controls are initialized
+    console.log('Model after initializing form controls:', this.model);
+  }
+
+  setModelValue(key: string, value: any) {
+    const keys = key.split('.');
+    let modelPart = this.model;
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!modelPart[keys[i]]) {
+        modelPart[keys[i]] = {};
+      }
+      modelPart = modelPart[keys[i]];
+    }
+    modelPart[keys[keys.length - 1]] = value;
+  }
+
+  submitFormTemplate() {
+    if (this.form.valid) {
+      console.log('Form Model submit:', this.model);
+    }
+
+    const formContentId = this.form.get('formContentId')?.value;
+  }
+
+  uploadFile(formContentId: string, file: File): Observable<string> {
+    const formData: FormData = new FormData();
+    formData.append('formContentId', formContentId);
+    formData.append('file', file, file.name);
+
+    return this.formService.uploadFile(formContentId, file).pipe(
+      map((response: any) => response.fileUrl) // Assurez-vous d'adapter cela à votre réponse serveur
+    );
+  }
+
+  ngDoCheck(): void {
+    if (this.fields){
+      this.newFields = this.fields;
+    }
+  }
+
+  deleteField(uniqueKey: string){
+    const fieldIndex = this.fields.findIndex(field => field.key === uniqueKey);
+
+    if (fieldIndex !== -1) {
+      this.fields.splice(fieldIndex, 1);
+
+      this.form = this.fb.group({});
+      // this.formlyForm.resetForm({ model: this.model, fields: this.fields });
+    }
+  }
+  onDragOver(event: DragEvent) {
+    event.preventDefault(); // Allow drop by preventing default behavior
+  }
+
+  // tslint:disable-next-line:typedef
+  onDragLeave(event: DragEvent) {
+    event.preventDefault(); // Prevent default behavior to maintain drop zone
+  }
+
   @HostListener('document:mousemove', ['$event'])
   // tslint:disable-next-line:typedef
   onMouseMove(event: MouseEvent) {
@@ -159,29 +325,29 @@ export class ContentComponent implements OnInit, DoCheck {
       if (firstElmCondition || tabCondition || panelCondition || columnCondition || stepperCondition ) {
         // this.addFieldGroupToField('text');  mat-tab-label-content
         this.addField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
-          }
+      }
       else if (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' || (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel') || (event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row' ) || event1.target?.__ngContext__[23].type === 'column' ){
         // event.target.__ngContext__[8].draggedField
         // this.addField('Panel');
         if ((event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || event1.target?.__ngContext__[23].type === 'column'  ){
-         if (event1.target?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
-           if (event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== 0 && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.type === 'tab'){
-            // tab layout
-             this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
-           }else {
-             this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
-           }
+          if (event1.target?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
+            if (event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== 0 && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.type === 'tab'){
+              // tab layout
+              this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+            }else {
+              this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+            }
 
-           if (event1.target?.lastChild.__ngContext__ !== undefined && event1.target?.lastChild.__ngContext__[25] !== undefined && event1.target?.lastChild.__ngContext__[25].firstChild.innerText !== undefined){
-             this.labelStepper = event1.target?.lastChild.__ngContext__[25].firstChild.innerText;
-           }
-         } else if (event1.target?.__ngContext__[23].type === 'column' ) {
-           this.layoutField = event1.target?.__ngContext__[23];
-         }else {
-             this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[24] ;
-         }
-         // this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
-         this.tabTag = event1.target?.__ngContext__[21].innerText ; }
+            if (event1.target?.lastChild.__ngContext__ !== undefined && event1.target?.lastChild.__ngContext__[25] !== undefined && event1.target?.lastChild.__ngContext__[25].firstChild.innerText !== undefined){
+              this.labelStepper = event1.target?.lastChild.__ngContext__[25].firstChild.innerText;
+            }
+          } else if (event1.target?.__ngContext__[23].type === 'column' ) {
+            this.layoutField = event1.target?.__ngContext__[23];
+          }else {
+            this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[24] ;
+          }
+          // this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
+          this.tabTag = event1.target?.__ngContext__[21].innerText ; }
         else if (event1.target.__ngContext__ !== undefined &&  event1.target.__ngContext__[0] !== undefined && event1.target.__ngContext__[0].className === 'form-row'){
           this.columnFieldIndex = event1.target.__ngContext__[24];
           this.layoutField = event1.target.__ngContext__[0].__ngContext__[0].__ngContext__[0].__ngContext__[24];
@@ -198,84 +364,12 @@ export class ContentComponent implements OnInit, DoCheck {
           this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
         }
         this.addFieldGroupToField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
-       // this.addFieldGroupToField('Text');
+        // this.addFieldGroupToField('Text');
       }
       this.endDrag();
     }
   }
-  endDrag() {
-    this.isMouseDown = false;
-    this.draggedField = null;
-  }
-  ngDoCheck(): void {
-    // if (this.arePreviewFieldsChanged()) {
-    //   console.log('Preview fields were changed');
-    //   console.log('this.model', this.model);
-    // //  console.log('this.previewmodel', this.previewModel);
-    //   this.updatePreviewFields();
-    // }
-    this.shareService.emitPreviewFieldList(this.previewfields);
-  }
 
-  loadTranslations() {
-    this.translationService.getCurrentLanguage().subscribe((language: string) => {
-      this.translationService.loadTranslations(language).subscribe((translations: any) => {
-        console.log('Loaded translations:', translations);
-        this.translations = translations;
-      });
-    });
-  }
-
-  chacklogedInUser() {
-    this.isLoggedIn = this.authService.isLoggedIn();
-    this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
-
-  }
-
-  updatePreviewFields() {
-    this.previewfields.forEach(field => {
-      const fieldTocheck = this.fields.find(el => el.key === field.templateOptions.condi_whenShouldDispaly);
-      if (fieldTocheck && this.previewModel[fieldTocheck.key.toString()] !== field.templateOptions.condi_value) {
-        field.templateOptions.hidden = true;
-      } else if (typeof field.expressionProperties === 'object' && typeof field.expressionProperties['templateOptions.hidden'] === 'function') {
-        const expressionFunction = field.expressionProperties['templateOptions.hidden'];
-        field.templateOptions.hidden = expressionFunction(this.previewModel, null, field);
-      }
-    });
-  }
-
-  arePreviewFieldsChanged(): boolean {
-    if (this.previousPreviewFields.length !== this.previewfields.length) {
-      return true;
-    }
-
-    for (let i = 0; i < this.previewfields.length; i++) {
-      console.log(this.fields[i].model);
-      if (JSON.stringify(this.previewfields[i].model) !== JSON.stringify(this.previousPreviewFields[i].model)) {
-        return true;
-      }
-    }
-    return false;
-    console.log('this.fields.values()', this.fields.values());
-    console.log('this.model', this.model);
-    console.log('this.previewfields.values()', this.previewfields.values());
-    console.log('this.previewmodel', this.previewModel);
-    console.log('this.fields.values()', this.fields.values());
-  }
-  // onMouseMove(event: MouseEvent) {
-  //   // Handle mouse move event
-  //   console.log('Mouse moved:', event);
-  //   if (event.target.__ngContext__[8].field.type === 'panel'){
-  //     this.addFieldGroupToField('text');
-  //   }
-  //   // You can access event.clientX and event.clientY for mouse coordinates
-  // }
-
-  // onMouseLeave(event: MouseEvent) {
-  //   // Handle mouse leave event
-  //   console.log('Mouse left the component.');
-  // }
-  // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>, droppedItem: any) {
     this.dragEvent = event ;
     this.isMouseDown = true;
@@ -309,21 +403,10 @@ export class ContentComponent implements OnInit, DoCheck {
       // Handle drop outside any formly-field
       console.log('Dropped outside any formly-field');
     }
- //   this.addField(droppedItem);
+    //   this.addField(droppedItem);
 
 
     this.containerDraggedOver = false;
-  }
-
-  calculatePosition(event: CdkDragDrop<string[]>): number {
-    const offsetY = event.distance.y - event.container.element.nativeElement.getBoundingClientRect().top;
-
-    const containerHeight = event.container.element.nativeElement.clientHeight;
-    const totalSegments = this.fields.length + 1; // Total segments including existing fields
-    const segmentHeight = containerHeight / totalSegments;
-    const position = Math.floor(offsetY / segmentHeight);
-
-    return position;
   }
 
   handleInput(event: Event, language: string): void {
@@ -344,34 +427,6 @@ export class ContentComponent implements OnInit, DoCheck {
     };
   }
 
-  restrictInput(event: KeyboardEvent, language: string) {
-    const arabicCharUnicodeRange = /[\u0600-\u06FF]/;
-    const englishCharUnicodeRange = /[A-Za-z]/;
-    const frenchCharUnicodeRange = /[\u00C0-\u017F]/;
-
-    let regex;
-    switch (language) {
-      case 'ar':
-        regex = arabicCharUnicodeRange;
-        break;
-      case 'fr':
-        regex = frenchCharUnicodeRange;
-        break;
-      case 'en':
-        regex = englishCharUnicodeRange;
-        break;
-      default:
-        regex = /./; // allow everything by default
-    }
-
-    const inputChar = String.fromCharCode(event.charCode);
-    if (!regex.test(inputChar)) {
-      event.preventDefault();
-    }
-  }
-
-
-  // tslint:disable-next-line:typedef
   async addField(type: any) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     let language: string;
@@ -578,7 +633,7 @@ export class ContentComponent implements OnInit, DoCheck {
             const Key = this.generateRandomId();
             const fieldGroupElem = {
               type: 'input',
-             wrappers: ['address-wrapper'],
+              wrappers: ['address-wrapper'],
               key: this.generateRandomId(), // Ensure unique key for each input
               templateOptions: {
                 label: el.label_row,
@@ -1147,8 +1202,8 @@ export class ContentComponent implements OnInit, DoCheck {
       }
 
     } else if  ((language === 'an' && type === 'File') ||
-    (language === 'fr' && type === 'Fichier') ||
-    (language === 'ar' && type === 'خانة اختيار')) {
+      (language === 'fr' && type === 'Fichier') ||
+      (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openFileDialog().toPromise();
       if (customizationData){
         const label_fr = customizationData.label_fr;
@@ -1180,29 +1235,29 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-       /*{
-        const label_fr = customizationData.label_fr;
-        const label_ar = customizationData.label_ar;
+      /*{
+       const label_fr = customizationData.label_fr;
+       const label_ar = customizationData.label_ar;
 
-      newField = [{
-        key: customizationData.property_name,
-        type: 'file',
-        templateOptions: {
-          label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-          label_fr,
-          label_ar,
-          disabled: customizationData.disabled,
-          hidden: customizationData.hidden,
-          hide_label: customizationData.hide_label,
-          custom_css: customizationData.custom_css,
-          required: customizationData.required,
-          property_name: customizationData.property_name,
-          field_tags: customizationData.field_tags,
-          error_label: customizationData.error_label,
-          custom_error_message: customizationData.custom_error_message
-        },
-      }];
-    }*/
+     newField = [{
+       key: customizationData.property_name,
+       type: 'file',
+       templateOptions: {
+         label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+         label_fr,
+         label_ar,
+         disabled: customizationData.disabled,
+         hidden: customizationData.hidden,
+         hide_label: customizationData.hide_label,
+         custom_css: customizationData.custom_css,
+         required: customizationData.required,
+         property_name: customizationData.property_name,
+         field_tags: customizationData.field_tags,
+         error_label: customizationData.error_label,
+         custom_error_message: customizationData.custom_error_message
+       },
+     }];
+   }*/
 
     } else if (type === 'Columns') {
 
@@ -1249,7 +1304,7 @@ export class ContentComponent implements OnInit, DoCheck {
         // ];
         let tableRow: FormlyFieldConfig;
         let columnField: FormlyFieldConfig = {};
-       // const columnFieldsByRow: FormlyFieldConfig[] = [];
+        // const columnFieldsByRow: FormlyFieldConfig[] = [];
         // Generate table rows with the specified number of rows and columns
         for (let i = 0; i < customizationData.number_rows; i++) {
           const columnFieldsByRow: FormlyFieldConfig[] = [];
@@ -1263,7 +1318,7 @@ export class ContentComponent implements OnInit, DoCheck {
             console.log(tableRow);
           }
           tableRow = {
-             key: 'row' + Math.floor(Math.random() * 90) + i,
+            key: 'row' + Math.floor(Math.random() * 90) + i,
             type: 'row',
             fieldGroup: columnFieldsByRow,
           };
@@ -1343,7 +1398,7 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
       const newFieldType = customizationData.stepper_orientation === 'horizontal' ? 'hr_stepper' : 'vr_stepper';
       if (customizationData) {
-          const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
+        const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
             key: stepLabel.label,
             templateOptions: {
@@ -1356,7 +1411,7 @@ export class ContentComponent implements OnInit, DoCheck {
           };
         });
 
-          newField = [
+        newField = [
           {
             type: newFieldType,
             fieldGroup: steps,
@@ -1381,36 +1436,36 @@ export class ContentComponent implements OnInit, DoCheck {
 
           },
         ];
-          console.log(newField);
+        console.log(newField);
       }
     }
 
     else if (type === 'Panel') {
-        const customizationData = await this.openPanelDialog();
-        if (customizationData) {
-          newField = [{
-            type: 'panel',
-            key: customizationData.property_name,
-            templateOptions: {
-              label: customizationData.label,
-              theme: customizationData.theme,
-              disabled: customizationData.disabled,
-              hidden: customizationData.hidden,
-              hide_label: customizationData.hide_label,
-              custom_css: customizationData.custom_css,
-              property_name: customizationData.property_name,
+      const customizationData = await this.openPanelDialog();
+      if (customizationData) {
+        newField = [{
+          type: 'panel',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: customizationData.label,
+            theme: customizationData.theme,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             collapsible: customizationData.collapsible,
-              condi_shouldDisplay: customizationData.condi_shouldDisplay,
-              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-              condi_value: customizationData.condi_value
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           fieldGroup: [
           ],
         }];
       }
     }
-     else {
+    else {
       //  this.openRadioDialog();
     }
 
@@ -1439,9 +1494,9 @@ export class ContentComponent implements OnInit, DoCheck {
         }
       });
       this.form.valueChanges.subscribe((value) => {
-         this.model = { ...this.form.value };
-         console.log('preview fields', this.previewfields);
-         console.log('model', this.model);
+        this.model = { ...this.form.value };
+        console.log('preview fields', this.previewfields);
+        console.log('model', this.model);
       });
 
       // Rebuild the form group with the updated fields
@@ -1449,7 +1504,7 @@ export class ContentComponent implements OnInit, DoCheck {
       this.newfb.group({});
     }
   }
-    async openPanelDialog() {
+  async openPanelDialog() {
     const dialogRef = this.dialog.open(PanelDialogComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
@@ -1466,7 +1521,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openTableDialog() {
+  async openTableDialog() {
     const dialogRef = this.dialog.open(FormTableComponent, {
       width: '1400px',
       data: {
@@ -1483,7 +1538,7 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
 
-    openCheckboxDialog(): Observable < any > {
+  openCheckboxDialog(): Observable < any > {
     const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
       width: '1400px', // Adjust the width as needed
       data: {
@@ -1531,7 +1586,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openIFrameDialog() {
+  async openIFrameDialog() {
     const dialogRef = this.dialog.open(IFrameDialogComponent, {
       width: '1400px',
       data: {label_fr: '', label_ar: '', link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
@@ -1545,7 +1600,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openInputDialog() {
+  async openInputDialog() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1400px',
       data: {
@@ -1568,7 +1623,7 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
   // tslint:disable-next-line:typedef
-    async openAddressDialog() {
+  async openAddressDialog() {
     const dialogRef = this.dialog.open(AddressCustomizeDialogComponent, {
       width: '1400px',
       data: {label: '', placeholder: ''},
@@ -1584,7 +1639,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openDateDialog() {
+  async openDateDialog() {
     const dialogRef = this.dialog.open(DateFormDialogComponent, {
       width: '1400px',
       data: {label_fr: '', label_ar: '', placeholder: ''},
@@ -1598,7 +1653,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openPhoneDialog() {
+  async openPhoneDialog() {
     const dialogRef = this.dialog.open(TelFormDialogComponent, {
       width: '1400px',
       data: {label_fr: '', label_ar: '', placeholder_fr: '', placeholder_ar: ''},
@@ -1612,7 +1667,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openColumnDialog() {
+  async openColumnDialog() {
     const dialogRef = this.dialog.open(FormColumnLayoutDialogComponent, {
       width: '1400px',
       data: {label: '', width_col: '', tableRows: []},
@@ -1627,7 +1682,7 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
 
-    async openRadioDialog() {
+  async openRadioDialog() {
     const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
       width: '1400px',
       data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label: '', value: ''}]},
@@ -1641,7 +1696,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openSelectDialog() {
+  async openSelectDialog() {
     const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
       width: '1400px',
       data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label: '', value: ''}]},
@@ -1655,7 +1710,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async openTabDialog() {
+  async openTabDialog() {
     const dialogRef = this.dialog.open(TabDialogComponent, {
       width: '1400px',
       data: {
@@ -1694,57 +1749,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-// tslint:disable-next-line:typedef
-    deleteField(uniqueKey: string){
-    const fieldIndex = this.fields.findIndex(field => field.key === uniqueKey);
-
-    if (fieldIndex !== -1) {
-      this.fields.splice(fieldIndex, 1);
-
-      this.form = this.fb.group({});
-      // this.formlyForm.resetForm({ model: this.model, fields: this.fields });
-    }
-  }
-
-    openCustomizationDialog(uniqueKey: string) {
-    const field = this.fields.find(f => f.key === uniqueKey);
-
-    if (field) {
-      const dialogRef = this.dialog.open(FormDialogComponent, {
-        width: '1400px',
-        data: {
-          label: field.templateOptions.label,
-          placeholder: field.templateOptions.placeholder,
-          minLength: field.templateOptions.minLength,
-          maxLength: field.templateOptions.maxLength,
-        },
-      });
-
-      dialogRef.afterClosed().subscribe((newCustomizationData) => {
-        if (newCustomizationData !== undefined) {
-          this.updateCustomizationData(uniqueKey, newCustomizationData);
-        }
-      });
-    }
-  }
-
-
-  // tslint:disable-next-line:typedef
-    updateCustomizationData(uniqueKey: string, newCustomizationData: any) {
-    const field = this.fields.find(f => f.key === uniqueKey);
-
-    if (field) {
-      field.templateOptions = {
-        ...field.templateOptions,
-        ...newCustomizationData,
-      };
-
-      this.form = this.fb.group({});
-      this.formlyForm.resetForm({model: this.model, fields: this.fields});
-    }
-  }
-
-    async openAlertDialog() {
+  async openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       width: '1400px',
       data: {},
@@ -1759,7 +1764,7 @@ export class ContentComponent implements OnInit, DoCheck {
   }
 
   // tslint:disable-next-line:typedef
-    async addFormTemplate() {
+  async addFormTemplate() {
 
     const customizationData = await this.openAlertDialog();
 
@@ -1831,7 +1836,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async saveFieldOptions(field: FormlyFieldConfig): Promise < TemplateOptions > {
+  async saveFieldOptions(field: FormlyFieldConfig): Promise < TemplateOptions > {
 
     let options;
     if (field.templateOptions.options != null) {
@@ -1859,10 +1864,10 @@ export class ContentComponent implements OnInit, DoCheck {
     console.log('Tabs:', field.templateOptions.tabs);
     const stepsMap: {[key: string]: any } = {};
     if (field.templateOptions.steps) {
-        field.templateOptions.steps.forEach((step, index) => {
-          stepsMap[`step${index + 1}`] = step;
-        });
-      }
+      field.templateOptions.steps.forEach((step, index) => {
+        stepsMap[`step${index + 1}`] = step;
+      });
+    }
     console.log('Steps:', field.templateOptions.steps);
     // Parse number_rows and number_columns to integers
     const numberRows = parseInt(field.templateOptions.number_rows, 10);
@@ -1953,10 +1958,10 @@ export class ContentComponent implements OnInit, DoCheck {
   }
   returnField(field: FormlyFieldConfig, idField: string) {
     const newField: Field = {
-    type: field.type,
+      type: field.type,
       key: field.key,
       templateOptions: {
-      label: field.templateOptions.label,
+        label: field.templateOptions.label,
         type: field.templateOptions.type,
         placeholder: field.templateOptions.placeholder,
         minlength: field.templateOptions.minLength,
@@ -1970,21 +1975,21 @@ export class ContentComponent implements OnInit, DoCheck {
         field_tags: field.templateOptions.field_tags,
         error_label: field.templateOptions.error_label,
         custom_error_message: field.templateOptions.custom_error_message
-    },
-    // wrappers: ['column'],
+      },
+      // wrappers: ['column'],
 
-    // expressionProperties: {
-    //   'templateOptions.errorState': (model: any, formState: any) => {
-    //     // Check the length constraints and set error state accordingly
-    //     const value = model[field.templateOptions.key];
-    //     if (value === undefined || value === null) {
-    //       return false; // Value is not defined or null, so no error state
-    //     }
-    //     const minLength = customizationData.minLength || 0;
-    //     const maxLength = customizationData.maxLength || Infinity;
-    //     return value.length < minLength || value.length > maxLength;
-    //   },
-    // },
+      // expressionProperties: {
+      //   'templateOptions.errorState': (model: any, formState: any) => {
+      //     // Check the length constraints and set error state accordingly
+      //     const value = model[field.templateOptions.key];
+      //     if (value === undefined || value === null) {
+      //       return false; // Value is not defined or null, so no error state
+      //     }
+      //     const minLength = customizationData.minLength || 0;
+      //     const maxLength = customizationData.maxLength || Infinity;
+      //     return value.length < minLength || value.length > maxLength;
+      //   },
+      // },
     };
     newField.fieldGroupId.push(idField);
     return newField ;
@@ -2003,6 +2008,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res.id;
   }
+
   generateRandomId(length: number = 8): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -2013,35 +2019,6 @@ export class ContentComponent implements OnInit, DoCheck {
     return randomId;
   }
 
-  // tslint:disable-next-line:typedef
-  onDragOver(event: DragEvent) {
-    event.preventDefault(); // Allow drop by preventing default behavior
-  }
-
-  // tslint:disable-next-line:typedef
-  onDragLeave(event: DragEvent) {
-    event.preventDefault(); // Prevent default behavior to maintain drop zone
-  }
-
-  onDragLeaveField(event) {
-    const clickedElement = event.target;
-    // the parent formly-form element
-    let formlyForm = clickedElement.parentElement;
-    while (formlyForm && !formlyForm.tagName.toLowerCase().includes('formly-form')) {
-      formlyForm = formlyForm.parentElement;
-    }
-    // Check if a formly-form element was found and if the field type is "panel" and then add for other type of layout
-    if (formlyForm && formlyForm.children[0].__ngContext__[24].type === 'panel' ||
-      formlyForm && formlyForm.children[0].__ngContext__[24].type === 'tabs') {
-      this.layoutField = formlyForm.children[0].__ngContext__[24];
-      console.log('layout field', this.layoutField);
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      console.log('Clicked at X:', clickX, 'Y:', clickY, 'inside panel field');
-
-    }
-    this.addFieldGroupToField('Text');
-  }
   async addFieldGroupToField(type: string) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
     let language: string;
@@ -2620,55 +2597,55 @@ export class ContentComponent implements OnInit, DoCheck {
       // if (this.layoutField.type ==='tab'){
       //   const index = this.fields.findIndex(field => field.key === this.layoutField.key);
       //   console.log(this.layoutField);
-        // if (index !== -1) {
-        //   const updatedField = { ...this.fields[index] };
-        //
-        //   if (!updatedField.fieldGroup) {
-        //     updatedField.fieldGroup = [];
-        //   }
-        //
-        //   const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
-        //   if (existingFieldIndex === -1) {
-        //     updatedField.fieldGroup = [...updatedField.fieldGroup, el];
-        //     // const control = this.fb.control(el.defaultValue || '');
-        //     // this.form.addControl(el.key.toString(), control);
-        //     // control.valueChanges.subscribe(value => {
-        //     //   this.model[el.key.toString()] = value;
-        //     // });
-        //
-        //     this.fields = [
-        //       ...this.fields.slice(0, index),
-        //       updatedField,
-        //       ...this.fields.slice(index + 1)
-        //     ];
-        //     this.dragEvent = {};
-        //   }
-        // }
+      // if (index !== -1) {
+      //   const updatedField = { ...this.fields[index] };
+      //
+      //   if (!updatedField.fieldGroup) {
+      //     updatedField.fieldGroup = [];
+      //   }
+      //
+      //   const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
+      //   if (existingFieldIndex === -1) {
+      //     updatedField.fieldGroup = [...updatedField.fieldGroup, el];
+      //     // const control = this.fb.control(el.defaultValue || '');
+      //     // this.form.addControl(el.key.toString(), control);
+      //     // control.valueChanges.subscribe(value => {
+      //     //   this.model[el.key.toString()] = value;
+      //     // });
+      //
+      //     this.fields = [
+      //       ...this.fields.slice(0, index),
+      //       updatedField,
+      //       ...this.fields.slice(index + 1)
+      //     ];
+      //     this.dragEvent = {};
+      //   }
+      // }
       let index: number;
       let rowColumn = {row : '' , column: ''};
       if (this.layoutField.type === 'column'){
         const tables = this.fields.filter( element => element.type === 'table');
-      //  index = tables.findIndex(field => field.fieldGroup.find(fieldGroup => fieldGroup.key === this.layoutField.key));
+        //  index = tables.findIndex(field => field.fieldGroup.find(fieldGroup => fieldGroup.key === this.layoutField.key));
         tables.forEach(table => {
-         table.fieldGroup.forEach(row => {
-           let columnKey = '';
-           for (const col of row.fieldGroup){
-             if (col.key === this.layoutField.key){
-               columnKey = col.key.toString();
-               break;
-             }
-           }
+          table.fieldGroup.forEach(row => {
+            let columnKey = '';
+            for (const col of row.fieldGroup){
+              if (col.key === this.layoutField.key){
+                columnKey = col.key.toString();
+                break;
+              }
+            }
 
-           if (columnKey){
+            if (columnKey){
               rowColumn = { row: row.key.toString(), column: columnKey };
-             }
-           const columnExist = row.fieldGroup.findIndex(column => column.key === rowColumn.column);
-           if (columnExist !== -1){
-             index = this.fields.findIndex(tablesElm => tablesElm.key === table.key);
-           }
-           });
-       });
-       // index = tables.findIndex(field => field.fieldGroup.forEach(fieldGroupElm => {fieldGroupElm.fieldGroup.find(col => col.key === this.layoutField.key); }));
+            }
+            const columnExist = row.fieldGroup.findIndex(column => column.key === rowColumn.column);
+            if (columnExist !== -1){
+              index = this.fields.findIndex(tablesElm => tablesElm.key === table.key);
+            }
+          });
+        });
+        // index = tables.findIndex(field => field.fieldGroup.forEach(fieldGroupElm => {fieldGroupElm.fieldGroup.find(col => col.key === this.layoutField.key); }));
       }else if (this.layoutField.type === 'hr_stepper'){
         index = this.fields.findIndex(elm => elm.type === 'hr_stepper');
       }
@@ -2735,25 +2712,25 @@ export class ContentComponent implements OnInit, DoCheck {
             ];
             this.dragEvent = {};
           }
-          }
+        }
         else if (updatedField.type === 'table' && Array.isArray(updatedField.fieldGroup)) {
           let fieldAdded = false;
 
           // Loop through rows and columns to find the target column
           updatedField.fieldGroup.forEach(row => {
             if (row.type === 'row' && Array.isArray(row.fieldGroup) && row.key === rowColumn.row) {
-             const fieldExist = row.fieldGroup.find(col => col.type === 'column' && col.key === rowColumn.column);
-             if (fieldExist){
-                   fieldExist.fieldGroup = [...fieldExist.fieldGroup, el];
-                   fieldAdded = true;
-                 }
-          //       if ( row.fieldGroup[i].type === 'column' && row.fieldGroup[i].key === this.layoutField.key) {
-          //         const existingFieldIndex = row.fieldGroup[i].fieldGroup.findIndex(groupField => groupField.key === el.key);
-          //         if (existingFieldIndex === -1) {
-          //           row.fieldGroup[i].fieldGroup = [...row.fieldGroup[i].fieldGroup, el];
-          //           fieldAdded = true; // Set flag to true if field is added
-          //         }
-          // }
+              const fieldExist = row.fieldGroup.find(col => col.type === 'column' && col.key === rowColumn.column);
+              if (fieldExist){
+                fieldExist.fieldGroup = [...fieldExist.fieldGroup, el];
+                fieldAdded = true;
+              }
+              //       if ( row.fieldGroup[i].type === 'column' && row.fieldGroup[i].key === this.layoutField.key) {
+              //         const existingFieldIndex = row.fieldGroup[i].fieldGroup.findIndex(groupField => groupField.key === el.key);
+              //         if (existingFieldIndex === -1) {
+              //           row.fieldGroup[i].fieldGroup = [...row.fieldGroup[i].fieldGroup, el];
+              //           fieldAdded = true; // Set flag to true if field is added
+              //         }
+              // }
             }
           });
 
@@ -2813,4 +2790,6 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     });
   }
+
+
 }

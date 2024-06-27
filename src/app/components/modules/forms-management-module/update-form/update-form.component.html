@@ -1,0 +1,42 @@
+<div class="content-container" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+  <form [formGroup]="formHeader" class="row g-3">
+    <div class="col-auto">
+      <label>{{ translations?.translations?.title }}</label>
+      <input type="text" class="form-control" placeholder="{{ translations?.translations?.title }}" formControlName="title" value="{{formTitle}}">
+    </div>
+    <div class="col-auto">
+      <label>{{ translations?.translations?.description }}</label>
+      <input type="text" class="form-control" placeholder="{{ translations?.translations?.description }}" formControlName="description" value="{{formDescription}}">
+    </div>
+  </form>
+  <form [formGroup]="form" (ngSubmit)="submit()" style="width: 100%">
+    <ng-container *ngFor="let field of fields; let i = index">
+      <div class="row align-items-center" cdkDrag cdkDragBoundary=".content-container"> <!-- Add cdkDrag directive here to make the row draggable -->
+        <div class="col-12">
+          <div class="formly-form-container">
+            <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"   (mousemove)="onMouseMove($event)" >
+
+              <formly-field *ngIf="field.templateOptions.custom_css" [field]="field" ></formly-field>
+            </formly-form>
+          </div>
+          <div class="button-container">
+            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon buttonField">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon buttonField" (click)="deleteField(field.key)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="submit-button-container">
+      <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">{{ translations?.translations?.Submit }}</button>
+      <button type="button" class="btn btn-default" (click)="options.resetModel()">{{ translations?.translations?.Reset }}</button>
+
+    </div>
+
+  </form>
+</div>
+
+<app-form-preview-creation [field]="previewfields"></app-form-preview-creation>
