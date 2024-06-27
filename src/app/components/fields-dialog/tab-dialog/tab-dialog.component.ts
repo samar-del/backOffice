@@ -40,18 +40,17 @@ export class TabDialogComponent implements OnInit {
 
   ngOnInit() {
     console.log(this.fieldsList);
-    this.form = this.fb.group({
-      label_fr: [this.data.label_fr, Validators.required],
-      label_ar: [this.data.label_ar, Validators.required],
-      custom_css: [this.data.custom_css],
-      hidden: [this.data.hidden],
-      hide_label_fr: [this.data.hide_label_fr],
-      hide_label_ar: [this.data.hide_label_ar],
-      property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags],
-      tabLabels: this.fb.array(this.data.tabLabels.map(row => this.createRow(row)))
-    });
-
+  this.form = this.fb.group({
+    label_fr: [this.data.label_fr, Validators.required],
+    label_ar: [this.data.label_ar, Validators.required],
+    custom_css: [this.data.custom_css],
+    hidden: [this.data.hidden],
+    hide_label_fr: [this.data.hide_label_fr],
+    hide_label_ar: [this.data.hide_label_ar],
+    property_name: [this.generatePropertyName(this.data.label_fr)],
+    field_tags: [this.data.field_tags],
+    tabLabels: this.fb.array(this.data.tabLabels.map(row => this.createRow(row)))
+  });
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
       propertyNameControl.setValue(this.generatePropertyName(label));
@@ -162,8 +161,8 @@ export class TabDialogComponent implements OnInit {
 
       const updatedTabLabels = tabLabels.controls.map((control: FormGroup) => {
         return {
-           label: control.get('label').value
-           };
+          label: control.get('label').value
+        };
       });
 
       const tabs: FormlyFieldConfig[] = updatedTabLabels.map((tabLabel: any, index: number) => {
@@ -182,14 +181,12 @@ export class TabDialogComponent implements OnInit {
       this.newField = {
         type: 'tab',
         fieldGroup: tabs,
-        templateOptions : {
+        templateOptions: {
           label: textLabel,
           tabs: tabLabels.value.map(tab => tab.label)
         },
       };
-    });
-  }
-
+    });}
 
 
 }
