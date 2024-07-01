@@ -13,7 +13,8 @@ import {FormPreviewCreationComponent} from '../../form-preview-creation/form-pre
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
-
+import {AppModule} from "../../../app.module";
+import {UpdateFormComponent} from "./update-form/update-form.component";
 
 
 @NgModule({
@@ -22,6 +23,11 @@ import {MatTableModule} from '@angular/material/table';
     ContentComponent,
     ListFormsComponent,
     FormPreviewCreationComponent,
+    UpdateFormComponent
+  ],
+  exports: [
+    FormPreviewCreationComponent,
+    SidebarComponent
   ],
   imports: [
     CommonModule,

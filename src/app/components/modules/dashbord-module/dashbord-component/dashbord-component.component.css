@@ -9,7 +9,6 @@
   flex: 1; /* Pour que chaque graphique prenne un espace égal */
   margin: 10px;
   padding: 10px;
-  border: 2px solid #000; /* Ajoute une bordure noire de 2px */
   border-radius: 5px; /* Ajoute des coins arrondis */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ajoute une ombre pour un effet visuel */
   background-color: #f9f9f9; /* Ajoute une couleur de fond légère */
@@ -30,7 +29,6 @@
   flex: 1;
   margin: 10px;
   padding: 10px;
-  border: 2px solid #000;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
@@ -45,7 +43,6 @@
   flex: 1;
   margin: 10px;
   padding: 20px;
-  border: 2px solid #000;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
@@ -69,4 +66,42 @@
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: flex-start;
+}
+
+.icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+.icon i {
+  font-size: 2.25rem;
+}
+
+.icon-shape {
+  display: inline-flex;
+  padding: 12px;
+  text-align: center;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-shape i {
+  font-size: 1.25rem;
+}
+.card-stats .card-body {
+  padding: 1rem 1.5rem;
+}
+.text-sm {
+  font-size: .875rem !important;
+}
+
+.text-white {
+  color: #fff !important;
+}
+
+.card{
+  border-radius: 35px;
+  border: none;
+  box-shadow: 4px 24px 60px 0px rgba(109,141,173,0.25098039215686274) ;
 }

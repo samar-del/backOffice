@@ -1,0 +1,2811 @@
+import {ChangeDetectorRef, Component, HostListener, NgZone, OnInit, ViewChild} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {FormContentService} from "../../../../services/form-content.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {TranslationService} from "../../../../services/translation.service";
+import {ShareService} from "../../../../services/share.service";
+import {forkJoin, Observable} from "rxjs";
+import {Options} from "../../../../models/Options";
+import {map} from "rxjs/operators";
+import {CdkDragDrop} from "@angular/cdk/drag-drop";
+import {PanelDialogComponent} from "../../../fields-dialog/panel-dialog/panel-dialog.component";
+import {FormTableComponent} from "../../../fields-dialog/form-table/form-table.component";
+import {FormDialogCheckboxComponent} from "../../../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component";
+import {FormFileDialogComponent} from "../../../fields-dialog/form-file-dialog/form-file-dialog.component";
+import {HtmlDialogComponent} from "../../../fields-dialog/html-dialog/html-dialog.component";
+import {IFrameDialogComponent} from "../../../fields-dialog/i-frame-dialog/i-frame-dialog.component";
+import {FormDialogComponent} from "../../../fields-dialog/form-dialog/form-dialog.component";
+import {
+  AddressCustomizeDialogComponent
+} from "../../../fields-dialog/address-customize-dialog/address-customize-dialog.component";
+import {DateFormDialogComponent} from "../../../fields-dialog/date-form-dialog/date-form-dialog.component";
+import {TelFormDialogComponent} from "../../../fields-dialog/tel-form-dialog/tel-form-dialog.component";
+import {
+  FormColumnLayoutDialogComponent
+} from "../../../fields-dialog/form-column-layout-dialog/form-column-layout-dialog.component";
+import {
+  RadioCustomizeDialogComponent
+} from "../../../fields-dialog/radio-customize-dialog/radio-customize-dialog.component";
+import {
+  SelectCustomizeDialogComponent
+} from "../../../fields-dialog/select-customize-dialog/select-customize-dialog.component";
+import {TabDialogComponent} from "../../../fields-dialog/tab-dialog/tab-dialog.component";
+import {StepperDialogComponent} from "../../../fields-dialog/stepper-dialog/stepper-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
+import {AlertDialogComponent} from "../../../fields-dialog/alert-dialog/alert-dialog.component";
+import {TemplateOptions} from "../../../../models/TemplateOptions";
+import {Field} from "../../../../models/Field";
+import {FormCreationService} from "../../../../services/form-creation.service";
+import {OptionsService} from "../../../../services/options.service";
+import {TemplateOptionsService} from "../../../../services/template-options.service";
+import {FieldService} from "../../../../services/field.service";
+import {LoginService} from "../../../../Modules/user/services/login.service";
+import {AuthService} from "../../../../Modules/user/services/auth.service";
+import {Location} from "@angular/common";
+
+@Component({
+  selector: 'app-update-form',
+  templateUrl: './update-form.component.html',
+  styleUrls: ['./update-form.component.css']
+})
+export class UpdateFormComponent implements OnInit {
+
+  selectedFile: File | null = null;
+  //fileUrl: string;
+  form: FormGroup;
+  formHeader: FormGroup;
+  formExist = false;
+  fields: FormlyFieldConfig[] = [];
+  newFields: FormlyFieldConfig[] = [];
+  previewfields: FormlyFieldConfig[] = [];
+  options: FormlyFormOptions = {};
+  model: any = {};
+  translations: any = {};
+  @ViewChild('formlyForm') formlyForm: any;
+  formId: string;
+  fileUrl: string;
+  langue: string;
+  formTitle: string;
+  formDescription: string;
+  containerDraggedOver = false;
+  mouseX = 0;
+  mouseY = 0;
+  isMouseDown = false;
+  draggedField: any;
+  labelStepper: string ;
+  columnSize: any [ ] = [];
+  recentListFields: any[] = [];
+  regexPatterns = {
+    'an': /^[A-Za-z0-9]*$/, // Define the regex pattern for language 'an'
+    'fr': /^[A-Za-z0-9éèàçùâêîôûëïü]*$/, // Define the regex pattern for French
+    'ar': /^[\u0621-\u064A0-9]*$/, // Define the regex pattern for Arabic
+  };
+  layoutField: FormlyFieldConfig = {};
+  tabTag: string ;
+  columnFieldIndex: string;
+  dragEvent: any = {};
+  private changes = false;
+  constructor(
+    private fb: FormBuilder,
+    private newfb: FormBuilder,
+    private formService: FormContentService,
+    private route: ActivatedRoute,
+    private translationService: TranslationService,
+    private shareService: ShareService,
+    private dialog: MatDialog,
+    private formCreationService: FormCreationService,
+    private optionService: OptionsService,
+    private templateOptionsService: TemplateOptionsService,
+    private fieldService: FieldService,
+    private cdr: ChangeDetectorRef, private ngZone: NgZone, private router: Router, private loginService: LoginService, private authService: AuthService,
+    private fbh: FormBuilder, private location: Location
+  ) {
+    this.form = this.fb.group({});
+    this.formHeader = this.fbh.group({});
+  }
+
+  ngOnInit(): void {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+    this.langue = localStorage.getItem('language');
+    this.route.params.subscribe((params) => {
+      this.formId = params['id']; // (+) converts string 'id' to a number
+      this.getFormTemplateById();
+    });
+    this.translationService
+      .getCurrentLanguage()
+      .subscribe((language: string) => {
+        this.langue = language;
+        // Update form fields on language change
+        this.updateFormLabel(language);
+      });
+    this.form.valueChanges.subscribe((values) => {
+      console.log('Form Values:', values);
+      console.log('Model:', this.model);
+    });
+
+    this.loadTranslations();
+  }
+  endDrag() {
+    this.isMouseDown = false;
+    this.draggedField = null;
+  }
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
+  }
+
+  updateFormLabel(langue: string) {
+    this.fields.forEach((el) => {
+      if (langue === 'ar') {
+        el.templateOptions.label = el.templateOptions.label_ar;
+        el.templateOptions.placeholder = el.templateOptions.placeholder_ar;
+      } else if (langue === 'fr' || langue === 'an') {
+        el.templateOptions.label = el.templateOptions.label_fr;
+        el.templateOptions.placeholder = el.templateOptions.placeholder_fr;
+      }
+    });
+  }
+  async getFormTemplateById() {
+    try {
+      const res = await this.formService.getFormTemplateById(this.formId).toPromise();
+
+      this.formTitle = res.title;
+      this.formDescription = res.description;
+      this.formExist = true;
+
+      if (!res.fieldIds || res.fieldIds.length === 0) {
+        return;
+      }
+
+      const fieldObservables = res.fieldIds.map((el: string) => this.formService.getFieldById(el));
+      const fields = await forkJoin(fieldObservables).toPromise();
+
+      await this.processFields(fields);
+
+      this.fields = fields;
+      this.initializeFormControls(fields);
+
+      console.log('Form Controls:', this.form.controls);
+      console.log('Initial Model:', this.model);
+      console.log('Fields:', this.fields);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private async processFields(fields: any[]): Promise<void> {
+    for (let field of fields) {
+      if (field.templateOptions.options) {
+        field.templateOptions.disabled = false;
+
+        if (field.type === 'iframe') {
+          const link_iframe = field.templateOptions.link_iframe;
+          this.shareService.changeUrl(link_iframe);
+        }
+
+        const optionsObservables = field.templateOptions.options.map(
+          (op: string) => this.formService.getOptionsById(op)
+        );
+        const options = await forkJoin(optionsObservables).toPromise();
+
+        const newFieldOptions: Options[] = field.templateOptions.options.map((op: string) => {
+          return options.find((opt) => opt.id === op);
+        }).filter(opt => opt !== undefined);
+
+        field.templateOptions.options = newFieldOptions;
+        this.options = field.templateOptions.options;
+      }
+
+      if (field.fieldGroup && field.fieldGroup.length > 0) {
+        let fieldGroupObservables = [] ;
+        field.fieldGroup.map((el) => {
+          if ( el && el.id !== undefined ){
+            fieldGroupObservables.push(this.formService.getFieldById(el?.id));
+          }else {
+            fieldGroupObservables.push(this.formService.getFieldById(el));
+          }
+        } );
+        let fieldGroup = await forkJoin(fieldGroupObservables).toPromise();
+
+        for (const fieldGroupElement of fieldGroup) {
+          if (fieldGroupElement.fieldGroupId && fieldGroupElement.fieldGroupId.length > 0) {
+            let fieldGroupElmObservables = fieldGroupElement.fieldGroupId.map((el: string) => this.formService.getFieldById(el));
+            let fieldGroupFields = await forkJoin(fieldGroupElmObservables).toPromise();
+            fieldGroupElement.fieldGroup= [...fieldGroupFields] ;
+            console.log(fieldGroupElement);
+            fieldGroupElmObservables = null ;
+            fieldGroupFields = null ;
+          }
+        }
+
+        field.fieldGroup = fieldGroup;
+        fieldGroupObservables = null ;
+        fieldGroup = null;
+        await this.processFields(field.fieldGroup); // Recursively process nested fields
+        this.changes = true;
+
+      }
+    }
+  }
+  // tslint:disable-next-line:typedef
+  initializeFormControls(fields: FormlyFieldConfig[]) {
+    const initializeFieldControl = (field: FormlyFieldConfig, parentKey: string = '') => {
+      const key = parentKey ? `${parentKey}.${field.key}` : field.key;
+
+      if (field.fieldGroup && field.fieldGroup.length > 0) {
+        field.fieldGroup.forEach((nestedField) => initializeFieldControl(nestedField, key));
+      } else {
+        const control = this.fb.control(field.defaultValue || '');
+        this.form.addControl(key.toString(), control);
+
+        // Update model when control value changes
+        control.valueChanges.subscribe((value) => {
+          this.setModelValue(key.toString(), value);
+        });
+
+        // Set initial model value
+        this.setModelValue(key.toString(), control.value);
+      }
+    };
+
+    fields.forEach((field) => initializeFieldControl(field));
+
+    // Log the model after form controls are initialized
+    console.log('Model after initializing form controls:', this.model);
+  }
+
+  setModelValue(key: string, value: any) {
+    const keys = key.split('.');
+    let modelPart = this.model;
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!modelPart[keys[i]]) {
+        modelPart[keys[i]] = {};
+      }
+      modelPart = modelPart[keys[i]];
+    }
+    modelPart[keys[keys.length - 1]] = value;
+  }
+
+  submitFormTemplate() {
+    if (this.form.valid) {
+      console.log('Form Model submit:', this.model);
+    }
+
+    const formContentId = this.form.get('formContentId')?.value;
+  }
+
+  uploadFile(formContentId: string, file: File): Observable<string> {
+    const formData: FormData = new FormData();
+    formData.append('formContentId', formContentId);
+    formData.append('file', file, file.name);
+
+    return this.formService.uploadFile(formContentId, file).pipe(
+      map((response: any) => response.fileUrl) // Assurez-vous d'adapter cela à votre réponse serveur
+    );
+  }
+
+  ngDoCheck(): void {
+    if (this.fields){
+      this.newFields = this.fields;
+    }
+  }
+
+  deleteField(uniqueKey: string){
+    const fieldIndex = this.fields.findIndex(field => field.key === uniqueKey);
+
+    if (fieldIndex !== -1) {
+      this.fields.splice(fieldIndex, 1);
+
+      this.form = this.fb.group({});
+      // this.formlyForm.resetForm({ model: this.model, fields: this.fields });
+    }
+  }
+  onDragOver(event: DragEvent) {
+    event.preventDefault(); // Allow drop by preventing default behavior
+  }
+
+  // tslint:disable-next-line:typedef
+  onDragLeave(event: DragEvent) {
+    event.preventDefault(); // Prevent default behavior to maintain drop zone
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  // tslint:disable-next-line:typedef
+  onMouseMove(event: MouseEvent) {
+    if (this.isMouseDown && this.draggedField) {
+      this.mouseX = event.clientX;
+      this.mouseY = event.clientY;
+    }
+  }
+  @HostListener('document:mouseup', ['$event'])
+  // tslint:disable-next-line:typedef
+  onMouseUp(event1: MouseEvent) {
+    if (this.isMouseDown && this.draggedField) {
+      const firstElmCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] === 'content-container' ;
+      const panelCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'row');
+      const tabCondition = event1.target?.__ngContext__ === undefined || (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] !== 'mat-tab-group') ;
+      const columnCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24] !== 0 && (event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row');
+      const tableCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel');
+      const stepperCondition = (event1.target?.firstElementChild !== undefined && event1.target?.firstElementChild !== null) && event1.target?.firstElementChild.__ngContext__ !== undefined &&  event1.target?.firstElementChild.__ngContext__.childNodes !== undefined && event1.target?.firstElementChild.__ngContext__ !== undefined && event1.target?.firstElementChild.__ngContext__[0] !== undefined && event1.target?.firstElementChild.__ngContext__[0].localName !== 'mat-step-header';
+      if (firstElmCondition || tabCondition || panelCondition || columnCondition || stepperCondition ) {
+        // this.addFieldGroupToField('text');  mat-tab-label-content
+        this.addField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
+      }
+      else if (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' || (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.type === 'panel') || (event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row' ) || event1.target?.__ngContext__[23].type === 'column' ){
+        // event.target.__ngContext__[8].draggedField
+        // this.addField('Panel');
+        if ((event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[32]?._groupId !== null) || event1.target?.__ngContext__[23].type === 'column'  ){
+          if (event1.target?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== undefined ){
+            if (event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30] !== 0 && event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.type === 'tab'){
+              // tab layout
+              this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+            }else {
+              this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field ;
+            }
+
+            if (event1.target?.lastChild.__ngContext__ !== undefined && event1.target?.lastChild.__ngContext__[25] !== undefined && event1.target?.lastChild.__ngContext__[25].firstChild.innerText !== undefined){
+              this.labelStepper = event1.target?.lastChild.__ngContext__[25].firstChild.innerText;
+            }
+          } else if (event1.target?.__ngContext__[23].type === 'column' ) {
+            this.layoutField = event1.target?.__ngContext__[23];
+          }else {
+            this.layoutField = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[24] ;
+          }
+          // this.layoutField.key = event1.target?.__ngContext__[3][3][0].__ngContext__[0].__ngContext__[30].field.key;
+          this.tabTag = event1.target?.__ngContext__[21].innerText ; }
+        else if (event1.target.__ngContext__ !== undefined &&  event1.target.__ngContext__[0] !== undefined && event1.target.__ngContext__[0].className === 'form-row'){
+          this.columnFieldIndex = event1.target.__ngContext__[24];
+          this.layoutField = event1.target.__ngContext__[0].__ngContext__[0].__ngContext__[0].__ngContext__[24];
+        }
+        else if ((event1.target?.firstElementChild !== undefined && event1.target?.firstElementChild !== null) &&
+          event1.target?.firstElementChild.__ngContext__ !== undefined &&  event1.target?.firstElementChild.__ngContext__[0].localName === 'mat-step-header'){
+          this.layoutField = event1.target?.firstElementChild.childNodes[1].__ngContext__[29];
+          if (event1.target?.lastChild.__ngContext__ !== undefined && event1.target?.lastChild.__ngContext__[25] !== undefined){
+            this.labelStepper = event1.target?.lastChild.__ngContext__[25].firstChild.innerText;
+          }
+        }
+        else {
+          this.layoutField =  event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field;
+          this.layoutField.key = event1.target?.__ngContext__[20]?.__ngContext__[3][3][0]?.__ngContext__[30]?.field.key.toString() ;
+        }
+        this.addFieldGroupToField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
+        // this.addFieldGroupToField('Text');
+      }
+      this.endDrag();
+    }
+  }
+
+  drop(event: CdkDragDrop<string[]>, droppedItem: any) {
+    this.dragEvent = event ;
+    this.isMouseDown = true;
+    this.draggedField = droppedItem;
+    const targetContainer = event.container.element.nativeElement;
+    this.onMouseUp(event1);
+    // Find the formly-form parent element
+    let formlyForm = targetContainer;
+    while (formlyForm && !formlyForm.tagName.toLowerCase().includes('formly-form')) {
+      formlyForm = formlyForm.parentElement;
+    }
+
+    // Check if a formly-form element was found
+    if (formlyForm && event) {
+      this.onMouseMove(event1);
+      console.log('Dropped inside formly-field:');
+
+      // Check if the parent field is a panel
+      const parentField = formlyForm.children[0].__ngContext__[24];
+      if (parentField && parentField.type === 'panel') {
+        console.log('Parent is a panel. Using addFieldGroup.');
+        // this.addFieldGroupToField(targetField, droppedItem);
+        this.addFieldGroupToField(droppedItem);
+      } else {
+        console.log('Parent is not a panel. Using addFieldToForm.');
+        // this.addFieldToForm(targetField, droppedItem);
+        this.addField(droppedItem);
+      }
+    } else {
+      this.addField(droppedItem);
+      // Handle drop outside any formly-field
+      console.log('Dropped outside any formly-field');
+    }
+    //   this.addField(droppedItem);
+
+
+    this.containerDraggedOver = false;
+  }
+
+  handleInput(event: Event, language: string): void {
+    const inputElement = event.target as HTMLInputElement;
+    const pattern = this.regexPatterns[language] || /.*/;
+
+    // Filter the input value
+    inputElement.value = inputElement.value.split('').filter(char => pattern.test(char)).join('');
+  }
+
+  regexValidator(language: string) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const pattern = this.regexPatterns[language] || /.*/;
+      if (control.value && !pattern.test(control.value)) {
+        return { regexValidation: true };
+      }
+      return null;
+    };
+  }
+
+  async addField(type: any) {
+    const uniqueKey = `newInput_${this.fields.length + 1}`;
+    let language: string;
+    // Subscribe to get the current language
+    this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
+      language = currentLang;
+    });
+
+    let newField: FormlyFieldConfig[] = [{}];
+
+    if ((language === 'en' && type === 'Text') ||
+      (language === 'fr' && type === 'Texte') ||
+      (language === 'ar' && type === 'نص')) {
+      const customizationData = await this.openInputDialog();
+      const listeCondition = customizationData.tableRows;
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
+        newField = [{
+
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'text',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            // hidden: customizationData.hidden,
+            custom_css: customizationData.custom_css,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            attributes: {
+              oninput: `this.restrictInput(event, '${language}')` // make sure to bind the context correctly
+            },
+            condition: listeCondition.forEach(el => {
+              const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
+              return conditionValues;
+            })
+          },
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
+          // wrappers: ['column'],
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false;
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength ;
+            },
+            'templateOptions.hidden': (model: any, formState: any) => {
+              if (!customizationData.condi_whenShouldDisplay) {
+                return false;
+              }
+              const fieldValue = model[customizationData.condi_whenShouldDisplay];
+              return fieldValue !== customizationData.condi_value;
+            }
+          },
+        }];
+      }
+    }
+
+    if ((language === 'en' && type === 'HTML Element') ||
+      (language === 'fr' && type === 'Element HTML') ||
+      (language === 'ar' && type === 'عنصر HTML')) {
+      const customizationData = await this.openHTMLDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const htmlElement = customizationData.htmlElement;
+        console.log(htmlElement);
+        newField = [{
+          type: 'html',
+          key: customizationData.property_name,
+          templateOptions: {
+            html_tag: customizationData.html_tag,
+            html_content: customizationData.html_content,
+            htmlElement,
+            type: 'html',
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            custom_css: customizationData.custom_css,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+        if (customizationData.condi_shouldDisplay && customizationData.condi_shouldDisplay) {
+          if (customizationData.condi_shouldDisplay === true) {
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay) {
+                if (el.model === customizationData.condi_value) {
+                  newField.map(field => {
+                    field.hide = false;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            });
+          } else {
+            this.fields.forEach(el => {
+              if (el.key === customizationData.condi_shouldDisplay) {
+                if (el.model === customizationData.condi_value) {
+                  newField.map(field => {
+                    field.hide = true;
+                    this.previewfields.push(field);
+                  });
+                }
+              }
+            });
+          }
+        }
+
+      }
+    }
+    if ((language === 'en' && type === 'Address') ||
+      (language === 'fr' && type === 'Adresse') ||
+      (language === 'ar' && type === 'العنوان')) {
+      const customizationData = await this.openAddressDialog();
+      const field: FormlyFieldConfig = {};
+      const listFieldAddress = customizationData.tableRows;
+      this.shareService.emitAddressOptions(listFieldAddress);
+      if (customizationData) {
+
+        const listFieldAddress = customizationData.tableRows || [];
+        this.shareService.emitAddressOptions(listFieldAddress);
+
+        const newField: FormlyFieldConfig[] = [];
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+        const property_name = customizationData.property_name;
+
+        if (listFieldAddress.length !== 0) {
+          const field: FormlyFieldConfig = {
+            type: 'column',
+            key: property_name,
+            templateOptions: {
+              label: language === 'ar' ? label_ar : label_fr,
+              label_fr,
+              label_ar,
+              minLength: customizationData.minLength,
+              maxLength: customizationData.maxLength,
+              required: customizationData.required,
+              disabled: customizationData.disabled,
+              hidden: customizationData.hidden,
+              custom_css: customizationData.custom_css,
+              property_name,
+              field_tags: customizationData.field_tags,
+              error_label: customizationData.error_label,
+              custom_error_message: customizationData.custom_error_message,
+              attributes: {
+                oninput: (event) => this.handleInput(event, language)
+              },
+            },
+            validators: {
+              validation: [this.regexValidator(language)]
+            },
+            //wrappers: ['column'],
+            fieldGroup: [],
+          };
+          listFieldAddress.forEach(el => {
+            const Key = this.generateRandomId();
+            const fieldGroupElem = {
+              type: 'input',
+              wrappers: ['address-wrapper'],
+              key: this.generateRandomId(), // Ensure unique key for each input
+              templateOptions: {
+                label: el.label_row,
+                placeholder: el.placeholder_row,
+                custom_css: customizationData.custom_css,
+                property_name,
+                field_tags: customizationData.field_tags,
+                error_label: customizationData.error_label,
+                custom_error_message: customizationData.custom_error_message,
+                condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                condi_value: customizationData.condi_value,
+              },
+              validators: {
+                validation: [this.regexValidator(language)]
+              },
+            };
+            field.fieldGroup.push(fieldGroupElem);
+          });
+          newField.push(field);
+          console.log('New Field:', newField);
+
+          // Update the fields in Formly form
+          this.fields = [...this.fields, ...newField];
+          // this.cdr.detectChanges(); // Trigger change detection
+        }
+        else {
+          const field: FormlyFieldConfig = {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [
+              {
+                type: 'input',
+                key: property_name,
+                templateOptions: {
+                  label: language === 'ar' ? label_ar : label_fr,
+                  label_fr,
+                  label_ar,
+                  placeholder: customizationData.placeholder,
+                  disabled: customizationData.disabled,
+                  hidden: customizationData.hidden,
+                  custom_css: customizationData.custom_css,
+                  property_name,
+                  field_tags: customizationData.field_tags,
+                  error_label: customizationData.error_label,
+                  custom_error_message: customizationData.custom_error_message,
+                  condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                  condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                  condi_value: customizationData.condi_value,
+                  attributes: {
+                    oninput: (event) => this.handleInput(event, language)
+                  },
+                },
+                validators: {
+                  validation: [this.regexValidator(language)]
+                },
+              },
+            ],
+          };
+          newField.push(field);
+          console.log('New Field:', newField);
+
+          // this.fields = [...this.fields, ...newField];
+        }
+      }
+    }
+    if ((language === 'en' && type === 'Email') ||
+      (language === 'fr' && type === 'E-mail') ||
+      (language === 'ar' && type === 'البريد الإلكتروني')) {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'email',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
+          },
+          // wrappers: ['column'],
+
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'IFrame') ||
+      (language === 'fr' && type === 'IFrame') ||
+      (language === 'ar' && type === 'IFrame')) {
+      const customizationData = await this.openIFrameDialog();
+      const link_iframe = customizationData.link_iframe;
+      this.shareService.changeUrl(link_iframe);
+
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+
+        newField = [{
+          type: 'iframe',
+          key: customizationData.property_name,
+          // wrappers: ['column'],
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'iframe',
+            link_iframe: customizationData.link_iframe,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
+          },
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidIFrame = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              return value || !isValidIFrame;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Url') ||
+      (language === 'fr' && type === 'URL') ||
+      (language === 'ar' && type === 'عنوان URL')) {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'url',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Phone Number') ||
+      (language === 'fr' && type === 'Numéro de téléphone') ||
+      (language === 'ar' && type === 'رقم الهاتف')) {
+      const customizationData = await this.openPhoneDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'tel',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength || !isValidPhoneNumber;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Date / Time') ||
+      (language === 'fr' && type === 'Date / Heure') ||
+      (language === 'ar' && type === 'تاريخ / وقت')) {
+      const customizationData = await this.openDateDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'datetime-local',
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Day') ||
+      (language === 'fr' && type === 'Jour') ||
+      (language === 'ar' && type === 'اليوم')) {
+      const customizationData = await this.openDateDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'date',
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+      }
+    } else if ((language === 'en' && type === 'Number') ||
+      (language === 'fr' && type === 'Nombre') ||
+      (language === 'ar' && type === 'عدد')) {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'number',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+      }
+    }
+    else if ((language === 'en' && type === 'Radio button') ||
+      (language === 'fr' && type === 'Bouton radio') ||
+      (language === 'ar' && type === 'راديو')) {
+      const customizationData = await this.openRadioDialog();
+      if (customizationData) {
+        newField = [{
+          type: 'radio',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            options: customizationData.tableRows,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
+
+        }];
+      }
+    } else if ((language === 'en' && type === 'Select') ||
+      (language === 'fr' && type === 'Sélectionner') ||
+      (language === 'ar' && type === 'اختيار')) {
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = [{
+          key: customizationData.property_name,
+          type: 'select',
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            options: customizationData.tableRows,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+
+          },
+          // wrappers: ['column'],
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
+        }];
+      }
+    } else if ((language === 'en' && type === 'Select Multiple') ||
+      (language === 'fr' && type === 'Sélection multiple') ||
+      (language === 'ar' && type === 'اختيار متعدد')) {
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = [{
+
+          key: customizationData.property_name,
+          type: 'select',
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            custom_css: customizationData.custom_css,
+            multiple: true,
+            options: customizationData.tableRows,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+
+        }];
+      }
+
+    } else if ((language === 'en' && type === 'Checkbox') ||
+      (language === 'fr' && type === 'Case à cocher') ||
+      (language === 'ar' && type === 'خانة اختيار')) {
+      const customizationData = await this.openCheckboxDialog().toPromise();
+      if (customizationData) {
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
+        newField = [{
+          type: 'checkbox',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+
+          defaultValue: false,
+        }];
+      }
+
+    } else if  ((language === 'en' && type === 'File') ||
+      (language === 'fr' && type === 'Fichier') ||
+      (language === 'ar' && type === 'خانة اختيار')) {
+      const customizationData = await this.openFileDialog().toPromise();
+      if (customizationData){
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
+        newField = [{
+          type: 'file',
+          key: customizationData.property_name,
+
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            storageType: customizationData.storageType,
+            minFileSize: customizationData.minFileSize,
+            maxFileSize: customizationData.maxFileSize,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+        }];
+      }
+      /*{
+       const label_fr = customizationData.label_fr;
+       const label_ar = customizationData.label_ar;
+
+     newField = [{
+       key: customizationData.property_name,
+       type: 'file',
+       templateOptions: {
+         label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+         label_fr,
+         label_ar,
+         disabled: customizationData.disabled,
+         hidden: customizationData.hidden,
+         hide_label: customizationData.hide_label,
+         custom_css: customizationData.custom_css,
+         required: customizationData.required,
+         property_name: customizationData.property_name,
+         field_tags: customizationData.field_tags,
+         error_label: customizationData.error_label,
+         custom_error_message: customizationData.custom_error_message
+       },
+     }];
+   }*/
+
+    } else if (type === 'Columns') {
+
+      const customizationData = await this.openColumnDialog();
+      if (customizationData) {
+        let columnSizess = [{size: '', width: ''}];
+        columnSizess = customizationData.tableRows;
+        let columnField: FormlyFieldConfig;
+        const columnFields = [];
+        this.shareService.emitNumberColumn(columnSizess);
+        for (let j = 0; j < columnSizess.length; j++) {
+          columnField = {
+            key: 'col-' + columnSizess[j].size + '-' + columnSizess[j].width,
+            type: 'columnSize',
+            fieldGroup: [],
+          } ;
+          columnFields.push(columnField);
+        }
+        newField = [
+          {
+            key: customizationData.propertyName, // Key of the wrapper component for columns
+            type: 'row',
+            fieldGroup: columnFields,
+          }
+        ];
+
+        this.columnSize = customizationData.tableRows;
+        this.shareService.emitNumberColumn(this.columnSize);
+      }
+      console.log(newField);
+      this.form = this.fb.group({});
+      //  this.formlyForm.resetForm({ model: this.model });
+    } else if ((language === 'en' && type === 'Table') ||
+      (language === 'fr' && type === 'Tableau') ||
+      (language === 'ar' && type === 'جدول')) {
+      const customizationData = await this.openTableDialog();
+      if (customizationData) {
+        const tableRows: FormlyFieldConfig[] = [];
+        // let tableRows: FormlyFieldConfig[] = [
+        //   {
+        //     type: 'row',
+        //     fieldGroup: []
+        //   }
+        // ];
+        let tableRow: FormlyFieldConfig;
+        let columnField: FormlyFieldConfig = {};
+        // const columnFieldsByRow: FormlyFieldConfig[] = [];
+        // Generate table rows with the specified number of rows and columns
+        for (let i = 0; i < customizationData.number_rows; i++) {
+          const columnFieldsByRow: FormlyFieldConfig[] = [];
+          for (let j = 0; j < customizationData.number_columns; j++) {
+            columnField = {
+              key: 'column' + Math.floor(Math.random() * 90) + j,
+              type: 'column',
+              fieldGroup: [],
+            } ;
+            columnFieldsByRow.push(columnField);
+            console.log(tableRow);
+          }
+          tableRow = {
+            key: 'row' + Math.floor(Math.random() * 90) + i,
+            type: 'row',
+            fieldGroup: columnFieldsByRow,
+          };
+          tableRows.push(tableRow);
+        }
+        console.log(tableRow);
+        newField = [{
+          type: 'table',
+          fieldGroup: tableRows,
+          key: customizationData.property_name,
+          templateOptions: {
+            type: 'table',
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            number_rows: customizationData.number_rows,
+            number_columns: customizationData.number_columns,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          // wrappers: ['column'],
+        }];
+        console.log(newField);
+      }
+    } else if (
+      (language === 'en' && type === 'Tabs') ||
+      (language === 'fr' && type === 'Onglets') ||
+      (language === 'ar' && type === 'نوافذ التبويب')
+    ) {
+      const customizationData = await this.openTabDialog();
+      if (customizationData) {
+        const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
+          return {
+            templateOptions: { label: tabLabel.label },
+            fieldGroup : [],
+          };
+        });
+
+        newField = [
+          {
+            type: 'tab',
+            fieldGroup: tabs,
+            key: customizationData.property_name,
+            templateOptions: {
+              type: 'tab',
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
+              number_tabs: customizationData.tabLabels.length,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,
+              tabs: customizationData.tabLabels,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
+            },
+            wrappers: ['column'],
+          },
+        ];
+        console.log(newField);
+      }
+    }
+    else if (
+      (language === 'en' && type === 'Stepper') ||
+      (language === 'fr' && type === 'Étapes') ||
+      (language === 'ar' && type === 'متدرج')
+    ) {
+      const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
+      const newFieldType = customizationData.stepper_orientation === 'horizontal' ? 'hr_stepper' : 'vr_stepper';
+      if (customizationData) {
+        const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
+          return {
+            key: stepLabel.label,
+            templateOptions: {
+              label: stepLabel.label,
+            },
+            fieldGroup: [
+              {
+              }
+            ]
+          };
+        });
+
+        newField = [
+          {
+            type: newFieldType,
+            fieldGroup: steps,
+            key: customizationData.property_name,
+            templateOptions: {
+              type: newFieldType,
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
+              number_steps: customizationData.stepperLabels.length,
+              custom_css: customizationData.custom_css,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              hide_label_fr: customizationData.hide_label_fr,
+              hide_label_ar: customizationData.hide_label_ar,
+              steps: customizationData.stepperLabels,
+              orientation: customizationData.orientation,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
+            },
+
+          },
+        ];
+        console.log(newField);
+      }
+    }
+
+    else if (type === 'Panel') {
+      const customizationData = await this.openPanelDialog();
+      if (customizationData) {
+        newField = [{
+          type: 'panel',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: customizationData.label,
+            theme: customizationData.theme,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            collapsible: customizationData.collapsible,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
+          },
+          fieldGroup: [
+          ],
+        }];
+      }
+    }
+    else {
+      //  this.openRadioDialog();
+    }
+
+    if (newField.length > 0) {
+      console.log(newField);
+      newField.forEach(el => {
+        this.fields.push(el);
+        this.recentListFields.push(el.key);
+        this.shareService.emitListFields(this.recentListFields);
+        const previewField: FormlyFieldConfig = {};
+        previewField.key = el.key;
+        previewField.templateOptions = el.templateOptions;
+        previewField.type = el.type;
+        if (el.templateOptions && el.templateOptions.condi_whenShouldDisplay !== undefined) {
+          const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
+          if (fieldToCheck) {
+            if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value) {
+              previewField.templateOptions.hidden = true;
+            } else {
+              previewField.templateOptions.hidden = false;
+            }
+            this.previewfields.push(previewField);
+          } else {
+            this.previewfields.push(el);
+          }
+        }
+      });
+      this.form.valueChanges.subscribe((value) => {
+        this.model = { ...this.form.value };
+        console.log('preview fields', this.previewfields);
+        console.log('model', this.model);
+      });
+
+      // Rebuild the form group with the updated fields
+      this.fb.group({});
+      this.newfb.group({});
+    }
+  }
+  async openPanelDialog() {
+    const dialogRef = this.dialog.open(PanelDialogComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label: '' // You can pass additional data to the panel customization component if needed
+      }
+    });
+
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openTableDialog() {
+    const dialogRef = this.dialog.open(FormTableComponent, {
+      width: '1400px',
+      data: {
+        label_fr: '', label_ar: '', number_rows: '', number_columns: ''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+
+  openCheckboxDialog(): Observable < any > {
+    const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label_fr: '', // Default label value
+        label_ar: ''
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  openFileDialog(): Observable<any> {
+    const dialogRef = this.dialog.open(FormFileDialogComponent, {
+      width: '1400px', // Adjust the width as needed
+      data: {
+        label_fr: '' , // Default label value
+        label_ar: ''
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  async openHTMLDialog() {
+    const dialogRef = this.dialog.open(HtmlDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr: '',
+        label_ar: '',
+        html_tag: '',
+        html_content: '',
+        htmlElement: '',
+        condi_whenShouldDisplay: '',
+        condi_shouldDisplay: '',
+        condi_value: ''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      customizationData.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`;
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openIFrameDialog() {
+    const dialogRef = this.dialog.open(IFrameDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openInputDialog() {
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr: '',
+        label_ar: '',
+        placeholder_fr: '',
+        placeholder_ar: '',
+        condi_whenShouldDisplay: '',
+        condi_shouldDisplay: '',
+        condi_value: ''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  // tslint:disable-next-line:typedef
+  async openAddressDialog() {
+    const dialogRef = this.dialog.open(AddressCustomizeDialogComponent, {
+      width: '1400px',
+      data: {label: '', placeholder: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      console.log('data dialog :' , customizationData);
+      return customizationData;
+      console.log('data dialog :' , customizationData);
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openDateDialog() {
+    const dialogRef = this.dialog.open(DateFormDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', placeholder: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openPhoneDialog() {
+    const dialogRef = this.dialog.open(TelFormDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', placeholder_fr: '', placeholder_ar: ''},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openColumnDialog() {
+    const dialogRef = this.dialog.open(FormColumnLayoutDialogComponent, {
+      width: '1400px',
+      data: {label: '', width_col: '', tableRows: []},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData; // Return the entire customization data object
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+
+  async openRadioDialog() {
+    const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label: '', value: ''}]},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openSelectDialog() {
+    const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label: '', value: ''}]},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openTabDialog() {
+    const dialogRef = this.dialog.open(TabDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr: '', label_ar: ''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  async openStepperDialog() {
+    const dialogRef = this.dialog.open(StepperDialogComponent, {
+      width: '1400px',
+      data: {
+        label_fr: '', label_ar: ''
+      },
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  submit() {
+    if (this.form.valid) {
+      const formValues = this.form.getRawValue();
+      console.log('Form Values:', formValues);
+    }
+  }
+
+  async openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      width: '1400px',
+      data: {},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+  // tslint:disable-next-line:typedef
+  async UpdateFormTemplate() {
+
+    const customizationData = await this.openAlertDialog();
+
+    if (!customizationData) {
+      console.log('Dialog was closed without data');
+      return; // Exit the method if there's no data
+    }
+
+    if (this.form.valid) {
+      const fieldsId: string[] = [];
+      let fieldsGroupId: any[] = [];
+      let fieldOptions;
+      let fieldId;
+      for (const field of this.fields) {
+        if (field.key) {
+          let FieldGroupFieldId = [];
+          if (field.fieldGroup != null && field.fieldGroup.length > 0) {
+            for (const fieldGroup of field.fieldGroup) {
+              if (fieldGroup.fieldGroup != null && fieldGroup.fieldGroup.length > 0){
+                let compteur = 0 ;
+                if (field.type === 'hr_stepper'){
+                  compteur = 1 ;
+                }else {compteur = 0 ; }
+                for (let  i = compteur ; i < fieldGroup.fieldGroup.length ; i++){
+                  const fieldGroupOfFieldGroup = [];
+                  if (fieldGroup.fieldGroup[i].fieldGroup && fieldGroup.fieldGroup[i].fieldGroup.length > 0){
+                    for (let j = 0 ; j < fieldGroup.fieldGroup[i].fieldGroup.length ; j++){
+                      const fieldGroupOfFieldOptions =  await this.saveFieldOptions(fieldGroup.fieldGroup[i].fieldGroup[j]);
+                      const fieldGroupOfFieldElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i].fieldGroup[j], fieldGroupOfFieldOptions, []);
+                      fieldGroupOfFieldGroup.push(fieldGroupOfFieldElmId.id);
+                    }
+                  }
+                  const fieldGroupOptionsElm = await this.saveFieldOptions(fieldGroup.fieldGroup[i]);
+                  const fieldGroupElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i], fieldGroupOptionsElm, fieldGroupOfFieldGroup);
+                  // GETfIELDbYiD AFTER SAVe and push it inside fieldGroup
+                  FieldGroupFieldId.push(fieldGroupElmId.id);
+                }
+              }
+              fieldOptions = await this.saveFieldOptions(fieldGroup);
+              const fieldGroupId = await this.saveFieldsGroupWithTemplateOptions(fieldGroup, fieldOptions , FieldGroupFieldId );
+              FieldGroupFieldId.splice(0, FieldGroupFieldId.length);
+              fieldsGroupId.push(fieldGroupId);
+              FieldGroupFieldId = [];
+            }
+          }
+          fieldOptions = await this.saveFieldOptions(field);
+          fieldId = await this.saveFieldWithTemplateOptions(field, fieldOptions, fieldsGroupId);
+          fieldsId.push(fieldId);
+          fieldsGroupId = [];
+        }
+      }
+      const titre = this.formHeader.get('title').value;
+      const description = this.formHeader.get('description').value;
+      const formTemplate = {
+        fieldIds: fieldsId,
+        title: titre,
+        version: 1,
+        alert_message: customizationData.alert_message,
+        createdAt: new Date(),
+        description
+      };
+
+      this.formCreationService.updateFormTemplate(formTemplate,this.formId).subscribe(
+        res => {
+          console.log('Form template added:', res);
+        },
+        err => console.error('Error adding form template:', err)
+      );
+    }
+  }
+
+  async saveFieldOptions(field: FormlyFieldConfig): Promise < TemplateOptions > {
+
+    let options;
+    if (field.templateOptions.options != null) {
+      options = await Promise.all((field.templateOptions.options as any[]).map(async option => {
+        const newOption: Options = {
+          label: option.label,
+          value: option.value,
+          id: this.generateRandomId()
+        };
+        await this.optionService.addOption(newOption).toPromise();
+        return newOption;
+      }));
+    } else {
+      options = [];
+    }
+
+    const tabsMap: { [key: string]: any } = {};
+    if (Array.isArray(field.templateOptions.tabs)) {
+      field.templateOptions.tabs.forEach((tab, index) => {
+        tabsMap[`tab${index + 1}`] = tab;
+      });
+    } else {
+      console.warn('Tabs is not an array:', field.templateOptions.tabs);
+    }
+
+    // Log to check tabs array
+    console.log('Tabs:', field.templateOptions.tabs);
+    const stepsMap: {[key: string]: any } = {};
+    if (Array.isArray(field.templateOptions.steps)) {
+      field.templateOptions.steps.forEach((step, index) => {
+        stepsMap[`step${index + 1}`] = step;
+      });
+    } else {
+      console.warn('Steps is not an array:', field.templateOptions.steps);
+    }
+    console.log('Steps:', field.templateOptions.steps);
+    // Parse number_rows and number_columns to integers
+    const numberRows = parseInt(field.templateOptions.number_rows, 10);
+    const numberColumns = parseInt(field.templateOptions.number_columns, 10);
+
+    // Generate rows array based on number_rows and number_columns
+    const rows: Array<Array<{ columns: any[] }>> = [];
+    for (let i = 0; i < numberRows; i++) {
+      const row: Array<{ columns: any[] }> = [];
+      for (let j = 0; j < numberColumns; j++) {
+        row.push({ columns: [] });
+      }
+      rows.push(row);
+    }
+
+    const optionValues: string[] = options.map(option => option.id); // Change to store option IDs
+    const templateOptions: TemplateOptions = {
+      label: field.templateOptions.label,
+      placeholder: field.templateOptions.placeholder,
+      label_fr: field.templateOptions.label_fr,
+      label_ar: field.templateOptions.label_ar,
+      disabled: field.templateOptions.disabled,
+      placeholder_fr: field.templateOptions.placeholder_fr,
+      placeholder_ar: field.templateOptions.placeholder_ar,
+      maxlength: field.templateOptions.maxLength,
+      minlength: field.templateOptions.minLength,
+      pattern: field.templateOptions.pattern,
+      multiple: field.templateOptions.multiple,
+      type: field.templateOptions.type,
+      required: field.templateOptions.required,
+      hidden: field.templateOptions.hidden,
+      hide_label_fr: field.templateOptions.hide_label_fr,
+      hide_label_ar: field.templateOptions.hide_label_ar,
+      custom_css: field.templateOptions.custom_css,
+      property_name: field.templateOptions.property_name,
+      field_tags: field.templateOptions.field_tags,
+      error_label: field.templateOptions.error_label,
+      custom_error_message: field.templateOptions.custom_error_message,
+      number_rows: field.templateOptions.number_rows,
+      number_columns: field.templateOptions.number_columns,
+      theme: field.templateOptions.theme,
+      collapsible: field.templateOptions.collapsible,
+      htmlElement: field.templateOptions.htmlElement,
+      link_iframe: field.templateOptions.link_iframe,
+      stepper_orientation: field.templateOptions.stepper_orientation,
+      storageType: field.templateOptions.storageType,
+      maxFileSize: field.templateOptions.maxFileSize,
+      minFileSize: field.templateOptions.minFileSize,
+      tabs: tabsMap,
+      steps: stepsMap,
+      options: optionValues, // Store option IDs instead of values
+      id: this.generateRandomId(),
+      rows
+    };
+
+    await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();
+    return templateOptions;
+  }
+
+  async saveFieldsGroupWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, fieldGroupsId: string[]): Promise<string> {
+    const mappedField: Field = {
+      type: field.type,
+      key: field.key,
+      fieldGroupId: fieldGroupsId,
+      templateOptions, // Store the ID of the templateOptions
+      id: this.generateRandomId(),
+      //
+    };
+
+    const res = await this.fieldService.addField(mappedField).toPromise();
+    return res.id;
+  }
+  async saveFieldsGroupElementWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, listFieldGroup: string[]): Promise<Field> {
+    const fieldsGroupId: any [] = [];
+    const mappedField: Field = {
+      type: field.type,
+      key: field.key,
+      templateOptions, // Store the ID of the templateOptions
+      id: this.generateRandomId(),
+      fieldGroupId: [],
+      //
+    };
+    // if (field.type === 'column'){
+    //   mappedField.fieldGroupId = listFieldGroup;
+    // }
+    const res = await this.fieldService.addField(mappedField).toPromise();
+    return res;
+  }
+  returnField(field: FormlyFieldConfig, idField: string) {
+    const newField: Field = {
+      type: field.type,
+      key: field.key,
+      templateOptions: {
+        label: field.templateOptions.label,
+        type: field.templateOptions.type,
+        placeholder: field.templateOptions.placeholder,
+        minlength: field.templateOptions.minLength,
+        maxlength: field.templateOptions.maxLength,
+        disabled: field.templateOptions.disabled,
+        hidden: field.templateOptions.hidden,
+        hide_label_fr: field.templateOptions.hide_label_fr,
+        hide_label_ar: field.templateOptions.hide_label_ar,
+        custom_css: field.templateOptions.custom_css,
+        property_name: field.templateOptions.property_name,
+        field_tags: field.templateOptions.field_tags,
+        error_label: field.templateOptions.error_label,
+        custom_error_message: field.templateOptions.custom_error_message
+      },
+      // wrappers: ['column'],
+
+      // expressionProperties: {
+      //   'templateOptions.errorState': (model: any, formState: any) => {
+      //     // Check the length constraints and set error state accordingly
+      //     const value = model[field.templateOptions.key];
+      //     if (value === undefined || value === null) {
+      //       return false; // Value is not defined or null, so no error state
+      //     }
+      //     const minLength = customizationData.minLength || 0;
+      //     const maxLength = customizationData.maxLength || Infinity;
+      //     return value.length < minLength || value.length > maxLength;
+      //   },
+      // },
+    };
+    newField.fieldGroupId.push(idField);
+    return newField ;
+  }
+  async saveFieldWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, fieldGroupId: any[]): Promise<string> {
+    if (field.fieldGroup == null) {
+      fieldGroupId = [];
+    }
+    const mappedField: Field = {
+      type: field.type,
+      key: field.key,
+      templateOptions, // Store the ID of the templateOptions
+      id: this.generateRandomId(),
+      fieldGroup: fieldGroupId,
+    };
+    const res = await this.fieldService.addField(mappedField).toPromise();
+    return res.id;
+  }
+
+  generateRandomId(length: number = 8): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let randomId = '';
+    for (let i = 0; i < length; i++) {
+      randomId += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return randomId;
+  }
+
+  async addFieldGroupToField(type: string) {
+    const uniqueKey = `newInput_${this.fields.length + 1}`;
+    let language: string;
+    // Subscribe to get the current language
+    this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
+      language = currentLang;
+    });
+    let newField: FormlyFieldConfig[] = [{}];
+    if ((language === 'en' && type === 'Text') ||
+      (language === 'fr' && type === 'Texte') ||
+      (language === 'ar' && type === 'نص')) {
+      const customizationData = await this.openInputDialog();
+      const listeCondition = customizationData.tableRows;
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+        newField = [{
+
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'text',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            // hidden: customizationData.hidden,
+            custom_css: customizationData.custom_css,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            condition: listeCondition.forEach(el => {
+              const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
+              return conditionValues;
+            })
+          },
+          // wrappers: ['column'],
+          // expressionProperties: {
+          //   'templateOptions.errorState': (model: any, formState: any) => {
+          //     const value = model[customizationData.property_name];
+          //     if (value === undefined || value === null) {
+          //       return false;
+          //     }
+          //     const minLength = customizationData.minLength || 0;
+          //     const maxLength = customizationData.maxLength || Infinity;
+          //     return value.length < minLength || value.length > maxLength;
+          //   },
+          //   'templateOptions.hidden': (model: any, formState: any) => {
+          //     if (!customizationData.condi_whenShouldDisplay) {
+          //       return false;
+          //     }
+          //     const fieldValue = model[customizationData.condi_whenShouldDisplay];
+          //     return fieldValue !== customizationData.condi_value;
+          //   }
+          // },
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Address') ||
+      (language === 'fr' && type === 'Adresse') ||
+      (language === 'ar' && type === 'العنوان')) {
+      const customizationData = await this.openAddressDialog();
+      let field: FormlyFieldConfig = {};
+      const listFieldAddress = customizationData.tableRows;
+      this.shareService.emitAddressOptions(listFieldAddress);
+      if (customizationData) {
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+        if (listFieldAddress.length !== 0) {
+          field = {
+            type: 'column',
+            key: customizationData.property_name,
+            templateOptions: {
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr,
+              label_ar,
+              minLength: customizationData.minLength,
+              maxLength: customizationData.maxLength,
+              required: customizationData.required,
+              disabled: customizationData.disabled,
+              hidden: customizationData.hidden,
+              custom_css: customizationData.custom_css,
+              hide_label: customizationData.hide_label,
+              property_name: customizationData.property_name,
+              field_tags: customizationData.field_tags,
+              error_label: customizationData.error_label,
+              custom_error_message: customizationData.custom_error_message
+            },
+            wrappers: ['column'],
+            fieldGroup: [],
+          };
+          listFieldAddress.forEach(el => {
+            const Key = this.generateRandomId();
+            const fieldGroupElem = {
+              type: 'input',
+              wrappers: ['address-wrapper'],
+              key: customizationData.property_name,
+              templateOptions: {
+
+                label: el.label,
+                placeholder: el.placeholder,
+                disabled: el.disabled,
+                hidden: el.hidden,
+                custom_css: el.custom_css,
+                hide_label: el.hide_label,
+                property_name: el.property_name,
+                field_tags: el.field_tags,
+                error_label: el.error_label,
+                custom_error_message: el.custom_error_message
+              },
+            };
+            field.fieldGroup.push(fieldGroupElem);
+          });
+          newField.push(field);
+        } else {
+          field = {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [
+              {
+                type: 'input',
+                key: customizationData.property_name,
+                templateOptions: {
+                  label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+                  label_fr,
+                  label_ar,
+                  placeholder: customizationData.placeholder,
+                  disabled: customizationData.disabled,
+                  hidden: customizationData.hidden,
+                  custom_css: customizationData.custom_css,
+                  hide_label: customizationData.hide_label,
+                  property_name: customizationData.property_name,
+                  field_tags: customizationData.field_tags,
+                  error_label: customizationData.error_label,
+                  custom_error_message: customizationData.custom_error_message
+                },
+                // wrappers: ['column'],
+
+              },
+            ],
+          };
+          newField.push(field);
+        }
+      }
+    }
+    if ((language === 'en' && type === 'Email') ||
+      (language === 'fr' && type === 'E-mail') ||
+      (language === 'ar' && type === 'البريد الإلكتروني')) {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'email',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
+
+          },
+          // wrappers: ['column'],
+
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Url') ||
+      (language === 'fr' && type === 'URL') ||
+      (language === 'ar' && type === 'عنوان URL')) {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'url',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Phone Number') ||
+      (language === 'fr' && type === 'Numéro de téléphone') ||
+      (language === 'ar' && type === 'رقم الهاتف')) {
+      const customizationData = await this.openPhoneDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'tel',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message,
+            pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength || !isValidPhoneNumber;
+            },
+          },
+          // Customize other properties as needed
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Date / Time') ||
+      (language === 'fr' && type === 'Date / Heure') ||
+      (language === 'ar' && type === 'تاريخ / وقت')) {
+      const customizationData = await this.openDateDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'datetime-local',
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+      }
+    }
+    if ((language === 'en' && type === 'Day') ||
+      (language === 'fr' && type === 'Jour') ||
+      (language === 'ar' && type === 'اليوم')) {
+      const customizationData = await this.openDateDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'date',
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+      }
+    } else if ((language === 'en' && type === 'Number') ||
+      (language === 'fr' && type === 'Nombre') ||
+      (language === 'ar' && type === 'عدد')) {
+      const customizationData = await this.openInputDialog();
+      // @ts-ignore
+      if (customizationData) {
+        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
+        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
+        const placeholder_fr = customizationData.placeholder_fr;
+        const placeholder_ar = customizationData.placeholder_ar;
+
+        newField = [{
+          type: 'input',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            type: 'number',
+            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
+            placeholder_fr,
+            placeholder_ar,
+            minLength: customizationData.minLength,
+            maxLength: customizationData.maxLength,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label_fr: customizationData.hide_label_fr,
+            hide_label_ar: customizationData.hide_label_ar,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          // wrappers: ['column'],
+
+          expressionProperties: {
+            'templateOptions.errorState': (model: any, formState: any) => {
+              // Check the length constraints and set error state accordingly
+              const value = model[uniqueKey];
+              if (value === undefined || value === null) {
+                return false; // Value is not defined or null, so no error state
+              }
+              const minLength = customizationData.minLength || 0;
+              const maxLength = customizationData.maxLength || Infinity;
+              return value.length < minLength || value.length > maxLength;
+            },
+          },
+        }];
+      }
+    } else if ((language === 'en' && type === 'Radio button') ||
+      (language === 'fr' && type === 'Bouton radio') ||
+      (language === 'ar' && type === 'راديو')) {
+      const customizationData = await this.openRadioDialog();
+      if (customizationData) {
+        newField = [{
+          type: 'radio',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            options: customizationData.tableRows,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            custom_css: customizationData.custom_css,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          // wrappers: ['column'],
+
+        }];
+      }
+    } else if ((language === 'en' && type === 'Select') ||
+      (language === 'fr' && type === 'Sélectionner') ||
+      (language === 'ar' && type === 'اختيار')) {
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = [{
+          key: customizationData.property_name,
+          type: 'select',
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            options: customizationData.tableRows,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+
+          },
+          // wrappers: ['column'],
+
+        }];
+      }
+    } else if ((language === 'en' && type === 'Select Multiple') ||
+      (language === 'fr' && type === 'Sélection multiple') ||
+      (language === 'ar' && type === 'اختيار متعدد')) {
+      const customizationData = await this.openSelectDialog();
+      console.log(customizationData);
+      if (customizationData) {
+        newField = [{
+
+          key: customizationData.property_name,
+          type: 'select',
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr: customizationData.label_fr,
+            label_ar: customizationData.label_ar,
+            custom_css: customizationData.custom_css,
+            multiple: true,
+            options: customizationData.tableRows,
+            required: customizationData.required,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+
+        }];
+      }
+
+    } else if ((language === 'en' && type === 'Checkbox') ||
+      (language === 'fr' && type === 'Case à cocher') ||
+      (language === 'ar' && type === 'خانة اختيار')) {
+      const customizationData = await this.openCheckboxDialog().toPromise();
+      if (customizationData) {
+        const label_fr = customizationData.label_fr;
+        const label_ar = customizationData.label_ar;
+
+        newField = [{
+          type: 'checkbox',
+          key: customizationData.property_name,
+          templateOptions: {
+            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+            label_fr,
+            label_ar,
+            disabled: customizationData.disabled,
+            hidden: customizationData.hidden,
+            hide_label: customizationData.hide_label,
+            custom_css: customizationData.custom_css,
+            required: customizationData.required,
+            property_name: customizationData.property_name,
+            field_tags: customizationData.field_tags,
+            error_label: customizationData.error_label,
+            custom_error_message: customizationData.custom_error_message
+          },
+          // wrappers: ['column'],
+
+          defaultValue: false,
+        }];
+      }
+    }
+    newField.forEach(el => {
+      // if (this.layoutField.type ==='tab'){
+      //   const index = this.fields.findIndex(field => field.key === this.layoutField.key);
+      //   console.log(this.layoutField);
+      // if (index !== -1) {
+      //   const updatedField = { ...this.fields[index] };
+      //
+      //   if (!updatedField.fieldGroup) {
+      //     updatedField.fieldGroup = [];
+      //   }
+      //
+      //   const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
+      //   if (existingFieldIndex === -1) {
+      //     updatedField.fieldGroup = [...updatedField.fieldGroup, el];
+      //     // const control = this.fb.control(el.defaultValue || '');
+      //     // this.form.addControl(el.key.toString(), control);
+      //     // control.valueChanges.subscribe(value => {
+      //     //   this.model[el.key.toString()] = value;
+      //     // });
+      //
+      //     this.fields = [
+      //       ...this.fields.slice(0, index),
+      //       updatedField,
+      //       ...this.fields.slice(index + 1)
+      //     ];
+      //     this.dragEvent = {};
+      //   }
+      // }
+      let index: number;
+      let rowColumn = {row : '' , column: ''};
+      if (this.layoutField.type === 'column'){
+        const tables = this.fields.filter( element => element.type === 'table');
+        //  index = tables.findIndex(field => field.fieldGroup.find(fieldGroup => fieldGroup.key === this.layoutField.key));
+        tables.forEach(table => {
+          table.fieldGroup.forEach(row => {
+            let columnKey = '';
+            for (const col of row.fieldGroup){
+              if (col.key === this.layoutField.key){
+                columnKey = col.key.toString();
+                break;
+              }
+            }
+
+            if (columnKey){
+              rowColumn = { row: row.key.toString(), column: columnKey };
+            }
+            const columnExist = row.fieldGroup.findIndex(column => column.key === rowColumn.column);
+            if (columnExist !== -1){
+              index = this.fields.findIndex(tablesElm => tablesElm.key === table.key);
+            }
+          });
+        });
+        // index = tables.findIndex(field => field.fieldGroup.forEach(fieldGroupElm => {fieldGroupElm.fieldGroup.find(col => col.key === this.layoutField.key); }));
+      }else if (this.layoutField.type === 'hr_stepper'){
+        index = this.fields.findIndex(elm => elm.type === 'hr_stepper');
+      }
+      else {
+        index = this.fields.findIndex(field => field.key === this.layoutField.key);
+      }
+      if (index !== -1) {
+        const updatedField = {...this.fields[index]};
+        if (updatedField.type === 'hr_stepper'){
+          const StepperToUpdate = updatedField.fieldGroup.find(stepper => stepper.templateOptions.label === this.labelStepper);
+          if (StepperToUpdate){
+            StepperToUpdate.fieldGroup = [...StepperToUpdate.fieldGroup, el];
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
+        }
+        else
+        if (updatedField.type === 'tab' && Array.isArray(updatedField.fieldGroup)) {
+          // Assuming each tab has a key or label to identify them
+          const tabIndex = updatedField.fieldGroup.findIndex(tab => tab.templateOptions.label === this.tabTag);
+
+          if (tabIndex !== -1) {
+            const updatedTab = {...updatedField.fieldGroup[tabIndex]};
+
+            if (!updatedTab.fieldGroup) {
+              updatedTab.fieldGroup = [];
+            }
+
+            const existingFieldIndex = updatedTab.fieldGroup.findIndex(groupField => groupField.key === el.key);
+            if (existingFieldIndex === -1) {
+              updatedTab.fieldGroup = [...updatedTab.fieldGroup, el];
+              updatedField.fieldGroup = [
+                ...updatedField.fieldGroup.slice(0, tabIndex),
+                updatedTab,
+                ...updatedField.fieldGroup.slice(tabIndex + 1)
+              ];
+              this.fields = [
+                ...this.fields.slice(0, index),
+                updatedField,
+                ...this.fields.slice(index + 1)
+              ];
+              this.dragEvent = {};
+            }
+          }
+        } else if (updatedField.type === 'row' && updatedField.fieldArray !== undefined && Array.isArray(updatedField.fieldArray.fieldGroup)){
+          updatedField.fieldArray.fieldGroup.push(el);
+          const existingFieldIndex = updatedField.fieldArray.fieldGroup.findIndex(groupField => groupField.key === el.key);
+          if (existingFieldIndex === -1) {
+            updatedField.fieldArray.fieldGroup = [...updatedField.fieldArray.fieldGroup, el];
+            // const control = this.fb.control(el.defaultValue || '');
+            // this.form.addControl(el.key.toString(), control);
+            // control.valueChanges.subscribe(value => {
+            //   this.model[el.key.toString()] = value;
+            // });
+
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
+        }
+        else if (updatedField.type === 'table' && Array.isArray(updatedField.fieldGroup)) {
+          let fieldAdded = false;
+
+          // Loop through rows and columns to find the target column
+          updatedField.fieldGroup.forEach(row => {
+            if (row.type === 'row' && Array.isArray(row.fieldGroup) && row.key === rowColumn.row) {
+              const fieldExist = row.fieldGroup.find(col => col.type === 'column' && col.key === rowColumn.column);
+              if (fieldExist){
+                fieldExist.fieldGroup = [...fieldExist.fieldGroup, el];
+                fieldAdded = true;
+              }
+              //       if ( row.fieldGroup[i].type === 'column' && row.fieldGroup[i].key === this.layoutField.key) {
+              //         const existingFieldIndex = row.fieldGroup[i].fieldGroup.findIndex(groupField => groupField.key === el.key);
+              //         if (existingFieldIndex === -1) {
+              //           row.fieldGroup[i].fieldGroup = [...row.fieldGroup[i].fieldGroup, el];
+              //           fieldAdded = true; // Set flag to true if field is added
+              //         }
+              // }
+            }
+          });
+
+          // Only update the fields if the field was actually added
+          if (fieldAdded) {
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+          }
+        }  else if (updatedField.type === 'row' && updatedField.id === this.layoutField.id && Array.isArray(updatedField.fieldGroup)) {
+          const columns = this.fields.filter( row => row.type === 'row');
+          columns.forEach(column => {
+            if (column.id === this.layoutField.id){
+              let fieldAdded = false;
+              const columnToUpdate = column.fieldGroup.find( col => col.key === this.columnFieldIndex);
+              if (columnToUpdate){
+                columnToUpdate.fieldGroup = [...columnToUpdate.fieldGroup , el];
+                fieldAdded = true;
+              }
+              if (fieldAdded) {
+                this.fields = [
+                  ...this.fields.slice(0, index),
+                  updatedField,
+                  ...this.fields.slice(index + 1)
+                ];
+                this.dragEvent = {};
+              }
+            }
+          });
+        }
+        else {
+          if (!updatedField.fieldGroup) {
+            updatedField.fieldGroup = [];
+          }
+
+          const existingFieldIndex = updatedField.fieldGroup.findIndex(groupField => groupField.key === el.key);
+          if (existingFieldIndex === -1) {
+            updatedField.fieldGroup = [...updatedField.fieldGroup, el];
+            // const control = this.fb.control(el.defaultValue || '');
+            // this.form.addControl(el.key.toString(), control);
+            // control.valueChanges.subscribe(value => {
+            //   this.model[el.key.toString()] = value;
+            // });
+
+            this.fields = [
+              ...this.fields.slice(0, index),
+              updatedField,
+              ...this.fields.slice(index + 1)
+            ];
+            this.dragEvent = {};
+            this.layoutField = {};
+          }
+        }
+      }
+    });
+  }
+
+
+}
