@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { UserService } from 'src/app/Modules/user/services/user.service';
 import { FormContentService } from 'src/app/services/form-content.service';
+import {FormCreationService} from "../../../../services/form-creation.service";
+import {User} from "../../../../models/user";
 
 @Component({
   selector: 'app-dashbord-component',
@@ -14,15 +16,20 @@ export class DashbordComponentComponent implements OnInit {
   public formChart: any;
   public formCountsByUser: { [key: string]: number } = {};
   public simpleUserCountWithInscription: { [key: string]: number } = {};
+  public numberUsers: { [key: string]: number } = {};
+  public numberForms: { [key: string]: number } = {};
+  public users: User[] = {};
 
   constructor(
     private userService: UserService,
-    private formService: FormContentService
+    private formService: FormContentService,
+    private formTemplateService : FormCreationService
   ) {}
 
   ngOnInit(): void {
     this.userService.getUserAddressesCount().subscribe((userAddressCounts) => {
       this.createChart(userAddressCounts);
+      this.numberUsers = userAddressCounts;
     });
     this.userService.getUserRolesCount().subscribe((userRoleCounts) => {
       this.createRoleChart(userRoleCounts);
@@ -33,8 +40,27 @@ export class DashbordComponentComponent implements OnInit {
 
       this.formCountsByUser = formCountsByUser;
     });
+
+    this.formTemplateService.getAllFormTemplate().subscribe(numberForms =>{
+      this.numberForms = numberForms.length;
+      console.log(this.numberForms);
+    });
     this.userService.getSimpleUserCountWithInscription().subscribe(count => {
       this.simpleUserCountWithInscription = count;
+    });
+
+    this.userService.getAllUSers().subscribe(numberForms =>{
+
+    });
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.userService.getAllUSers().subscribe(users => {
+      console.log('Users from API:', users);
+      this.users = users;
+    }, error => {
+      console.error('Error fetching users:', error);
     });
   }
 
