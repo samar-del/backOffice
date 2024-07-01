@@ -370,7 +370,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
     let newField: FormlyFieldConfig[] = [{}];
 
-    if ((language === 'an' && type === 'Text') ||
+    if ((language === 'en' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
@@ -442,7 +442,7 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     }
 
-    if ((language === 'an' && type === 'HTML Element') ||
+    if ((language === 'en' && type === 'HTML Element') ||
       (language === 'fr' && type === 'Element HTML') ||
       (language === 'ar' && type === 'عنصر HTML')) {
       const customizationData = await this.openHTMLDialog();
@@ -517,7 +517,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
       }
     }
-    if ((language === 'an' && type === 'Address') ||
+    if ((language === 'en' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
       const customizationData = await this.openAddressDialog();
@@ -632,7 +632,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }
       }
     }
-    if ((language === 'an' && type === 'Email') ||
+    if ((language === 'en' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
       const customizationData = await this.openInputDialog();
@@ -691,7 +691,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'IFrame') ||
+    if ((language === 'en' && type === 'IFrame') ||
       (language === 'fr' && type === 'IFrame') ||
       (language === 'ar' && type === 'IFrame')) {
       const customizationData = await this.openIFrameDialog();
@@ -742,7 +742,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Url') ||
+    if ((language === 'en' && type === 'Url') ||
       (language === 'fr' && type === 'URL') ||
       (language === 'ar' && type === 'عنوان URL')) {
       const customizationData = await this.openInputDialog();
@@ -799,7 +799,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Phone Number') ||
+    if ((language === 'en' && type === 'Phone Number') ||
       (language === 'fr' && type === 'Numéro de téléphone') ||
       (language === 'ar' && type === 'رقم الهاتف')) {
       const customizationData = await this.openPhoneDialog();
@@ -855,7 +855,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Date / Time') ||
+    if ((language === 'en' && type === 'Date / Time') ||
       (language === 'fr' && type === 'Date / Heure') ||
       (language === 'ar' && type === 'تاريخ / وقت')) {
       const customizationData = await this.openDateDialog();
@@ -902,7 +902,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Day') ||
+    if ((language === 'en' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
       const customizationData = await this.openDateDialog();
@@ -948,7 +948,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Number') ||
+    } else if ((language === 'en' && type === 'Number') ||
       (language === 'fr' && type === 'Nombre') ||
       (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
@@ -1002,7 +1002,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    else if ((language === 'an' && type === 'Radio button') ||
+    else if ((language === 'en' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
@@ -1033,7 +1033,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
         }];
       }
-    } else if ((language === 'an' && type === 'Select') ||
+    } else if ((language === 'en' && type === 'Select') ||
       (language === 'fr' && type === 'Sélectionner') ||
       (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
@@ -1067,7 +1067,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Select Multiple') ||
+    } else if ((language === 'en' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
       const customizationData = await this.openSelectDialog();
@@ -1100,7 +1100,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if ((language === 'an' && type === 'Checkbox') ||
+    } else if ((language === 'en' && type === 'Checkbox') ||
       (language === 'fr' && type === 'Case à cocher') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
@@ -1134,7 +1134,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if  ((language === 'an' && type === 'File') ||
+    } else if  ((language === 'en' && type === 'File') ||
     (language === 'fr' && type === 'Fichier') ||
     (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openFileDialog().toPromise();
@@ -1283,7 +1283,7 @@ export class ContentComponent implements OnInit, DoCheck {
         console.log(newField);
       }
     } else if (
-      (language === 'an' && type === 'Tabs') ||
+      (language === 'en' && type === 'Tabs') ||
       (language === 'fr' && type === 'Onglets') ||
       (language === 'ar' && type === 'نوافذ التبويب')
     ) {
@@ -1324,7 +1324,7 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     }
     else if (
-      (language === 'an' && type === 'Stepper') ||
+      (language === 'en' && type === 'Stepper') ||
       (language === 'fr' && type === 'Étapes') ||
       (language === 'ar' && type === 'متدرج')
     ) {
@@ -2038,7 +2038,7 @@ export class ContentComponent implements OnInit, DoCheck {
       language = currentLang;
     });
     let newField: FormlyFieldConfig[] = [{}];
-    if ((language === 'an' && type === 'Text') ||
+    if ((language === 'en' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
@@ -2102,7 +2102,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Address') ||
+    if ((language === 'en' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
       const customizationData = await this.openAddressDialog();
@@ -2188,7 +2188,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }
       }
     }
-    if ((language === 'an' && type === 'Email') ||
+    if ((language === 'en' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
       const customizationData = await this.openInputDialog();
@@ -2245,7 +2245,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Url') ||
+    if ((language === 'en' && type === 'Url') ||
       (language === 'fr' && type === 'URL') ||
       (language === 'ar' && type === 'عنوان URL')) {
       const customizationData = await this.openInputDialog();
@@ -2299,7 +2299,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Phone Number') ||
+    if ((language === 'en' && type === 'Phone Number') ||
       (language === 'fr' && type === 'Numéro de téléphone') ||
       (language === 'ar' && type === 'رقم الهاتف')) {
       const customizationData = await this.openPhoneDialog();
@@ -2352,7 +2352,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Date / Time') ||
+    if ((language === 'en' && type === 'Date / Time') ||
       (language === 'fr' && type === 'Date / Heure') ||
       (language === 'ar' && type === 'تاريخ / وقت')) {
       const customizationData = await this.openDateDialog();
@@ -2396,7 +2396,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Day') ||
+    if ((language === 'en' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
       const customizationData = await this.openDateDialog();
@@ -2439,7 +2439,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Number') ||
+    } else if ((language === 'en' && type === 'Number') ||
       (language === 'fr' && type === 'Nombre') ||
       (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
@@ -2489,7 +2489,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Radio button') ||
+    } else if ((language === 'en' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
@@ -2514,7 +2514,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
         }];
       }
-    } else if ((language === 'an' && type === 'Select') ||
+    } else if ((language === 'en' && type === 'Select') ||
       (language === 'fr' && type === 'Sélectionner') ||
       (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
@@ -2543,7 +2543,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
         }];
       }
-    } else if ((language === 'an' && type === 'Select Multiple') ||
+    } else if ((language === 'en' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
       const customizationData = await this.openSelectDialog();
@@ -2573,7 +2573,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if ((language === 'an' && type === 'Checkbox') ||
+    } else if ((language === 'en' && type === 'Checkbox') ||
       (language === 'fr' && type === 'Case à cocher') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
