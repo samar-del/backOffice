@@ -61,4 +61,16 @@ export class ListFormsComponent implements OnInit {
   navigateTo(id) {
     this.route.navigate([`/home/forms/form`, id]);
   }
+  duplicateForm(form: any) {
+    const duplicatedForm = { ...form, id: null, name: `${form.name} (Copy)` };
+    this.formcreation.addFormTemplate(duplicatedForm).subscribe(
+      (res) => {
+        this.toastr.success('Duplicated form successfully!');
+        this.loadFormTemplates();
+      },
+      (error) => {
+        this.toastr.error('Failed to duplicate form');
+      }
+    );
+  }
 }
