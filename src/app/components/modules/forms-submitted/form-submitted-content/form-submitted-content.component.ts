@@ -5,6 +5,7 @@ import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormContentService} from '../../../../services/form-content.service';
 import {Options} from '../../../../models/Options';
+import {ShareService} from '../../../../services/share.service';
 
 @Component({
   selector: 'app-form-submitted-content',
@@ -17,15 +18,15 @@ export class FormSubmittedContentComponent implements OnInit {
   form: FormGroup;
   fields: FormlyFieldConfig[] = [];
   options: FormlyFormOptions = {};
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private formService: FormContentService, private fb: FormBuilder) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private formService: FormContentService, private fb: FormBuilder, private shareService: ShareService) {
     this.form = this.fb.group({});
   }
-
   ngOnInit(): void {
     console.log(this.data);
     this.getFormTemplateById();
   }
 
+  // tslint:disable-next-line:typedef
   async getFormTemplateById() {
     try {
       const fieldsId = this.data.formStructure.fieldIds;
