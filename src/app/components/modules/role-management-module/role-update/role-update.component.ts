@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {Role} from '../../../../models/role';
 import {Permission} from '../../../../models/permission';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {PermissionService} from '../../../../Modules/user/services/permission.service';
 import {RoleService} from '../../../../Modules/user/services/role.service';
 
@@ -28,7 +28,8 @@ export class RoleUpdateComponent implements OnInit {
     },
     private permissionService: PermissionService,
     private fb: FormBuilder,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private dialogRef: MatDialog
   ) {
 
     this.idRole = this.data.role.id;
