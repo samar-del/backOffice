@@ -1,3 +1,4 @@
+import { Options } from './../../../../models/Options';
 import { RolePageComponent } from './../role-page/role-page.component';
 
 import { Component, OnInit } from '@angular/core';

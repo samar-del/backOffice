@@ -7,7 +7,7 @@
   <div>
     <label class="form-label" >Permissions:</label>
     <mat-form-field class="example-full-width">
-      <mat-select formControlName="permissions" multiple>
+      <mat-select formControlName="permissions"  (change)="assignPermissions($event.target.options)" multiple>
         <ng-container *ngFor="let permission of permissions">
         <mat-option  [value]="permission.id">
             {{ permission.permissionName }} : {{ permission.permissionType }}
