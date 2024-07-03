@@ -15,6 +15,9 @@
   background:linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
   color: #ffffff;
   padding: 10px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden /* add this */
 }
 
 .title {

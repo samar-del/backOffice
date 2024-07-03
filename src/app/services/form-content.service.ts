@@ -42,6 +42,7 @@ export class FormContentService {
   getAll(): Observable<FormContent[]>{
   return this.httpClient.get<FormContent[]>(`http://localhost:8078/formContent/getAll`);
  }
+
  getFormCountsByUser(): Observable<{ [key: string]: number }> {
   return this.getAll().pipe(
     map(forms => {

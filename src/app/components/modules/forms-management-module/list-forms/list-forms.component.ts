@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { FormCreationService } from '../../../../services/form-creation.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
-
+import {FormSubmittedContentComponent} from '../../forms-submitted/form-submitted-content/form-submitted-content.component';
 @Component({
   selector: 'app-list-forms',
   templateUrl: './list-forms.component.html',
@@ -25,7 +25,8 @@ export class ListFormsComponent implements OnInit {
     private formcreation: FormCreationService,
     private route: Router,
     private dialog: MatDialog,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private formContent: FormContentService
   ) {}
 
   ngOnInit(): void {
@@ -35,11 +36,11 @@ export class ListFormsComponent implements OnInit {
   // tslint:disable-next-line:typedef
   loadFormTemplates() {
     this.formcreation.getAllFormTemplate().subscribe(
-      (res) => {
-        this.allFormTemplateList.data = res;
+      res => {
+        this.allFormTemplateList.data = res.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         this.allFormTemplateList.paginator = this.paginator;
       },
-      (error) => {
+      error => {
         console.log('No form template available');
       }
     );
@@ -58,7 +59,23 @@ export class ListFormsComponent implements OnInit {
   }
 
   // tslint:disable-next-line:typedef
-  navigateTo(id) {
-    this.route.navigate([`/home/forms/form`, id]);
+  async openFomStructure(id) {
+    try {
+      const [formTemplateStructure] = await forkJoin([
+        this.formContent.getFormTemplateById(id),
+      ]).toPromise();
+
+      console.log(formTemplateStructure);
+      const dialogRef = this.dialog.open(FormSubmittedContentComponent, {
+        width: '1000px', height: '1200px',
+        data: { formStructure: formTemplateStructure, formModel: '' },
+      });
+
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
   }
 }
