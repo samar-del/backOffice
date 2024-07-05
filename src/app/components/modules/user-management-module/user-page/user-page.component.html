@@ -37,15 +37,15 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <button (click)="updateUser(element.idUser)" class="btn btn-outline-info mb-2">Update</button>
+              <mat-icon (click)="updateUser(element.idUser)">update</mat-icon>
             </td>
           </ng-container>
 
           <!-- Delete Column -->
           <ng-container matColumnDef="delete">
-            <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <a (click)="deleteUser(element.idUser)" class="btn btn-outline-secondary mb-2">Delete User</a>
+              <mat-icon (click)="deleteUser(element.idUser)" >delete</mat-icon>
             </td>
           </ng-container>
 

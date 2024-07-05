@@ -1,14 +1,17 @@
 .full-page {
-  background-color: #f0f0f0;
-  height: 100%;
+  background-color: transparent;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 50px;
 }
 
 .user-list-card {
-  width: 80%;
+  width: 90%;
   min-width: 300px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .header {
@@ -17,7 +20,9 @@
   padding: 10px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  overflow: hidden /* add this */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .title {

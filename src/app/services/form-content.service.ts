@@ -53,4 +53,7 @@ export class FormContentService {
     })
   );
 }
+  validateAnswers(notification: any, validationStatus: boolean): Observable<any>{
+    return this.httpClient.post(`http://localhost:8078/answers/validateAnswer`, notification, validationStatus);
+  }
 }
