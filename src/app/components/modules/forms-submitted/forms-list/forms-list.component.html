@@ -1,5 +1,9 @@
 <div class="container">
-  <h3>Liste des formulaires soumis</h3>
+  <mat-card-header class="header">
+    <h3>Liste des formulaires soumis</h3>
+    <br>
+    <br>
+  </mat-card-header>
   <hr>
   <br>
   <mat-table [dataSource]="allFormTemplateList">
@@ -27,6 +31,12 @@
         </button>
         <button mat-icon-button (click)="deleteForm(form)">
           <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button (click)="validateForm(form, 'validate')">
+         <mat-icon>done</mat-icon>
+        </button>
+        <button mat-icon-button (click)="validateForm(form, 'devalidate')">
+          <mat-icon>delete_forever</mat-icon>
         </button>
       </mat-cell>
     </ng-container>

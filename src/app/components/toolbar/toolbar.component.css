@@ -42,7 +42,30 @@ i{
 option:hover{
   background-color: #00719D !important;
 }
+.nav-header {
+  width: 100%;
+}
 
+.flex-header {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  max-width: 100%;
+  height: 185px;
+  width: auto !important;
+}
+
+.flexright-header {
+  display: flex;
+  align-items: center;
+}
+
+.flexright-header select {
+  background: transparent;
+  border: none;
+}
 /*.input-group{*/
 /*  width: 150%;*/
 /*}*/

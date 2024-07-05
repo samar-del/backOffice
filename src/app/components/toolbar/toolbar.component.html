@@ -16,34 +16,40 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 <mat-toolbar *ngIf="ismenurequired">
-  <nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
+  <nav class="navbar navbar-top navbar-expand-md navbar-dark nav-header" id="navbar-main">
     <div class="container-fluid">
-      <div class="d-flex align-items-center">
-        <img src="./../../../assets/img/Logo%20Numeryx.png" width="50%" style="width:8%">
+      <div class="flex-header">
+        <div class="d-flex align-items-center logo">
+          <img src="./../../../assets/img/Logo%20Numeryx.png" width="50%" style="width:8%">
+        </div>
       </div>
 
-      <i class="bi bi-globe"></i>
-      <select [value]="currentLanguage" (change)="changeLanguage($event.target.value)">
-        <option value="en">En</option>
-        <option value="fr">Fr</option>
-        <option value="ar">Ar</option>
-      </select>
-
-      <form class="d-flex align-items-center">
-        <div class="form-group mb-0">
-          <div class="input-group input-group-alternative">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
-            </div>
-            <input class="form-control" placeholder="Search" type="text">
-          </div>
+      <div class="flexright-header">
+        <div class="flex-boxlangue">
+          <i class="bi bi-globe"></i>
+          <select [value]="currentLanguage" (change)="changeLanguage($event.target.value)">
+            <option value="en">En</option>
+            <option value="fr">Fr</option>
+            <option value="ar">Ar</option>
+          </select>
         </div>
-      </form>
+        <form class="d-flex align-items-center">
+          <div class="form-group mb-0">
+            <div class="input-group input-group-alternative">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+              </div>
+              <input class="form-control" placeholder="Search" type="text">
+            </div>
+          </div>
+        </form>
+        <button type="button" class="btn btn-link px-3 me-2">
+          <a (click)="handleLogout()" style="cursor:pointer"><i class="bi bi-box-arrow-right"></i></a>
+        </button>
+      </div>
     </div>
 
-    <button type="button" class="btn btn-link px-3 me-2">
-      <a (click)="handleLogout()" style="cursor:pointer"><i class="bi bi-box-arrow-right"></i></a>
-    </button>
+
   </nav>
 </mat-toolbar>
 
