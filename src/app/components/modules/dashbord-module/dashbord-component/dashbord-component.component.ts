@@ -18,7 +18,7 @@ export class DashbordComponentComponent implements OnInit {
   public simpleUserCountWithInscription: { [key: string]: number } = {};
   public numberUsers: { [key: string]: number } = {};
   public numberForms: { [key: string]: number } = {};
-  public users: User[] = {};
+  public users: User[] = [];
 
   constructor(
     private userService: UserService,

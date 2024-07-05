@@ -8,6 +8,10 @@ import {MatPaginator} from '@angular/material/paginator';
 import {IFrameDialogComponent} from '../../../fields-dialog/i-frame-dialog/i-frame-dialog.component';
 import {FormSubmittedContentComponent} from '../form-submitted-content/form-submitted-content.component';
 import {MatDialog} from '@angular/material/dialog';
+import {Notification} from '../../../../models/notification';
+import {AuthService} from '../../../../Modules/user/services/auth.service';
+import {ValidationDialogComponent} from '../dialog/validation-dialog/validation-dialog.component';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-forms-list',
@@ -16,11 +20,18 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class FormsListComponent implements OnInit {
   allFormTemplateList = new MatTableDataSource<any>();
+  currentUseId: string;
   displayedColumns: string[] = ['title', 'description', 'userId' , 'actions'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  constructor(private formContent: FormContentService, private dialog: MatDialog) { }
+  constructor(private formContent: FormContentService, private dialog: MatDialog, private authService: AuthService,
+              private toastr: ToastrService) { }
 
   ngOnInit(): void {
+    this.authService.getUserId().subscribe(res => {
+      this.currentUseId = res;
+    }, err => {
+      console.log('user id is null');
+    })
     const answersList = [];
     this.formContent.getAllAnswers().subscribe(formSubmittedList => {
       formSubmittedList.forEach(el => {
@@ -59,4 +70,38 @@ export class FormsListComponent implements OnInit {
     }
   }
 
+  async validateForm(form: any, validation: string) {
+    let Description = '';
+    let notifToastr = '' ;
+    if (validation === 'vallidate'){
+      Description = 'La formulaire dont le titre est ' + form.title + ' que vous aver soumis a été validé par l administrateur ';
+      notifToastr = ' Validation faite avec succes';
+    }else {
+      Description = 'La formulaire dont le titre est ' + form.title + ' que vous aver soumis n a pas été validé par l administrateur ';
+      notifToastr = 'Dévalidation faite avec succes';
+    }
+    try {
+      const notif: Notification = new  Notification();
+      notif.id = null;
+      notif.answersId = form.answerId;
+      notif.idUserToInform = form.userId;
+      notif.idAdmin = this.currentUseId;
+      notif.title = form.title;
+      notif.description = Description;
+      const dialogRef = this.dialog.open(ValidationDialogComponent, {
+        width : '900px',
+        data: {notificationInfo: notif, typeValidateion: validation }
+      });
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      if (customizationData){
+        this.toastr.success(notifToastr);
+      }else {
+        this.toastr.info('un problème est survenue');
+      }
+      return customizationData;
+    }
+  catch (error){
+      console.log('error');
+  }
+  }
 }
