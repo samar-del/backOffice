@@ -6,6 +6,7 @@ import {ListFormsComponent} from './list-forms/list-forms.component';
 const routes: Routes = [
   { path: '', component: ListFormsComponent },
   { path: 'createForm', component: SidebarComponent },
+  { path: 'updateForm/:id', component: SidebarComponent }
 ];
 
 @NgModule({

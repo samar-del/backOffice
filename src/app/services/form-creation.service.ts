@@ -23,5 +23,8 @@ export class FormCreationService {
     return this.httpClient.delete<any>(`http://localhost:8078/deleteFormTemplate/${id}`)
 
   }
+  public updateFormTemplate(form: FormTemplate,id: string): Observable<any>{
+    return this.httpClient.patch(`http://localhost:8078/updateFormTemplate/${id}`, form);
+  }
 
 }

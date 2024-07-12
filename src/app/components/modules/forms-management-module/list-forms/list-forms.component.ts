@@ -48,7 +48,8 @@ export class ListFormsComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   editForm(idForm: string) {
-    this.route.navigate([`home/forms/:`, idForm]);
+    localStorage.setItem('edit', JSON.stringify(true));
+    this.route.navigate([`/admin/formsManagement/updateForm`, idForm]);
   }
 
   deleteForm(id: string): void {

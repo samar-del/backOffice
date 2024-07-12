@@ -25,6 +25,7 @@ export class SidebarComponent implements OnInit {
   isSubmenuOpen: boolean[] = [];
   containerDraggedOver = false;
   translations: any = {};
+  edit: boolean = false;
   // Define categories with their respective items
   categories = [
     { name: 'Basics', items: ['Text', 'Number', 'Radio button', 'Checkbox',  'Select', 'Button'] },
@@ -61,6 +62,10 @@ export class SidebarComponent implements OnInit {
     });
 
     this.loadTranslations();
+
+    this.edit = JSON.parse(localStorage.getItem('edit') || 'false');
+
+    localStorage.removeItem('edit');
   }
 
   loadTranslations() {

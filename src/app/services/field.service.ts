@@ -18,4 +18,9 @@ export class FieldService {
     return this.httpClient.get<Field>(url);
   }
 
+  public deleteFieldByIdAndUpdateFormTemplate(fieldId: string, formTemplateId: string): Observable<any> {
+    return this.httpClient.delete<any>(`http://localhost:8078/field/delete/${fieldId}/${formTemplateId}`);
+  }
+
+
 }
