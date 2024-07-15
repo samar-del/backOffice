@@ -144,6 +144,7 @@ export class SelectCustomizeDialogComponent implements OnInit {
         error_label: this.form.get('error_label').value,
         custom_error_message: this.form.get('custom_error_message').value,
         disabled: inputDisabled,
+        type: 'select',
     },
       hide: inputHidden,
       expressionProperties: {

@@ -177,6 +177,7 @@ export class FormTableComponent implements OnInit {
         custom_css: this.form.get('custom_css').value,
         number_rows: this.form.get('number_rows').value,
         number_columns: this.form.get('number_columns').value,
+        type: 'table',
       },
       hide: inputHidden,
       expressionProperties: {

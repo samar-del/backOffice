@@ -173,7 +173,7 @@ export class FormFileDialogComponent implements OnInit {
         label: textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
+        type: 'file',
         required: false,
         placeholder_fr: this.form.get('placeholder_fr').value,
         placeholder_ar: this.form.get('placeholder_ar').value,

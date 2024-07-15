@@ -130,7 +130,7 @@ export class DateFormDialogComponent implements OnInit {
         label:textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
+        type: 'datetime-local',
         placeholder: this.form.get('placeholder').value,
         disabled: inputDisabled,
         custom_css: this.form.get('custom_css').value,
