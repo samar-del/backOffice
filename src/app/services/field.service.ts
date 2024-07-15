@@ -22,5 +22,10 @@ export class FieldService {
     return this.httpClient.delete<any>(`http://localhost:8078/field/delete/${fieldId}/${formTemplateId}`);
   }
 
+  public editField(fieldId: string, field:Field): Observable<any>{
+    return this.httpClient.put(`http://localhost:8078/field/edit/${fieldId}`, field);
+  }
+
+
 
 }

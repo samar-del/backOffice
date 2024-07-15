@@ -579,6 +579,7 @@ export class ContentComponent implements OnInit, DoCheck {
                 condi_shouldDisplay: customizationData.condi_shouldDisplay,
                 condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
                 condi_value: customizationData.condi_value,
+                type: 'address',
               },
               validators: {
                 validation: [this.regexValidator(language)]
@@ -615,6 +616,7 @@ export class ContentComponent implements OnInit, DoCheck {
                   condi_shouldDisplay: customizationData.condi_shouldDisplay,
                   condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
                   condi_value: customizationData.condi_value,
+                  type: 'address',
                   attributes: {
                     oninput: (event) => this.handleInput(event, language)
                   },
@@ -1024,7 +1026,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            type: 'radio',
           },
           // wrappers: ['column'],
           validators: {
@@ -1058,8 +1061,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-
+            condi_value: customizationData.condi_value,
+            type: 'select',
           },
           // wrappers: ['column'],
           validators: {
@@ -1082,6 +1085,7 @@ export class ContentComponent implements OnInit, DoCheck {
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
             custom_css: customizationData.custom_css,
+            type: 'select-multiple',
             multiple: true,
             options: customizationData.tableRows,
             required: customizationData.required,
@@ -1126,7 +1130,8 @@ export class ContentComponent implements OnInit, DoCheck {
             custom_error_message: customizationData.custom_error_message,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            type: 'checkbox',
           },
           // wrappers: ['column'],
 
@@ -1164,7 +1169,8 @@ export class ContentComponent implements OnInit, DoCheck {
             maxFileSize: customizationData.maxFileSize,
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
+            condi_value: customizationData.condi_value,
+            type: 'file',
           },
         }];
       }

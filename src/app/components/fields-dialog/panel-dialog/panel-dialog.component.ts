@@ -122,7 +122,7 @@ export class PanelDialogComponent implements OnInit {
       key: 'key1',
       templateOptions: {
         label: labelHidden ? null : this.form.get('label').value,
-        type: 'text',
+        type: 'panel',
         required: true,
         placeholder: this.form.get('placeholder').value,
         disabled: inputDisabled,

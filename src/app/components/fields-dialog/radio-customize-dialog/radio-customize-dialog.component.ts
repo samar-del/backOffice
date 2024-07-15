@@ -146,6 +146,7 @@ export class RadioCustomizeDialogComponent implements OnInit {
           disabled: inputDisabled,
           error_label: this.form.get('error_label').value,
           custom_error_message: this.form.get('custom_error_message').value,
+          type: 'radio',
         },
         hide: inputHidden,
       };

@@ -257,14 +257,58 @@ export class UpdateFormComponent implements OnInit, DoCheck {
     modelPart[keys[keys.length - 1]] = value;
   }
 
-  updateForm(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }) {
+  /*updateForm(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }) {
     this.formCreationService.updateFormTemplate(formTemplate, formId).subscribe(
       res => {
         console.log('Form template updated:', res);
       },
       err => console.error('Error updating form template:', err)
     );
+  }*/
+
+  updateFormAndFields(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }, fields: any[]) {
+    // First, update the form template
+    this.formCreationService.updateFormTemplate(formTemplate, formId).subscribe(
+      res => {
+        console.log('Form template updated:', res);
+
+        // If form template update is successful, update the fields
+        const fieldObservables = fields.map(field => {
+          const fieldId = field._id; // Ensure you're using the correct field identifier
+          return this.fieldService.editField(fieldId, field);
+        });
+
+        forkJoin(fieldObservables).subscribe(
+          fieldResults => {
+            console.log('Fields updated:', fieldResults);
+          },
+          fieldErr => {
+            console.error('Error updating fields:', fieldErr);
+          }
+        );
+
+      },
+      err => {
+        console.error('Error updating form template:', err);
+      }
+    );
   }
+
+  updateForm(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }) {
+    // Prepare the fields array with updated field data
+    const updatedFields = this.fields.map(field => ({
+      ...field,
+      templateOptions: {
+        ...field.templateOptions,
+      },
+      type: field.type,
+      id: field.id // Ensure the field's _id is included
+    }));
+
+    // Call the new method to update form and fields
+    this.updateFormAndFields(formId, formTemplate, updatedFields);
+  }
+
 
   generateRandomId(length: number = 8): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -338,23 +382,20 @@ export class UpdateFormComponent implements OnInit, DoCheck {
     this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
       language = currentLang;
     });
+
     let newField: FormlyFieldConfig[] = [{}];
-    if ((language === 'an' && type === 'Text') ||
+
+    if ((language === 'en' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
       const listeCondition = customizationData.tableRows;
-      // Assuming you have a map to store customization data by field key
-
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-        console.log('type :' , customizationData.type);
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
         const placeholder_ar = customizationData.placeholder_ar;
+
         newField = [{
 
           type: 'input',
@@ -382,10 +423,16 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value,
+            attributes: {
+              oninput: `this.restrictInput(event, '${language}')` // make sure to bind the context correctly
+            },
             condition: listeCondition.forEach(el => {
               const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
               return conditionValues;
             })
+          },
+          validators: {
+            validation: [this.regexValidator(language)]
           },
           // wrappers: ['column'],
           expressionProperties: {
@@ -396,7 +443,7 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength ;
             },
             'templateOptions.hidden': (model: any, formState: any) => {
               if (!customizationData.condi_whenShouldDisplay) {
@@ -407,20 +454,15 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             }
           },
         }];
-        this.cdr.detectChanges();
       }
     }
 
-    if ((language === 'an' && type === 'HTML Element') ||
+    if ((language === 'en' && type === 'HTML Element') ||
       (language === 'fr' && type === 'Element HTML') ||
       (language === 'ar' && type === 'عنصر HTML')) {
       const customizationData = await this.openHTMLDialog();
       console.log(customizationData);
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const htmlElement = customizationData.htmlElement;
@@ -429,8 +471,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
           type: 'html',
           key: customizationData.property_name,
           templateOptions: {
-            label_fr,
-            label_ar,
             html_tag: customizationData.html_tag,
             html_content: customizationData.html_content,
             htmlElement,
@@ -492,18 +532,14 @@ export class UpdateFormComponent implements OnInit, DoCheck {
 
       }
     }
-
-    if ((language === 'an' && type === 'Address') ||
+    if ((language === 'en' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
       const customizationData = await this.openAddressDialog();
-      let field: FormlyFieldConfig = {};
+      const field: FormlyFieldConfig = {};
       const listFieldAddress = customizationData.tableRows;
       this.shareService.emitAddressOptions(listFieldAddress);
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
 
         const listFieldAddress = customizationData.tableRows || [];
         this.shareService.emitAddressOptions(listFieldAddress);
@@ -521,7 +557,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               label: language === 'ar' ? label_ar : label_fr,
               label_fr,
               label_ar,
-              type: 'address',
               minLength: customizationData.minLength,
               maxLength: customizationData.maxLength,
               required: customizationData.required,
@@ -531,9 +566,15 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               property_name,
               field_tags: customizationData.field_tags,
               error_label: customizationData.error_label,
-              custom_error_message: customizationData.custom_error_message
+              custom_error_message: customizationData.custom_error_message,
+              attributes: {
+                oninput: (event) => this.handleInput(event, language)
+              },
             },
-            wrappers: ['column'],
+            validators: {
+              validation: [this.regexValidator(language)]
+            },
+            //wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
@@ -549,7 +590,14 @@ export class UpdateFormComponent implements OnInit, DoCheck {
                 property_name,
                 field_tags: customizationData.field_tags,
                 error_label: customizationData.error_label,
-                custom_error_message: customizationData.custom_error_message
+                custom_error_message: customizationData.custom_error_message,
+                condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                condi_value: customizationData.condi_value,
+                type: 'address',
+              },
+              validators: {
+                validation: [this.regexValidator(language)]
               },
             };
             field.fieldGroup.push(fieldGroupElem);
@@ -559,7 +607,7 @@ export class UpdateFormComponent implements OnInit, DoCheck {
 
           // Update the fields in Formly form
           this.fields = [...this.fields, ...newField];
-          //this.cdr.detectChanges(); // Trigger change detection
+          // this.cdr.detectChanges(); // Trigger change detection
         }
         else {
           const field: FormlyFieldConfig = {
@@ -579,27 +627,34 @@ export class UpdateFormComponent implements OnInit, DoCheck {
                   property_name,
                   field_tags: customizationData.field_tags,
                   error_label: customizationData.error_label,
-                  custom_error_message: customizationData.custom_error_message
-                }
+                  custom_error_message: customizationData.custom_error_message,
+                  condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                  condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                  condi_value: customizationData.condi_value,
+                  type: 'address',
+                  attributes: {
+                    oninput: (event) => this.handleInput(event, language)
+                  },
+                },
+                validators: {
+                  validation: [this.regexValidator(language)]
+                },
               },
             ],
           };
           newField.push(field);
           console.log('New Field:', newField);
 
-          //this.fields = [...this.fields, ...newField];
+          // this.fields = [...this.fields, ...newField];
         }
       }
     }
-    if ((language === 'an' && type === 'Email') ||
+    if ((language === 'en' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -628,7 +683,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
-
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
           },
           // wrappers: ['column'],
 
@@ -640,17 +698,17 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
         }];
-        this.cdr.detectChanges();
       }
     }
-    if ((language === 'an' && type === 'IFrame') ||
+    if ((language === 'en' && type === 'IFrame') ||
       (language === 'fr' && type === 'IFrame') ||
       (language === 'ar' && type === 'IFrame')) {
       const customizationData = await this.openIFrameDialog();
@@ -659,10 +717,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
 
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
 
@@ -675,7 +729,7 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             label_fr,
             label_ar,
             type: 'iframe',
-            link_iframe: link_iframe,
+            link_iframe: customizationData.link_iframe,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             hidden: customizationData.hidden,
@@ -684,7 +738,11 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -693,26 +751,20 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
-              return value;
+              const isValidIFrame = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              return value || !isValidIFrame;
             },
           },
           // Customize other properties as needed
         }];
       }
     }
-
-    if ((language === 'an' && type === 'Url') ||
+    if ((language === 'en' && type === 'Url') ||
       (language === 'fr' && type === 'URL') ||
       (language === 'ar' && type === 'عنوان URL')) {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -739,7 +791,11 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -750,25 +806,22 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed
         }];
       }
     }
-    if ((language === 'an' && type === 'Phone Number') ||
+    if ((language === 'en' && type === 'Phone Number') ||
       (language === 'fr' && type === 'Numéro de téléphone') ||
       (language === 'ar' && type === 'رقم الهاتف')) {
       const customizationData = await this.openPhoneDialog();
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -796,6 +849,9 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
           },
           // wrappers: ['column'],
 
@@ -816,16 +872,12 @@ export class UpdateFormComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Date / Time') ||
+    if ((language === 'en' && type === 'Date / Time') ||
       (language === 'fr' && type === 'Date / Heure') ||
       (language === 'ar' && type === 'تاريخ / وقت')) {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
         newField = [{
@@ -845,7 +897,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -864,16 +919,12 @@ export class UpdateFormComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Day') ||
+    if ((language === 'en' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
-      const customizationData = await this.openDayDialog();
+      const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
         newField = [{
@@ -893,7 +944,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -911,16 +965,12 @@ export class UpdateFormComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Number') ||
+    } else if ((language === 'en' && type === 'Number') ||
       (language === 'fr' && type === 'Nombre') ||
       (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -947,7 +997,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -965,15 +1018,12 @@ export class UpdateFormComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Radio button') ||
+    }
+    else if ((language === 'en' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         newField = [{
           type: 'radio',
           key: customizationData.property_name,
@@ -981,7 +1031,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            type: 'radio',
             options: customizationData.tableRows,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -989,22 +1038,25 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'radio',
           },
           // wrappers: ['column'],
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
 
         }];
       }
-    } else if ((language === 'an' && type === 'Select') ||
+    } else if ((language === 'en' && type === 'Select') ||
       (language === 'fr' && type === 'Sélectionner') ||
       (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         newField = [{
           key: customizationData.property_name,
           type: 'select',
@@ -1012,7 +1064,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            type: 'select',
             options: customizationData.tableRows,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -1022,23 +1073,24 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
-
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'select',
           },
           // wrappers: ['column'],
-
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
         }];
       }
-    } else if ((language === 'an' && type === 'Select Multiple') ||
+    } else if ((language === 'en' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
-      const customizationData = await this.openSelectMultipleDialog();
+      const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         newField = [{
 
           key: customizationData.property_name,
@@ -1047,8 +1099,8 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            type: customizationData.type,
             custom_css: customizationData.custom_css,
+            type: 'select-multiple',
             multiple: true,
             options: customizationData.tableRows,
             required: customizationData.required,
@@ -1058,21 +1110,20 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
 
         }];
       }
 
-    } else if ((language === 'an' && type === 'Checkbox') ||
+    } else if ((language === 'en' && type === 'Checkbox') ||
       (language === 'fr' && type === 'Case à cocher') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.label_fr;
         const label_ar = customizationData.label_ar;
 
@@ -1083,7 +1134,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
             label_ar,
-            type: 'checkbox',
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -1092,7 +1142,11 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'checkbox',
           },
           // wrappers: ['column'],
 
@@ -1100,15 +1154,11 @@ export class UpdateFormComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if  ((language === 'an' && type === 'File') ||
+    } else if  ((language === 'en' && type === 'File') ||
       (language === 'fr' && type === 'Fichier') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openFileDialog().toPromise();
       if (customizationData){
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const label_fr = customizationData.label_fr;
         const label_ar = customizationData.label_ar;
 
@@ -1120,7 +1170,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
             label_ar,
-            type: 'file',
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -1130,9 +1179,13 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
-            storageType:customizationData.storageType,
-            minFileSize:customizationData.minFileSize,
-            maxFileSize:customizationData.maxFileSize
+            storageType: customizationData.storageType,
+            minFileSize: customizationData.minFileSize,
+            maxFileSize: customizationData.maxFileSize,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'file',
           },
         }];
       }
@@ -1172,9 +1225,8 @@ export class UpdateFormComponent implements OnInit, DoCheck {
         for (let j = 0; j < columnSizess.length; j++) {
           columnField = {
             key: 'col-' + columnSizess[j].size + '-' + columnSizess[j].width,
-            type: 'column',
+            type: 'columnSize',
             fieldGroup: [],
-            wrappers: ['column'],
           } ;
           columnFields.push(columnField);
         }
@@ -1183,7 +1235,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             key: customizationData.propertyName, // Key of the wrapper component for columns
             type: 'row',
             fieldGroup: columnFields,
-            wrappers: ['columnSize'],
           }
         ];
 
@@ -1198,10 +1249,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       (language === 'ar' && type === 'جدول')) {
       const customizationData = await this.openTableDialog();
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         const tableRows: FormlyFieldConfig[] = [];
         // let tableRows: FormlyFieldConfig[] = [
         //   {
@@ -1248,24 +1295,24 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             hide_label_fr: customizationData.hide_label_fr,
             hide_label_ar: customizationData.hide_label_ar,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
         }];
         console.log(newField);
       }
     } else if (
-      (language === 'an' && type === 'Tabs') ||
+      (language === 'en' && type === 'Tabs') ||
       (language === 'fr' && type === 'Onglets') ||
       (language === 'ar' && type === 'نوافذ التبويب')
     ) {
       const customizationData = await this.openTabDialog();
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.get(customizationData.property_name));
         const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
           return {
-            templateOptions: { label: tabLabel.label,type: 'tab' },
+            templateOptions: { label: tabLabel.label },
             fieldGroup : [],
           };
         });
@@ -1286,26 +1333,28 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               field_tags: customizationData.field_tags,
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
-              tabs: customizationData.tabs,
+              tabs: customizationData.tabLabels,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
             },
-            //wrappers: ['column'],
+            wrappers: ['column'],
           },
         ];
         console.log(newField);
       }
     }
     else if (
-      (language === 'an' && type === 'Stepper') ||
+      (language === 'en' && type === 'Stepper') ||
       (language === 'fr' && type === 'Étapes') ||
       (language === 'ar' && type === 'متدرج')
     ) {
       const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
       const newFieldType = customizationData.stepper_orientation === 'horizontal' ? 'hr_stepper' : 'vr_stepper';
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
         const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
+            key: stepLabel.label,
             templateOptions: {
               label: stepLabel.label,
             },
@@ -1333,7 +1382,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
               steps: customizationData.stepperLabels,
-              orientation: customizationData.orientation
+              orientation: customizationData.orientation,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
             },
 
           },
@@ -1342,23 +1394,14 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       }
     }
 
-    else if ((language === 'an' && type === 'Panel') ||
-      (language === 'fr' && type === 'Panneau') ||
-      (language === 'ar' && type === 'لوحة')) {
+    else if (type === 'Panel') {
       const customizationData = await this.openPanelDialog();
       if (customizationData) {
-        this.customizationDataMap = new Map();
-        this.customizationDataMap.set(customizationData.property_name, customizationData);
-        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
-
         newField = [{
           type: 'panel',
           key: customizationData.property_name,
           templateOptions: {
-            type: 'panel',
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: customizationData.label_fr,
-            label_ar: customizationData.label_ar,
+            label: customizationData.label,
             theme: customizationData.theme,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -1366,7 +1409,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
             custom_css: customizationData.custom_css,
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
-            collapsible: customizationData.collapsible
+            collapsible: customizationData.collapsible,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           fieldGroup: [
           ],

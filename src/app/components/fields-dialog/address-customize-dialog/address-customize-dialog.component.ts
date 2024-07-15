@@ -167,6 +167,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
             custom_css: this.form.get('custom_css').value,
             error_label: this.form.get('error_label').value,
             custom_error_message: this.form.get('custom_error_message').value,
+            type:'address',
           },
         };
         this.fields.push(this.newField);
@@ -183,6 +184,7 @@ export class AddressCustomizeDialogComponent implements OnInit {
             type: 'input',
             templateOptions: {
               label: labelRow,
+              type:'address',
               placeholder: placeholderRow,
               custom_css: this.form.get('custom_css').value,
               error_label: this.form.get('error_label').value,

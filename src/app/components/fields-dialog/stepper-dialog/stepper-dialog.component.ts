@@ -191,6 +191,7 @@ export class StepperDialogComponent implements OnInit {
         type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
         templateOptions: {
           label: stepLabel,
+          type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
         },
       };
     });
@@ -202,6 +203,7 @@ export class StepperDialogComponent implements OnInit {
         label: this.form.get('label_fr').value,
         steps: stepperLabels.value.map(step => step.label),
         stepper_orientation: this.form.get('stepper_orientation').value,
+        type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
       },
     };
   }
