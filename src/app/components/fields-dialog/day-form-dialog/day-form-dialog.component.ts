@@ -1,29 +1,29 @@
-import {Component, Inject, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {TranslationService} from "../../../services/translation.service";
 
 @Component({
-  selector: 'app-radio-customize-dialog',
-  templateUrl: './radio-customize-dialog.component.html',
-  styleUrls: ['./radio-customize-dialog.component.css']
+  selector: 'app-day-form-dialog',
+  templateUrl: './day-form-dialog.component.html',
+  styleUrls: ['./day-form-dialog.component.css']
 })
-export class RadioCustomizeDialogComponent implements OnInit {
-
+export class DayFormDialogComponent implements OnInit {
 
   form: FormGroup;
   previewForm: FormGroup;
   newField: FormlyFieldConfig;
+  fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   options: FormlyFormOptions = {};
   model: any = {};
-  selectedTabIndex = 0;
+  selectedTabIndex = 0; // Default tab index
   translations: any = {};
 
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<RadioCustomizeDialogComponent>,
+    public dialogRef: MatDialogRef<DayFormDialogComponent>,
     private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -32,17 +32,20 @@ export class RadioCustomizeDialogComponent implements OnInit {
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
-      placeholder: [this.data.placeholder],
-      disabled : [this.data.disabled],
-      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
-      custom_css: this.data.custom_css,
+      label_position: [this.data.label_position],
+      custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
+      hide_label_fr: [this.data.hide_label_fr],
+      hide_label_ar: [this.data.hide_label_ar],
+      disabled: [this.data.disabled],
+      required: [this.data.required],
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
       type: [this.data.type],
     });
+
     // Subscribe to label changes to update property name
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
       const propertyNameControl = this.form.get('property_name');
@@ -61,33 +64,17 @@ export class RadioCustomizeDialogComponent implements OnInit {
 
     this.updateFields();
   }
-  updateFormGroup(index: number, controlName: string, value: any): void {
-    const tableRowsArray = this.form.get('tableRows') as FormArray;
-    const rowFormGroup = tableRowsArray.at(index) as FormGroup;
-    rowFormGroup.controls[controlName].setValue(value);
-  }
+
   onNoClick(): void {
+    this.data = 0 ;
     this.dialogRef.close();
   }
-  get tableRows(): FormArray {
-    console.log(this.form.get('tableRows') );
-    return this.form.get('tableRows') as FormArray;
+  getLabelStyles(): any {
+    const customCss = this.form.get('custom_css').value;
+    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
   }
-
-  createRow(rowData: any = {}): FormGroup {
-    return this.fb.group({
-      label: [rowData.label || ''],
-      value: [rowData.value || '']
-    });
-  }
-
-  addRow(): void {
-    const tableRowsArray = this.form.get('tableRows') as FormArray;
-    tableRowsArray.push(this.createRow());
-  }
-
-  removeRow(index: number): void {
-    this.tableRows.removeAt(index);
+  onTabChange(event: any): void {
+    this.selectedTabIndex = event.index;
   }
   generatePropertyName(label: string): string {
     const words = label.split(/\s+/); // Split label into words
@@ -121,42 +108,45 @@ export class RadioCustomizeDialogComponent implements OnInit {
     });
   }
 
-
   updateTags(inputValue: string): void {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);
   }
-
   updateFields(): void {
+    const labelFrHidden = this.form.get('hide_label_fr').value;
+    const labelArHidden = this.form.get('hide_label_ar').value;
     const inputHidden = this.form.get('hidden').value;
     const inputDisabled = this.form.get('disabled').value;
 
     this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
-      const radioLabel = currentLanguage === 'ar' ? label_ar : label_fr;
+      const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
 
       this.newField = {
-        type: 'radio',
-        key: 'key',
+        type: 'input',
+        key: 'key1',
         templateOptions: {
-          label:radioLabel,
-          options : this.form.get('tableRows').value ,
-          custom_css: this.form.get('custom_css').value,
+          label:textLabel,
+          label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
+          label_ar: labelArHidden ? null : this.form.get('label_ar').value,
+          type: 'date',
           disabled: inputDisabled,
+          custom_css: this.form.get('custom_css').value,
           error_label: this.form.get('error_label').value,
           custom_error_message: this.form.get('custom_error_message').value,
         },
         hide: inputHidden,
+        expressionProperties: {
+          'templateOptions.hideLabel_fr': () => labelFrHidden,
+          'templateOptions.hideLabel_ar': () => labelArHidden
+        },
+
       };
     });
+
   }
 
-  onTabChange(event: any): void {
-    this.selectedTabIndex = event.index;
-  }
-  getLabelStyles(): any {
-    const customCss = this.form.get('custom_css').value;
-    return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
-  }
+
+
 }

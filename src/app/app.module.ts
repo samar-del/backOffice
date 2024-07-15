@@ -91,6 +91,8 @@ import { RestrictInputDirective } from './restrict-input.directive';
 import {TranslationService} from "./services/translation.service";
 import {FieldValidatorFn} from "@ngx-formly/core/lib/services/formly.config";
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { DayFormDialogComponent } from './components/fields-dialog/day-form-dialog/day-form-dialog.component';
+import { SelectMultipleDialogComponent } from './components/fields-dialog/select-multiple-dialog/select-multiple-dialog.component';
 
 
 const regexValidator: FieldValidatorFn = (control: AbstractControl, field: FormlyFieldConfig): ValidationErrors | null => {
@@ -156,7 +158,9 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
     FormFileDialogComponent,
-    RestrictInputDirective
+    RestrictInputDirective,
+    DayFormDialogComponent,
+    SelectMultipleDialogComponent
   ],
     imports: [
         BrowserModule,
