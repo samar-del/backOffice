@@ -61,7 +61,8 @@ export class FormDialogComponent implements OnInit {
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
-      tableRows: this.fb.array([])
+      tableRows: this.fb.array([]),
+      type: [this.data.type],
     });
 
     // Subscribe to label changes to update property name
@@ -161,7 +162,7 @@ export class FormDialogComponent implements OnInit {
       const placeholder_ar = this.form.get('placeholder_ar').value;
       const placeholder_fr = this.form.get('placeholder_fr').value;
       const placeholderText = currentLanguage === 'ar' ? placeholder_ar : placeholder_fr;
-
+      const type = 'text';
     this.newField = {
       type: 'input',
       key: 'key1',
@@ -169,7 +170,7 @@ export class FormDialogComponent implements OnInit {
         label: textLabel,
         label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
         label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
+        type: type,
         required: false,
         placeholder_fr: this.form.get('placeholder_fr').value,
         placeholder_ar: this.form.get('placeholder_ar').value,

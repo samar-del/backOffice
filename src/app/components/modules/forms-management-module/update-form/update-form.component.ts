@@ -73,7 +73,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
   customizationDataMap: Map<string, any> = new Map();
   columnSize: any [ ] = [];
   previewModel: any = {};
-
   constructor(
     private fb: FormBuilder,
     private formService: FormContentService,
@@ -93,7 +92,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       description: ['']
     });
   }
-
   ngOnInit(): void {
     this.translationService.getCurrentLanguage().subscribe((language: string) => {
       this.loadTranslations();
@@ -139,7 +137,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
   async getFormTemplateById() {
     try {
       const res = await this.formService.getFormTemplateById(this.formId).toPromise();
-
       this.formTitle = res.title;
       this.formDescription = res.description;
       this.formExist = true;
@@ -147,15 +144,11 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       if (!res.fieldIds || res.fieldIds.length === 0) {
         return;
       }
-
       const fieldObservables = res.fieldIds.map((el: string) => this.formService.getFieldById(el));
       const fields = await forkJoin(fieldObservables).toPromise();
-
       await this.processFields(fields);
-
       this.fields = fields;
       this.initializeFormControls(fields);
-
       console.log('Form Controls:', this.form.controls);
       console.log('Initial Model:', this.model);
       console.log('Fields:', this.fields);
@@ -166,27 +159,23 @@ export class UpdateFormComponent implements OnInit, DoCheck {
 
   private async processFields(fields: any[]): Promise<void> {
     for (let field of fields) {
+      console.log('Processing field:', field); // Debug statement
       if (field.templateOptions.options) {
         field.templateOptions.disabled = false;
-
         if (field.type === 'iframe') {
           const link_iframe = field.templateOptions.link_iframe;
           this.shareService.changeUrl(link_iframe);
         }
-
         const optionsObservables = field.templateOptions.options.map(
           (op: string) => this.formService.getOptionsById(op)
         );
         const options = await forkJoin(optionsObservables).toPromise();
-
         const newFieldOptions: Options[] = field.templateOptions.options.map((op: string) => {
           return options.find((opt) => opt.id === op);
         }).filter(opt => opt !== undefined);
-
         field.templateOptions.options = newFieldOptions;
         this.options = field.templateOptions.options;
       }
-
       if (field.fieldGroup && field.fieldGroup.length > 0) {
         let fieldGroupObservables = [] ;
         field.fieldGroup.map((el) => {
@@ -197,28 +186,21 @@ export class UpdateFormComponent implements OnInit, DoCheck {
           }
         } );
         let fieldGroup = await forkJoin(fieldGroupObservables).toPromise();
-
         for (const fieldGroupElement of fieldGroup) {
           if (fieldGroupElement.fieldGroupId && fieldGroupElement.fieldGroupId.length > 0) {
-            let fieldGroupElmObservables = fieldGroupElement.fieldGroupId.map((el: string) => this.formService.getFieldById(el));
-            let fieldGroupFields = await forkJoin(fieldGroupElmObservables).toPromise();
-            fieldGroupElement.fieldGroup= [...fieldGroupFields] ;
-            console.log(fieldGroupElement);
-            fieldGroupElmObservables = null ;
-            fieldGroupFields = null ;
+            fieldGroupElement.fieldGroup = fieldGroupElement.fieldGroupId;
+            const nestedFieldGroupObservables = fieldGroupElement.fieldGroup.map((el: string) =>
+              this.formService.getFieldById(el)
+            );
+            const nestedFieldGroup = await forkJoin(nestedFieldGroupObservables).toPromise();
+            fieldGroupElement.fieldGroup = nestedFieldGroup;
           }
         }
-
         field.fieldGroup = fieldGroup;
-        fieldGroupObservables = null ;
-        fieldGroup = null;
-        await this.processFields(field.fieldGroup); // Recursively process nested fields
-        this.changes = true;
-
       }
+      console.log('Processed field:', field); // Debug statement
     }
   }
-  // tslint:disable-next-line:typedef
   initializeFormControls(fields: FormlyFieldConfig[]) {
     const initializeFieldControl = (field: FormlyFieldConfig, parentKey: string = '') => {
       const key = parentKey ? `${parentKey}.${field.key}` : field.key;
@@ -228,23 +210,18 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       } else {
         const control = this.fb.control(field.defaultValue || '');
         this.form.addControl(key.toString(), control);
-
         // Update model when control value changes
         control.valueChanges.subscribe((value) => {
           this.setModelValue(key.toString(), value);
         });
-
         // Set initial model value
         this.setModelValue(key.toString(), control.value);
       }
     };
-
     fields.forEach((field) => initializeFieldControl(field));
-
     // Log the model after form controls are initialized
     console.log('Model after initializing form controls:', this.model);
   }
-
   setModelValue(key: string, value: any) {
     const keys = key.split('.');
     let modelPart = this.model;
@@ -256,16 +233,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
     }
     modelPart[keys[keys.length - 1]] = value;
   }
-
-  /*updateForm(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }) {
-    this.formCreationService.updateFormTemplate(formTemplate, formId).subscribe(
-      res => {
-        console.log('Form template updated:', res);
-      },
-      err => console.error('Error updating form template:', err)
-    );
-  }*/
-
   updateFormAndFields(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }, fields: any[]) {
     // First, update the form template
     this.formCreationService.updateFormTemplate(formTemplate, formId).subscribe(
@@ -274,7 +241,8 @@ export class UpdateFormComponent implements OnInit, DoCheck {
 
         // If form template update is successful, update the fields
         const fieldObservables = fields.map(field => {
-          const fieldId = field._id; // Ensure you're using the correct field identifier
+          const fieldId = field.id; // Use the field's _id
+          console.log('Updating field:', field); // Log field data before update
           return this.fieldService.editField(fieldId, field);
         });
 
@@ -301,15 +269,15 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       templateOptions: {
         ...field.templateOptions,
       },
-      type: field.type,
-      id: field.id // Ensure the field's _id is included
+      type: field.type, // Ensure the type is included
+      id: field.id // Ensure the field's id is included
     }));
+
+    console.log('Updated fields:', updatedFields); // Log updated fields before calling update
 
     // Call the new method to update form and fields
     this.updateFormAndFields(formId, formTemplate, updatedFields);
   }
-
-
   generateRandomId(length: number = 8): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -319,7 +287,6 @@ export class UpdateFormComponent implements OnInit, DoCheck {
     }
     return randomId;
   }
-
   saveForm() {
     const titre = this.formHeader.get('title')?.value;
     const description = this.formHeader.get('description')?.value;
@@ -329,23 +296,19 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       createdAt: new Date(),
       description: description
     };
-
     this.updateForm(this.formId, formTemplate);
   }
-
   submitFormTemplate() {
     if (this.form.valid) {
       console.log('Form Model submit:', this.model);
     }
     const formContentId = this.form.get('formContentId')?.value;
   }
-
   ngDoCheck(): void {
     if (this.fields){
       this.newFields = this.fields;
     }
   }
-
   deleteField(uniqueKey: string) {
     const fieldIndex = this.fields.findIndex(field => field.key === uniqueKey);
 
@@ -353,9 +316,7 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       const fieldId = this.fields[fieldIndex].id;  // Get the field ID
       const formTemplateId = this.formId;  // Get the form template ID
       this.fields.splice(fieldIndex, 1);
-
       this.form = this.fb.group({});
-
       this.fieldService.deleteFieldByIdAndUpdateFormTemplate(fieldId, formTemplateId)
         .subscribe(
           () => {
@@ -367,1357 +328,22 @@ export class UpdateFormComponent implements OnInit, DoCheck {
         );
     }
   }
-
   submit() {
     if (this.form.valid) {
       const formValues = this.form.getRawValue();
       console.log('Form Values:', formValues);
     }
   }
-
-  async updateField(type: any) {
-    const uniqueKey = `newInput_${this.fields.length + 1}`;
-    let language: string;
-    // Subscribe to get the current language
-    this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
-      language = currentLang;
-    });
-
-    let newField: FormlyFieldConfig[] = [{}];
-
-    if ((language === 'en' && type === 'Text') ||
-      (language === 'fr' && type === 'Texte') ||
-      (language === 'ar' && type === 'نص')) {
-      const customizationData = await this.openInputDialog();
-      const listeCondition = customizationData.tableRows;
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-        const placeholder_fr = customizationData.placeholder_fr;
-        const placeholder_ar = customizationData.placeholder_ar;
-
-        newField = [{
-
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'text',
-            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr,
-            placeholder_ar,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            // hidden: customizationData.hidden,
-            custom_css: customizationData.custom_css,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            attributes: {
-              oninput: `this.restrictInput(event, '${language}')` // make sure to bind the context correctly
-            },
-            condition: listeCondition.forEach(el => {
-              const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
-              return conditionValues;
-            })
-          },
-          validators: {
-            validation: [this.regexValidator(language)]
-          },
-          // wrappers: ['column'],
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false;
-              }
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength ;
-            },
-            'templateOptions.hidden': (model: any, formState: any) => {
-              if (!customizationData.condi_whenShouldDisplay) {
-                return false;
-              }
-              const fieldValue = model[customizationData.condi_whenShouldDisplay];
-              return fieldValue !== customizationData.condi_value;
-            }
-          },
-        }];
-      }
-    }
-
-    if ((language === 'en' && type === 'HTML Element') ||
-      (language === 'fr' && type === 'Element HTML') ||
-      (language === 'ar' && type === 'عنصر HTML')) {
-      const customizationData = await this.openHTMLDialog();
-      console.log(customizationData);
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-        const htmlElement = customizationData.htmlElement;
-        console.log(htmlElement);
-        newField = [{
-          type: 'html',
-          key: customizationData.property_name,
-          templateOptions: {
-            html_tag: customizationData.html_tag,
-            html_content: customizationData.html_content,
-            htmlElement,
-            type: 'html',
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            custom_css: customizationData.custom_css,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-          // wrappers: ['column'],
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
-            },
-          },
-        }];
-        if (customizationData.condi_shouldDisplay && customizationData.condi_shouldDisplay) {
-          if (customizationData.condi_shouldDisplay === true) {
-            this.fields.forEach(el => {
-              if (el.key === customizationData.condi_shouldDisplay) {
-                if (el.model === customizationData.condi_value) {
-                  newField.map(field => {
-                    field.hide = false;
-                    this.previewfields.push(field);
-                  });
-                }
-              }
-            });
-          } else {
-            this.fields.forEach(el => {
-              if (el.key === customizationData.condi_shouldDisplay) {
-                if (el.model === customizationData.condi_value) {
-                  newField.map(field => {
-                    field.hide = true;
-                    this.previewfields.push(field);
-                  });
-                }
-              }
-            });
-          }
-        }
-
-      }
-    }
-    if ((language === 'en' && type === 'Address') ||
-      (language === 'fr' && type === 'Adresse') ||
-      (language === 'ar' && type === 'العنوان')) {
-      const customizationData = await this.openAddressDialog();
-      const field: FormlyFieldConfig = {};
-      const listFieldAddress = customizationData.tableRows;
-      this.shareService.emitAddressOptions(listFieldAddress);
-      if (customizationData) {
-
-        const listFieldAddress = customizationData.tableRows || [];
-        this.shareService.emitAddressOptions(listFieldAddress);
-
-        const newField: FormlyFieldConfig[] = [];
-        const label_fr = customizationData.label_fr;
-        const label_ar = customizationData.label_ar;
-        const property_name = customizationData.property_name;
-
-        if (listFieldAddress.length !== 0) {
-          const field: FormlyFieldConfig = {
-            type: 'column',
-            key: property_name,
-            templateOptions: {
-              label: language === 'ar' ? label_ar : label_fr,
-              label_fr,
-              label_ar,
-              minLength: customizationData.minLength,
-              maxLength: customizationData.maxLength,
-              required: customizationData.required,
-              disabled: customizationData.disabled,
-              hidden: customizationData.hidden,
-              custom_css: customizationData.custom_css,
-              property_name,
-              field_tags: customizationData.field_tags,
-              error_label: customizationData.error_label,
-              custom_error_message: customizationData.custom_error_message,
-              attributes: {
-                oninput: (event) => this.handleInput(event, language)
-              },
-            },
-            validators: {
-              validation: [this.regexValidator(language)]
-            },
-            //wrappers: ['column'],
-            fieldGroup: [],
-          };
-          listFieldAddress.forEach(el => {
-            const Key = this.generateRandomId();
-            const fieldGroupElem = {
-              type: 'input',
-              wrappers: ['address-wrapper'],
-              key: this.generateRandomId(), // Ensure unique key for each input
-              templateOptions: {
-                label: el.label_row,
-                placeholder: el.placeholder_row,
-                custom_css: customizationData.custom_css,
-                property_name,
-                field_tags: customizationData.field_tags,
-                error_label: customizationData.error_label,
-                custom_error_message: customizationData.custom_error_message,
-                condi_shouldDisplay: customizationData.condi_shouldDisplay,
-                condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-                condi_value: customizationData.condi_value,
-                type: 'address',
-              },
-              validators: {
-                validation: [this.regexValidator(language)]
-              },
-            };
-            field.fieldGroup.push(fieldGroupElem);
-          });
-          newField.push(field);
-          console.log('New Field:', newField);
-
-          // Update the fields in Formly form
-          this.fields = [...this.fields, ...newField];
-          // this.cdr.detectChanges(); // Trigger change detection
-        }
-        else {
-          const field: FormlyFieldConfig = {
-            fieldGroupClassName: 'display-flex',
-            fieldGroup: [
-              {
-                type: 'input',
-                key: property_name,
-                templateOptions: {
-                  label: language === 'ar' ? label_ar : label_fr,
-                  label_fr,
-                  label_ar,
-                  placeholder: customizationData.placeholder,
-                  disabled: customizationData.disabled,
-                  hidden: customizationData.hidden,
-                  custom_css: customizationData.custom_css,
-                  property_name,
-                  field_tags: customizationData.field_tags,
-                  error_label: customizationData.error_label,
-                  custom_error_message: customizationData.custom_error_message,
-                  condi_shouldDisplay: customizationData.condi_shouldDisplay,
-                  condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-                  condi_value: customizationData.condi_value,
-                  type: 'address',
-                  attributes: {
-                    oninput: (event) => this.handleInput(event, language)
-                  },
-                },
-                validators: {
-                  validation: [this.regexValidator(language)]
-                },
-              },
-            ],
-          };
-          newField.push(field);
-          console.log('New Field:', newField);
-
-          // this.fields = [...this.fields, ...newField];
-        }
-      }
-    }
-    if ((language === 'en' && type === 'Email') ||
-      (language === 'fr' && type === 'E-mail') ||
-      (language === 'ar' && type === 'البريد الإلكتروني')) {
-      const customizationData = await this.openInputDialog();
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-        const placeholder_fr = customizationData.placeholder_fr;
-        const placeholder_ar = customizationData.placeholder_ar;
-
-        newField = [{
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'email',
-            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr,
-            placeholder_ar,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
-          },
-          // wrappers: ['column'],
-
-
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength || !isValidEmail;
-            },
-          },
-          // Customize other properties as needed
-        }];
-      }
-    }
-    if ((language === 'en' && type === 'IFrame') ||
-      (language === 'fr' && type === 'IFrame') ||
-      (language === 'ar' && type === 'IFrame')) {
-      const customizationData = await this.openIFrameDialog();
-      const link_iframe = customizationData.link_iframe;
-      this.shareService.changeUrl(link_iframe);
-
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-
-        newField = [{
-          type: 'iframe',
-          key: customizationData.property_name,
-          // wrappers: ['column'],
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'iframe',
-            link_iframe: customizationData.link_iframe,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            hidden: customizationData.hidden,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
-          },
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const isValidIFrame = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
-              return value || !isValidIFrame;
-            },
-          },
-          // Customize other properties as needed
-        }];
-      }
-    }
-    if ((language === 'en' && type === 'Url') ||
-      (language === 'fr' && type === 'URL') ||
-      (language === 'ar' && type === 'عنوان URL')) {
-      const customizationData = await this.openInputDialog();
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-        const placeholder_fr = customizationData.placeholder_fr;
-        const placeholder_ar = customizationData.placeholder_ar;
-        newField = [{
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'url',
-            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr,
-            placeholder_ar,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
-          },
-          // wrappers: ['column'],
-
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength || !isValidUrl;
-            },
-          },
-          // Customize other properties as needed
-        }];
-      }
-    }
-    if ((language === 'en' && type === 'Phone Number') ||
-      (language === 'fr' && type === 'Numéro de téléphone') ||
-      (language === 'ar' && type === 'رقم الهاتف')) {
-      const customizationData = await this.openPhoneDialog();
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-        const placeholder_fr = customizationData.placeholder_fr;
-        const placeholder_ar = customizationData.placeholder_ar;
-        newField = [{
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'tel',
-            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr,
-            placeholder_ar,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-          },
-          // wrappers: ['column'],
-
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const isValidPhoneNumber = new RegExp(customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$').test(value);
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength || !isValidPhoneNumber;
-            },
-          },
-          // Customize other properties as needed
-        }];
-      }
-    }
-    if ((language === 'en' && type === 'Date / Time') ||
-      (language === 'fr' && type === 'Date / Heure') ||
-      (language === 'ar' && type === 'تاريخ / وقت')) {
-      const customizationData = await this.openDateDialog();
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
-        newField = [{
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'datetime-local',
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-          // wrappers: ['column'],
-
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
-            },
-          },
-        }];
-      }
-    }
-    if ((language === 'en' && type === 'Day') ||
-      (language === 'fr' && type === 'Jour') ||
-      (language === 'ar' && type === 'اليوم')) {
-      const customizationData = await this.openDateDialog();
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
-        newField = [{
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'date',
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-          // wrappers: ['column'],
-
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
-            },
-          },
-        }];
-      }
-    } else if ((language === 'en' && type === 'Number') ||
-      (language === 'fr' && type === 'Nombre') ||
-      (language === 'ar' && type === 'عدد')) {
-      const customizationData = await this.openInputDialog();
-      // @ts-ignore
-      if (customizationData) {
-        const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
-        const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
-        const placeholder_fr = customizationData.placeholder_fr;
-        const placeholder_ar = customizationData.placeholder_ar;
-
-        newField = [{
-          type: 'input',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            type: 'number',
-            placeholder: language === 'ar' ? customizationData.placeholder_ar : customizationData.placeholder_fr,
-            placeholder_fr,
-            placeholder_ar,
-            minLength: customizationData.minLength,
-            maxLength: customizationData.maxLength,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            custom_css: customizationData.custom_css,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-          // wrappers: ['column'],
-
-          expressionProperties: {
-            'templateOptions.errorState': (model: any, formState: any) => {
-              // Check the length constraints and set error state accordingly
-              const value = model[uniqueKey];
-              if (value === undefined || value === null) {
-                return false; // Value is not defined or null, so no error state
-              }
-              const minLength = customizationData.minLength || 0;
-              const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
-            },
-          },
-        }];
-      }
-    }
-    else if ((language === 'en' && type === 'Radio button') ||
-      (language === 'fr' && type === 'Bouton radio') ||
-      (language === 'ar' && type === 'راديو')) {
-      const customizationData = await this.openRadioDialog();
-      if (customizationData) {
-        newField = [{
-          type: 'radio',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: customizationData.label_fr,
-            label_ar: customizationData.label_ar,
-            options: customizationData.tableRows,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            custom_css: customizationData.custom_css,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            type: 'radio',
-          },
-          // wrappers: ['column'],
-          validators: {
-            validation: [this.regexValidator(language)]
-          },
-
-        }];
-      }
-    } else if ((language === 'en' && type === 'Select') ||
-      (language === 'fr' && type === 'Sélectionner') ||
-      (language === 'ar' && type === 'اختيار')) {
-      const customizationData = await this.openSelectDialog();
-      console.log(customizationData);
-      if (customizationData) {
-        newField = [{
-          key: customizationData.property_name,
-          type: 'select',
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: customizationData.label_fr,
-            label_ar: customizationData.label_ar,
-            options: customizationData.tableRows,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            type: 'select',
-          },
-          // wrappers: ['column'],
-          validators: {
-            validation: [this.regexValidator(language)]
-          },
-        }];
-      }
-    } else if ((language === 'en' && type === 'Select Multiple') ||
-      (language === 'fr' && type === 'Sélection multiple') ||
-      (language === 'ar' && type === 'اختيار متعدد')) {
-      const customizationData = await this.openSelectDialog();
-      console.log(customizationData);
-      if (customizationData) {
-        newField = [{
-
-          key: customizationData.property_name,
-          type: 'select',
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: customizationData.label_fr,
-            label_ar: customizationData.label_ar,
-            custom_css: customizationData.custom_css,
-            type: 'select-multiple',
-            multiple: true,
-            options: customizationData.tableRows,
-            required: customizationData.required,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-
-        }];
-      }
-
-    } else if ((language === 'en' && type === 'Checkbox') ||
-      (language === 'fr' && type === 'Case à cocher') ||
-      (language === 'ar' && type === 'خانة اختيار')) {
-      const customizationData = await this.openCheckboxDialog().toPromise();
-      if (customizationData) {
-        const label_fr = customizationData.label_fr;
-        const label_ar = customizationData.label_ar;
-
-        newField = [{
-          type: 'checkbox',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            type: 'checkbox',
-          },
-          // wrappers: ['column'],
-
-          defaultValue: false,
-        }];
-      }
-
-    } else if  ((language === 'en' && type === 'File') ||
-      (language === 'fr' && type === 'Fichier') ||
-      (language === 'ar' && type === 'خانة اختيار')) {
-      const customizationData = await this.openFileDialog().toPromise();
-      if (customizationData){
-        const label_fr = customizationData.label_fr;
-        const label_ar = customizationData.label_ar;
-
-        newField = [{
-          type: 'file',
-          key: customizationData.property_name,
-
-          templateOptions: {
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr,
-            label_ar,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            custom_css: customizationData.custom_css,
-            required: customizationData.required,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message,
-            storageType: customizationData.storageType,
-            minFileSize: customizationData.minFileSize,
-            maxFileSize: customizationData.maxFileSize,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value,
-            type: 'file',
-          },
-        }];
-      }
-      /*{
-       const label_fr = customizationData.label_fr;
-       const label_ar = customizationData.label_ar;
-
-     newField = [{
-       key: customizationData.property_name,
-       type: 'file',
-       templateOptions: {
-         label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-         label_fr,
-         label_ar,
-         disabled: customizationData.disabled,
-         hidden: customizationData.hidden,
-         hide_label: customizationData.hide_label,
-         custom_css: customizationData.custom_css,
-         required: customizationData.required,
-         property_name: customizationData.property_name,
-         field_tags: customizationData.field_tags,
-         error_label: customizationData.error_label,
-         custom_error_message: customizationData.custom_error_message
-       },
-     }];
-   }*/
-
-    } else if (type === 'Columns') {
-
-      const customizationData = await this.openColumnDialog();
-      if (customizationData) {
-        let columnSizess = [{size: '', width: ''}];
-        columnSizess = customizationData.tableRows;
-        let columnField: FormlyFieldConfig;
-        const columnFields = [];
-        this.shareService.emitNumberColumn(columnSizess);
-        for (let j = 0; j < columnSizess.length; j++) {
-          columnField = {
-            key: 'col-' + columnSizess[j].size + '-' + columnSizess[j].width,
-            type: 'columnSize',
-            fieldGroup: [],
-          } ;
-          columnFields.push(columnField);
-        }
-        newField = [
-          {
-            key: customizationData.propertyName, // Key of the wrapper component for columns
-            type: 'row',
-            fieldGroup: columnFields,
-          }
-        ];
-
-        this.columnSize = customizationData.tableRows;
-        this.shareService.emitNumberColumn(this.columnSize);
-      }
-      console.log(newField);
-      this.form = this.fb.group({});
-      //  this.formlyForm.resetForm({ model: this.model });
-    } else if ((language === 'an' && type === 'Table') ||
-      (language === 'fr' && type === 'Tableau') ||
-      (language === 'ar' && type === 'جدول')) {
-      const customizationData = await this.openTableDialog();
-      if (customizationData) {
-        const tableRows: FormlyFieldConfig[] = [];
-        // let tableRows: FormlyFieldConfig[] = [
-        //   {
-        //     type: 'row',
-        //     fieldGroup: []
-        //   }
-        // ];
-        let tableRow: FormlyFieldConfig;
-        let columnField: FormlyFieldConfig = {};
-        // const columnFieldsByRow: FormlyFieldConfig[] = [];
-        // Generate table rows with the specified number of rows and columns
-        for (let i = 0; i < customizationData.number_rows; i++) {
-          const columnFieldsByRow: FormlyFieldConfig[] = [];
-          for (let j = 0; j < customizationData.number_columns; j++) {
-            columnField = {
-              key: 'column' + Math.floor(Math.random() * 90) + j,
-              type: 'column',
-              fieldGroup: [],
-            } ;
-            columnFieldsByRow.push(columnField);
-            console.log(tableRow);
-          }
-          tableRow = {
-            key: 'row' + Math.floor(Math.random() * 90) + i,
-            type: 'row',
-            fieldGroup: columnFieldsByRow,
-          };
-          tableRows.push(tableRow);
-        }
-        console.log(tableRow);
-        newField = [{
-          type: 'table',
-          fieldGroup: tableRows,
-          key: customizationData.property_name,
-          templateOptions: {
-            type: 'table',
-            label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-            label_fr: customizationData.label_fr,
-            label_ar: customizationData.label_ar,
-            number_rows: customizationData.number_rows,
-            number_columns: customizationData.number_columns,
-            custom_css: customizationData.custom_css,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            hide_label_fr: customizationData.hide_label_fr,
-            hide_label_ar: customizationData.hide_label_ar,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-          // wrappers: ['column'],
-        }];
-        console.log(newField);
-      }
-    } else if (
-      (language === 'en' && type === 'Tabs') ||
-      (language === 'fr' && type === 'Onglets') ||
-      (language === 'ar' && type === 'نوافذ التبويب')
-    ) {
-      const customizationData = await this.openTabDialog();
-      if (customizationData) {
-        const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
-          return {
-            templateOptions: { label: tabLabel.label },
-            fieldGroup : [],
-          };
-        });
-
-        newField = [
-          {
-            type: 'tab',
-            fieldGroup: tabs,
-            key: customizationData.property_name,
-            templateOptions: {
-              type: 'tab',
-              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-              label_fr: customizationData.label_fr,
-              label_ar: customizationData.label_ar,
-              number_tabs: customizationData.tabLabels.length,
-              custom_css: customizationData.custom_css,
-              property_name: customizationData.property_name,
-              field_tags: customizationData.field_tags,
-              hide_label_fr: customizationData.hide_label_fr,
-              hide_label_ar: customizationData.hide_label_ar,
-              tabs: customizationData.tabLabels,
-              condi_shouldDisplay: customizationData.condi_shouldDisplay,
-              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-              condi_value: customizationData.condi_value
-            },
-            wrappers: ['column'],
-          },
-        ];
-        console.log(newField);
-      }
-    }
-    else if (
-      (language === 'en' && type === 'Stepper') ||
-      (language === 'fr' && type === 'Étapes') ||
-      (language === 'ar' && type === 'متدرج')
-    ) {
-      const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
-      const newFieldType = customizationData.stepper_orientation === 'horizontal' ? 'hr_stepper' : 'vr_stepper';
-      if (customizationData) {
-        const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
-          return {
-            key: stepLabel.label,
-            templateOptions: {
-              label: stepLabel.label,
-            },
-            fieldGroup: [
-              {
-              }
-            ]
-          };
-        });
-
-        newField = [
-          {
-            type: newFieldType,
-            fieldGroup: steps,
-            key: customizationData.property_name,
-            templateOptions: {
-              type: newFieldType,
-              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
-              label_fr: customizationData.label_fr,
-              label_ar: customizationData.label_ar,
-              number_steps: customizationData.stepperLabels.length,
-              custom_css: customizationData.custom_css,
-              property_name: customizationData.property_name,
-              field_tags: customizationData.field_tags,
-              hide_label_fr: customizationData.hide_label_fr,
-              hide_label_ar: customizationData.hide_label_ar,
-              steps: customizationData.stepperLabels,
-              orientation: customizationData.orientation,
-              condi_shouldDisplay: customizationData.condi_shouldDisplay,
-              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-              condi_value: customizationData.condi_value
-            },
-
-          },
-        ];
-        console.log(newField);
-      }
-    }
-
-    else if (type === 'Panel') {
-      const customizationData = await this.openPanelDialog();
-      if (customizationData) {
-        newField = [{
-          type: 'panel',
-          key: customizationData.property_name,
-          templateOptions: {
-            label: customizationData.label,
-            theme: customizationData.theme,
-            disabled: customizationData.disabled,
-            hidden: customizationData.hidden,
-            hide_label: customizationData.hide_label,
-            custom_css: customizationData.custom_css,
-            property_name: customizationData.property_name,
-            field_tags: customizationData.field_tags,
-            collapsible: customizationData.collapsible,
-            condi_shouldDisplay: customizationData.condi_shouldDisplay,
-            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
-            condi_value: customizationData.condi_value
-          },
-          fieldGroup: [
-          ],
-        }];
-      }
-    }
-    else {
-      //  this.openRadioDialog();
-    }
-
-    if (newField.length > 0) {
-      console.log(newField);
-      newField.forEach(el => {
-        this.fields.push(el);
-        this.recentListFields.push(el.key);
-        this.shareService.emitListFields(this.recentListFields);
-        const previewField: FormlyFieldConfig = {};
-        previewField.key = el.key;
-        previewField.templateOptions = el.templateOptions;
-        previewField.type = el.type;
-        if (el.templateOptions && el.templateOptions.condi_whenShouldDisplay !== undefined) {
-          const fieldToCheck = this.fields.find(field => field.key === el.templateOptions.condi_whenShouldDisplay);
-          if (fieldToCheck) {
-            if (fieldToCheck.key === el.templateOptions.condi_whenShouldDisplay && this.previewModel[fieldToCheck.key.toString()] === el.templateOptions.condi_value) {
-              previewField.templateOptions.hidden = true;
-            } else {
-              previewField.templateOptions.hidden = false;
-            }
-            this.previewfields.push(previewField);
-          } else {
-            this.previewfields.push(el);
-          }
-        }
-      });
-      this.form.valueChanges.subscribe((value) => {
-        this.model = { ...this.form.value };
-        console.log('preview fields', this.previewfields);
-        console.log('model', this.model);
-      });
-
-      // Rebuild the form group with the updated fields
-      this.fb.group({});
-      this.newfb.group({});
-    }
-  }
-  async openPanelDialog() {
-    const dialogRef = this.dialog.open(PanelDialogComponent, {
-      width: '1400px', // Adjust the width as needed
-      data: {
-        label: '' // You can pass additional data to the panel customization component if needed
-      }
-    });
-
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openTableDialog() {
-    const dialogRef = this.dialog.open(FormTableComponent, {
-      width: '1400px',
-      data: {
-        label_fr: '', label_ar: '', number_rows: '', number_columns: ''
-      },
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  openCheckboxDialog(): Observable < any > {
-    const dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
-      width: '1400px', // Adjust the width as needed
-      data: {
-        label_fr: '', // Default label value
-        label_ar: ''
-      }
-    });
-
-    return dialogRef.afterClosed();
-  }
-  openFileDialog(): Observable<any> {
-    const dialogRef = this.dialog.open(FormFileDialogComponent, {
-      width: '1400px', // Adjust the width as needed
-      data: {
-        label_fr: '' , // Default label value
-        label_ar: ''
-      }
-    });
-
-    return dialogRef.afterClosed();
-  }
-  async openHTMLDialog() {
-    const dialogRef = this.dialog.open(HtmlDialogComponent, {
-      width: '1400px',
-      data: {
-        label_fr: '',
-        label_ar: '',
-        html_tag: '',
-        html_content: '',
-        htmlElement: '',
-        condi_whenShouldDisplay: '',
-        condi_shouldDisplay: '',
-        condi_value: ''
-      },
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      customizationData.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`;
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openIFrameDialog() {
-    const dialogRef = this.dialog.open(IFrameDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '', link_iframe: '', condi_whenShouldDisplay: '', condi_shouldDisplay: '', condi_value: ''},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openInputDialog() {
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1400px',
-      data: {
-        label_fr: '',
-        label_ar: '',
-        placeholder_fr: '',
-        placeholder_ar: '',
-        condi_whenShouldDisplay: '',
-        condi_shouldDisplay: '',
-        condi_value: ''
-      },
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openAddressDialog() {
-    const dialogRef = this.dialog.open(AddressCustomizeDialogComponent, {
-      width: '1400px',
-      data: {label: '', placeholder: ''},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      console.log('data dialog :' , customizationData);
-      return customizationData;
-      console.log('data dialog :' , customizationData);
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openDateDialog() {
-    const dialogRef = this.dialog.open(DateFormDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '',type: 'datetime-local',},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openDayDialog() {
-    const dialogRef = this.dialog.open(DayFormDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '',type: 'date',},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openPhoneDialog() {
-    const dialogRef = this.dialog.open(TelFormDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '', placeholder_fr: '', placeholder_ar: ''},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openColumnDialog() {
-    const dialogRef = this.dialog.open(FormColumnLayoutDialogComponent, {
-      width: '1400px',
-      data: {label: '', width_col: '', tableRows: []},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData; // Return the entire customization data object
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openRadioDialog() {
-    const dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label: '', value: ''}]},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openSelectDialog() {
-    const dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '', placeholder: '', tableRows: [{label: '', value: ''}]},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openSelectMultipleDialog() {
-    const dialogRef = this.dialog.open(SelectMultipleDialogComponent, {
-      width: '1400px',
-      data: {label_fr: '', label_ar: '', multiple:true, placeholder: '', tableRows: [{label: '', value: ''}]},
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openTabDialog() {
-    const dialogRef = this.dialog.open(TabDialogComponent, {
-      width: '1400px',
-      data: {
-        label_fr: '', label_ar: '',tabLabels: [{label: ''}]
-      },
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-  async openStepperDialog() {
-    const dialogRef = this.dialog.open(StepperDialogComponent, {
-      width: '1400px',
-      data: {
-        label_fr: '', label_ar: '', stepperLabels : [{label: ''}]
-      },
-    });
-    try {
-      const customizationData = await dialogRef.afterClosed().toPromise();
-      return customizationData;
-    } catch (error) {
-      console.error('Error in dialog:', error);
-      return null;
-    }
-  }
-
   async openCustomizationDialog(fieldKey: string, fieldType: string) {
     const field = this.fields.find(f => f.key === fieldKey);
-
     if (!field) {
       console.error(`No field found with key ${fieldKey}`);
       return;
     }
-
     const existingData = field.templateOptions;
     console.log('this is the old data :', existingData);
-
     let dialogRef;
-    const dataToPass = { ...existingData, type: existingData.type || fieldType }; // Ensure type is passed
+    const dataToPass = { ...existingData, type: fieldType }; // Ensure type is passed
     console.log('Data passed to dialog:', dataToPass);
     switch(fieldType) {
       case 'text':
@@ -1726,7 +352,7 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       case 'url':
         dialogRef = this.dialog.open(FormDialogComponent, {
           width: '1400px',
-          data: dataToPass,
+          data: dataToPass
         });
         break;
       case 'vr_stepper':
@@ -1824,10 +450,10 @@ export class UpdateFormComponent implements OnInit, DoCheck {
         console.error(`Unsupported field type: ${fieldType}`);
         return;
     }
-
     try {
       const updatedCustomizationData = await dialogRef.afterClosed().toPromise();
       if (updatedCustomizationData) {
+        this.customizationDataMap.set(fieldKey, updatedCustomizationData);
         this.updateFieldConfiguration(fieldKey, updatedCustomizationData);
         console.log('this is the updated data', updatedCustomizationData);
       }
@@ -1835,17 +461,17 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       console.error('Error in dialog:', error);
     }
   }
-  // tslint:disable-next-line:typedef
   updateFieldConfiguration(fieldKey: string, customizationData: any) {
     const field = this.fields.find(f => f.key === fieldKey);
-
     if (!field) {
       console.error(`No field found with key ${fieldKey}`);
       return;
     }
-
+    console.log("this is the customization data :",customizationData);
     // Update the field's properties with the new customization data
-    field.type = customizationData.type;
+    field.type = field.type;
+    console.log(field.type);
+    field.key = customizationData.property_name;
     field.templateOptions.type = customizationData.type;
     field.templateOptions.label = customizationData.label_fr;
     field.templateOptions.label_fr = customizationData.label_fr;
@@ -1892,12 +518,8 @@ export class UpdateFormComponent implements OnInit, DoCheck {
       console.log('this is the tab :', customizationData.tabLabels);
       console.error('Tab labels are not defined or not an array');
     }
-
     // Trigger a change detection cycle to ensure the form is updated
     this.fields = [...this.fields];
-
   }
-
-
 }
 
