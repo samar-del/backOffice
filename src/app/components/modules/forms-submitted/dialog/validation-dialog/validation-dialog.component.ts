@@ -17,23 +17,33 @@ export class ValidationDialogComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.data);
-    if (this.data.typeValidateion === 'validate'){
-     this.descriptionNotif = 'Etes vous sur de confirmer la validation des données ?' ;
+    if (this.data.typeValidation === 'validate'){
+     this.descriptionNotif = 'Etes vous sure de confirmer la validation des données ?' ;
      this.validationStatus = true;
    } else {
-     this.descriptionNotif = 'Etes vous sur de confirmer la dévalidation des données ?' ;
+     this.descriptionNotif = 'Etes vous sur de confirmer invalidation des données ?' ;
      this.validationStatus = false;
    }
   }
-  validateTask(){
-    this.formContentService.validateAnswers(this.data.notificationInfo,this.validationStatus).subscribe(res => {
-      return res;
-      this.dialogRef.close();
-    }, err => {
-      return null;
-    });
+  validateTask(): void {
+    const requestBody = {
+      notificationRequest: this.data.notificationInfo,
+      validationStatus: this.validationStatus
+    };
+
+    this.formContentService.validateAnswers(requestBody.notificationRequest, requestBody.validationStatus).subscribe(
+      (res) => {
+        console.log('Validation successful:', res);
+        this.dialogRef.close(true); // Close dialog with true if validation successful
+      },
+      (err) => {
+        console.error('Error during validation:', err);
+        this.dialogRef.close(false); // Close dialog with false if validation failed
+      }
+    );
   }
+
   cancelDialog(){
-    this.dialogRef.close();
+    this.dialogRef.close(null);
   }
 }
