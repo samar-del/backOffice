@@ -31,22 +31,34 @@ export class FormsListComponent implements OnInit {
       this.currentUseId = res;
     }, err => {
       console.log('user id is null');
-    })
+    });
+
     const answersList = [];
-    this.formContent.getAllAnswers().subscribe(formSubmittedList => {
-      formSubmittedList.forEach(el => {
-        if (el.userId != null){
-          const formSubmitted = new FormSubmitted();
-          formSubmitted.formTemplateId = el.formTemplateId ;
-          formSubmitted.userId = el.userId;
-          formSubmitted.answerId = el.id ;
-          answersList.push(formSubmitted);
-        }
-      });
+    this.formContent.getAllAnswers().pipe(
+      mergeMap(formSubmittedList => {
+        const formTemplateRequests = formSubmittedList
+          .filter(el => el.userId != null)
+          .map(el => {
+            const formSubmitted = new FormSubmitted();
+            formSubmitted.formTemplateId = el.formTemplateId;
+            formSubmitted.userId = el.userId;
+            formSubmitted.answerId = el.id;
+            return this.formContent.getFormTemplateById(el.formTemplateId).pipe(
+              map(template => {
+                formSubmitted.title = template.title;
+                formSubmitted.description = template.description;
+                return formSubmitted;
+              })
+            );
+          });
+        return forkJoin(formTemplateRequests);
+      })
+    ).subscribe(answersList => {
       this.allFormTemplateList.data = answersList;
       this.allFormTemplateList.paginator = this.paginator;
     });
   }
+
   async viewContent(idAnswer: string , idFormTemplate: string){
     try {
       const [formTemplateStructure, answer] = await forkJoin([
@@ -73,7 +85,7 @@ export class FormsListComponent implements OnInit {
   async validateForm(form: any, validation: string) {
     let Description = '';
     let notifToastr = '' ;
-    if (validation === 'vallidate'){
+    if (validation === 'validate'){
       Description = 'La formulaire dont le titre est ' + form.title + ' que vous aver soumis a été validé par l administrateur ';
       notifToastr = ' Validation faite avec succes';
     }else {
@@ -89,15 +101,19 @@ export class FormsListComponent implements OnInit {
       notif.title = form.title;
       notif.description = Description;
       const dialogRef = this.dialog.open(ValidationDialogComponent, {
-        width : '900px',
-        data: {notificationInfo: notif, typeValidateion: validation }
+        width : '400px',
+        data: { notificationInfo: notif, typeValidation: validation }
       });
       const customizationData = await dialogRef.afterClosed().toPromise();
-      if (customizationData){
+      console.log('Customization Data:', customizationData);
+      if (customizationData === true) {
         this.toastr.success(notifToastr);
-      }else {
-        this.toastr.info('un problème est survenue');
+      } else if (customizationData === false) {
+        this.toastr.info('Validation failed.');
+      } else {
+        this.toastr.info('Operation cancelled or encountered an issue.');
       }
+
       return customizationData;
     }
   catch (error){

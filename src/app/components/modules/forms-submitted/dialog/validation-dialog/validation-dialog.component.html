@@ -1,3 +1,8 @@
-<h3>{{this.descriptionNotif}}</h3>
-<button (click)="validateTask()">confirmer</button>
-<button (click)="cancelDialog()">annuler</button>
+<h2 mat-dialog-title>{{ descriptionNotif }}</h2>
+<div mat-dialog-content>
+  <!-- Dialog content here, if any -->
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="validateTask()">Confirmer</button>
+  <button mat-raised-button color="warn" (click)="cancelDialog()">Annuler</button>
+</div>

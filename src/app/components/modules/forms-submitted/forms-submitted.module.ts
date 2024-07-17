@@ -16,23 +16,27 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {FormlyModule} from '@ngx-formly/core';
 import {MatCardModule} from '@angular/material/card';
 import { ValidationDialogComponent } from './dialog/validation-dialog/validation-dialog.component';
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from "@angular/material/button";
 
 
 // @ts-ignore
 @NgModule({
   declarations: [FormsListComponent, FormSubmittedContentComponent, ValidationDialogComponent],
-    imports: [
-        CommonModule,
-        FormsSubmittedRoutingModule,
-        MatPaginatorModule,
-        MatTableModule,
-        MatListModule,
-        MatIconModule,
-        RouterModule.forChild([]),
-        HttpClientModule,
-        ReactiveFormsModule,
-        FormlyModule,
-        MatCardModule,
-    ]
+  imports: [
+    CommonModule,
+    FormsSubmittedRoutingModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatListModule,
+    MatIconModule,
+    RouterModule.forChild([]),
+    HttpClientModule,
+    ReactiveFormsModule,
+    FormlyModule,
+    MatCardModule,
+    MatDialogModule,
+    MatButtonModule,
+  ]
 })
 export class FormsSubmittedModule { }
