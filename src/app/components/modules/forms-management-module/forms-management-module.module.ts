@@ -14,6 +14,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
 import {UpdateFormComponent} from "./update-form/update-form.component";
+import {MatButtonModule} from "@angular/material/button";
 
 
 
@@ -36,6 +37,7 @@ import {UpdateFormComponent} from "./update-form/update-form.component";
     DragDropModule,
     MatPaginatorModule,
     MatTableModule,
+    MatButtonModule,
   ]
 })
 export class FormsManagementModuleModule { }

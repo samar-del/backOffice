@@ -102,9 +102,6 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
   border: 1px solid #000;
   height: 1rem;
 }
-::ng-deep  formly-field{
-  border:1px solid red ;
-}
 /*.small-icon mat-icon {*/
 /*  font-size: 20px;*/
 /*  text-align: center;*/

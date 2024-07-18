@@ -263,21 +263,40 @@ export class UpdateFormComponent implements OnInit, DoCheck {
   }
 
   updateForm(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }) {
-    // Prepare the fields array with updated field data
-    const updatedFields = this.fields.map(field => ({
-      ...field,
-      templateOptions: {
-        ...field.templateOptions,
+    // Fetch the existing form data first
+    this.formService.getFormTemplateById(formId).subscribe(
+      existingFormTemplate => {
+        // Prepare the fields array with updated field data
+        const updatedFields = this.fields.map(field => ({
+          ...field,
+          templateOptions: {
+            ...field.templateOptions,
+          },
+          type: field.type, // Ensure the type is included
+          id: field.id // Ensure the field's id is included
+        }));
+
+        console.log('Updated fields:', updatedFields); // Log updated fields before calling update
+
+        // Update the form template with existing values if new values are not provided
+        const modifiedFormTemplate = {
+          title: formTemplate.title || existingFormTemplate.title,
+          version: formTemplate.version, // Always include version
+          createdAt: formTemplate.createdAt, // Always include createdAt
+          description: formTemplate.description || existingFormTemplate.description
+        };
+
+        console.log('Modified form template:', modifiedFormTemplate); // Log modified form template
+
+        // Call the new method to update form and fields
+        this.updateFormAndFields(formId, modifiedFormTemplate, updatedFields);
       },
-      type: field.type, // Ensure the type is included
-      id: field.id // Ensure the field's id is included
-    }));
-
-    console.log('Updated fields:', updatedFields); // Log updated fields before calling update
-
-    // Call the new method to update form and fields
-    this.updateFormAndFields(formId, formTemplate, updatedFields);
+      err => {
+        console.error('Error fetching existing form template:', err);
+      }
+    );
   }
+
   generateRandomId(length: number = 8): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;

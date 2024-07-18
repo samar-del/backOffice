@@ -34,7 +34,7 @@ export class RadioCustomizeDialogComponent implements OnInit {
       label_ar: [this.data.label_ar, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
-      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
+      tableRows: this.fb.array((this.data.tableRows || []).map(row => this.createRow(row))),
       custom_css: this.data.custom_css,
       hidden: [this.data.hidden],
       error_label: [this.data.error_label],
