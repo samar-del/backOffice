@@ -70,11 +70,9 @@ export class ContentComponent implements OnInit, DoCheck {
   categories: { name: string, fields: FormlyFieldConfig[] }[] = [
     {name: 'Category 1', fields: []},
     {name: 'Category 2', fields: []},
-
   ];
   roles = '';
   isLoggedIn = false;
-
   private previousPreviewFields: FormlyFieldConfig[] = [];
   formHeader: FormGroup;
   layoutField: FormlyFieldConfig = {};
@@ -1825,7 +1823,7 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    async saveFieldOptions(field: FormlyFieldConfig): Promise < TemplateOptions > {
+  async saveFieldOptions(field: FormlyFieldConfig): Promise < TemplateOptions > {
 
     let options;
     if (field.templateOptions.options != null) {
@@ -1915,7 +1913,6 @@ export class ContentComponent implements OnInit, DoCheck {
     await this.templateOptionsService.addTemplateOption(templateOptions).toPromise();
     return templateOptions;
   }
-
   async saveFieldsGroupWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, fieldGroupsId: string[]): Promise<string> {
     const mappedField: Field = {
       type: field.type,
@@ -1997,6 +1994,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res.id;
   }
+
   generateRandomId(length: number = 8): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
