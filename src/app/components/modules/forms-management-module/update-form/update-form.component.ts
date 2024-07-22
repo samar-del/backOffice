@@ -1931,34 +1931,89 @@ export class UpdateFormComponent implements OnInit, DoCheck {
     modelPart[keys[keys.length - 1]] = value;
   }
   updateFormAndFields(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }, fields: any[]) {
-    // First, update the form template
-    this.formCreationService.updateFormTemplate(formTemplate, formId).subscribe(
-      res => {
-        console.log('Form template updated:', res);
+    // Fetch the existing form data first
+    this.formService.getFormTemplateById(formId).subscribe(
+      existingFormTemplate => {
+        // Log existing form template to check if data is correct
+        console.log('Existing form template:', existingFormTemplate);
 
-        // If form template update is successful, update the fields
-        const fieldObservables = fields.map(field => {
-          const fieldId = field.id; // Use the field's _id
-          console.log('Updating field:', field); // Log field data before update
-          return this.fieldService.editField(fieldId, field);
+        // Prepare the updated fields list
+        const updatedFields = this.fields.map(field => ({
+          ...field,
+          templateOptions: {
+            ...field.templateOptions,
+          },
+          type: field.type,
+          id: field.id
+        }));
+
+        // Log updated fields to verify data
+        console.log('Updated fields:', updatedFields);
+
+        // Identify existing field IDs
+        const existingFieldIds = existingFormTemplate.fieldIds || [];
+
+        // Separate new fields from existing ones
+        const fieldsToUpdate = updatedFields.filter(field => existingFieldIds.includes(field.id));
+        const newFields = updatedFields.filter(field => !existingFieldIds.includes(field.id));
+
+        // Log fields to be updated and added
+        console.log('Fields to update:', fieldsToUpdate);
+        console.log('New fields to add:', newFields);
+
+        // Observable for updating existing fields
+        const fieldUpdateObservables = fieldsToUpdate.map(field => {
+          console.log('Updating field:', field);
+          return this.fieldService.editField(field.id, field);
         });
 
-        forkJoin(fieldObservables).subscribe(
-          fieldResults => {
-            console.log('Fields updated:', fieldResults);
+        // Observable for adding new fields
+        const fieldAddObservables = newFields.map(field => {
+          console.log('Adding new field:', field);
+          return this.fieldService.addField(field).pipe(
+            switchMap(addedField => {
+              // Add the new field ID to the form template
+              return this.formCreationService.addFieldFormTemplate(addedField.id, formId);
+            })
+          );
+        });
+
+
+        // Update form template
+        this.formCreationService.updateFormTemplate(formTemplate, formId).subscribe(
+          res => {
+            console.log('Form template updated:', res);
+
+            // Update existing fields
+            forkJoin(fieldUpdateObservables).subscribe(
+              fieldUpdateResults => {
+                console.log('Fields updated:', fieldUpdateResults);
+
+                // Add new fields
+                forkJoin(fieldAddObservables).subscribe(
+                  fieldAddResults => {
+                    console.log('New fields added:', fieldAddResults);
+                  },
+                  fieldAddErr => {
+                    console.error('Error adding new fields:', fieldAddErr);
+                  }
+                );
+              },
+              fieldUpdateErr => {
+                console.error('Error updating fields:', fieldUpdateErr);
+              }
+            );
           },
-          fieldErr => {
-            console.error('Error updating fields:', fieldErr);
+          err => {
+            console.error('Error updating form template:', err);
           }
         );
-
       },
       err => {
-        console.error('Error updating form template:', err);
+        console.error('Error fetching existing form template:', err);
       }
     );
   }
-
   updateForm(formId: string, formTemplate: { title: string, version: number, createdAt: Date, description: string }) {
     // Fetch the existing form data first
     this.formService.getFormTemplateById(formId).subscribe(

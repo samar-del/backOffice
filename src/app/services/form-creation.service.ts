@@ -27,6 +27,6 @@ export class FormCreationService {
     return this.httpClient.patch(`http://localhost:8078/updateFormTemplate/${id}`, form);
   }
   public addFieldFormTemplate(fieldId: string, formId: string): Observable<any> {
-    return this.httpClient.put(`http://localhost:8078/addFieldFormTemplate/${formId}/${fieldId}`, null);
+    return this.httpClient.put(`http://localhost:8078/field/addFieldFormTemplate/${formId}/${fieldId}`, null);
   }
 }

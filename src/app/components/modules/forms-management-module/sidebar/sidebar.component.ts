@@ -103,11 +103,12 @@ export class SidebarComponent implements OnInit {
     console.log(currentPosition);
     // tslint:disable-next-line:prefer-const
     let position: number;
-    if (this.edit) {
-      this.updateFormComponent.drop(event, droppedItem);
-    } else {
+    if (!this.edit) {
       this.contentComponent.drop(event, droppedItem);
-    }  }
+    } else {
+      this.updateFormComponent.drop(event, droppedItem);
+    }
+  }
   onDragEntered() {
     // Add a CSS class when an element is dragged over the container
     this.containerDraggedOver = true; // Assuming you have a boolean property to track the drag state
