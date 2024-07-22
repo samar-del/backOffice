@@ -1752,6 +1752,9 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
+  resetModel(): void {
+    window.location.reload(); // Recharge la page
+  }
   // tslint:disable-next-line:typedef
     async addFormTemplate() {
 

@@ -26,9 +26,9 @@
               <div class="row">
                 <div class="col-12">
                   <div class="mb-4">
-                    <div class="center-text">
-                      <h3>Sign in</h3>
-                  </div>                  </div>
+                    <h3>Sign in</h3>
+                    <p>Don't have an account? <a routerLink="/signup">Sign up</a></p>
+                  </div>
                   <div class="alert alert-warning" *ngIf="invalidLogin">{{ errorMessage }}</div>
                   <div class="alert alert-success" *ngIf="loginSuccess">{{ successMessage }}</div>
                   <div class="alert alert-danger" *ngIf="form.get('email').hasError('required') && form.get('email').touched">
