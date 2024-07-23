@@ -16,7 +16,7 @@ export class LoginService {
 
 
                 signin(request: loginRequest) {
-                  return this.http.post<any>(`${baseUrl}/auth/signinAdmin`, request).pipe(
+                  return this.http.post<any>(`${baseUrl}/auth/signin/Admin`, request).pipe(
                     map(response => {
                       if (response && response.token) {
                        // localStorage.setItem('accessToken', response.token);
