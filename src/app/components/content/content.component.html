@@ -20,7 +20,7 @@
             </formly-form>
           </div>
           <div class="button-container">
-            <button mat-icon-button class="btn btn-sm btn-outline-primary small-icon buttonField" (click)="openCustomizationDialog(field.key)">
+            <button mat-icon-button class="btn btn-sm btn-gradient-bg small-icon buttonField" (click)="openCustomizationDialog(field.key)">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button class="btn btn-sm btn-outline-danger small-icon buttonField" (click)="deleteField(field.key)">
@@ -31,11 +31,10 @@
       </div>
     </ng-container>
     <div class="submit-button-container">
-      <button type="submit" class="btn btn-primary btn-info" (click)="addFormTemplate()">{{ translations?.translations?.Submit }}</button>
-      <button type="button" class="btn btn-default" (click)="resetModel()">{{ translations?.translations?.Reset }}</button>
 
+      <button type="submit" class="btn btn-primary btn-gradient-bg" (click)="addFormTemplate()">{{ translations?.translations?.Submit }}</button>
+      <button type="button" class="btn btn-default" (click)="options.resetModel()">{{ translations?.translations?.Reset }}</button>
     </div>
-
   </form>
 </div>
 
