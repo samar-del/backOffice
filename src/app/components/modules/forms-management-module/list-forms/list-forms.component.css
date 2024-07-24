@@ -29,3 +29,7 @@ mat-header-row{
 mat-table{
   border-radius: 20px;
 }
+.btn-gradient-bg{
+  color: #00719D;
+  border-radius: 20px;
+}

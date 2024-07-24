@@ -22,6 +22,7 @@ export class StepperDialogComponent implements OnInit {
   selectedTabIndex = 0;
   translations: any = {};
   fieldsList: any[] = [];
+  NumberOptions = 0 ;
   private fieldsListSub: Subscription;
 
   constructor(
@@ -50,9 +51,12 @@ export class StepperDialogComponent implements OnInit {
       stepper_orientation: [this.data.stepper_orientation || 'horizontal'], // default to horizontal
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      stepperLabels: this.fb.array(this.data.stepperLabels.map(step => this.createRow(step))) // Initialize steps array
-
-  });
+      stepperLabels: this.fb.array(this.data.stepperLabels.map(step => this.createRow(step))), // Initialize steps array
+      tableRows: this.fb.array([]),
+      condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
+      condi_shouldDisplay: [this.data.condi_shouldDisplay],
+      condi_value: [this.data.condi_value],
+    });
 
     if (this.data.steps) {
       this.data.steps.forEach((stepLabel: string) => {
@@ -101,6 +105,25 @@ export class StepperDialogComponent implements OnInit {
     }
   }
 
+  addRowCondi(): void {
+    const tableRowsArray = this.form.get('tableRows') as FormArray;
+    tableRowsArray.push(this.createRow());
+    this.NumberOptions++ ;
+  }
+  createRowCondi(): FormGroup {
+    const row = this.fb.group({
+      keyCondition: [''],
+      valueCondition: [''],
+    });
+    return row;
+  }
+  removeRow(index: number): void {
+    this.tableRows.removeAt(index);
+    this.NumberOptions--;
+  }
+  get tableRows(): FormArray {
+    return this.form.get('tableRows') as FormArray;
+  }
   generatePropertyName(label: string): string {
     const words = label.split(/\s+/); // Split label into words
     let propertyName = '';
@@ -169,6 +192,7 @@ export class StepperDialogComponent implements OnInit {
         type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
         templateOptions: {
           label: stepLabel,
+          type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
         },
       };
     });
@@ -180,6 +204,7 @@ export class StepperDialogComponent implements OnInit {
         label: this.form.get('label_fr').value,
         steps: stepperLabels.value.map(step => step.label),
         stepper_orientation: this.form.get('stepper_orientation').value,
+        type: this.form.get('stepper_orientation').value === 'horizontal' ? 'hr_stepper' : 'vr_stepper',
       },
     };
   }

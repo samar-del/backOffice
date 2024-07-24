@@ -4,7 +4,7 @@
       <h2 class="title">Role Listing &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
       <br>
       <br>
-      <button (click)="addRole()" class="btn btn-secondary mb-2">Add New Role</button>
+      <mat-icon (click)="addRole()" >add_box</mat-icon>
     </mat-card-header>
     <mat-card-content class="content">
       <div class="mat-elevation-z8">
@@ -13,7 +13,9 @@
           <!-- Role Type Column -->
           <ng-container matColumnDef="RoleType">
             <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Role Type </th>
-            <td mat-cell class="cell" *matCellDef="let element"> {{element.roleType}} </td>
+            <td mat-cell class="cell" *matCellDef="let element">
+               {{element.roleType}}
+            </td>
           </ng-container>
 
           <!-- Permissions Column -->
@@ -21,8 +23,8 @@
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Permissions </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <select>
-                <option *ngFor="let permission of element.permissions" [value]="permission.idPermission">
-                  {{ permission.permissionType }} - {{ permission.permissionName }}
+                <option *ngFor="let permission of element?.permissions" [value]="permission?.id">
+                  {{ permission?.permissionType }} - {{ permission?.permissionName }}
                 </option>
               </select>
             </td>
@@ -32,15 +34,16 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <button *ngIf="element.roleType" (click)="updateRole(element.idRole)" class="btn btn-outline-info mb-2">Update</button>
+              <mat-icon class="btn-gradient-bg" *ngIf="element.roleType" (click)="dialogPEr(element.id, element.permissions)" >update</mat-icon>
             </td>
+
           </ng-container>
 
           <!-- Delete Column -->
           <ng-container matColumnDef="delete">
-            <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <a *ngIf="element.roleType !== 'SUPER-ADMIN'" (click)="deleteRole(element.idRole)" class="btn btn-outline-secondary mb-2">Delete Role</a>
+              <mat-icon class="btn-gradient-bg" (click)="deleteRole(element.id)">delete</mat-icon>
             </td>
           </ng-container>
 

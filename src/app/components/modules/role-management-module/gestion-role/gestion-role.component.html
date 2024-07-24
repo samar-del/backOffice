@@ -2,18 +2,21 @@
 <form [formGroup]="form" (ngSubmit)="addRoleWithPermissions()">
   <div>
     <label class="form-label" for="roleType">Role Type:</label>
-    <input class="form-control" id="roleType" formControlName="roleType" />
+    <input class="form-control" id="roleType" formControlName="roleType" (input)="toUpperCaseInput()" />
   </div>
   <div>
-    <label class="form-label" for="permissions">Permissions Name:</label>
-    <select id="permissions"  multiple (change)="assignPermissions($event.target.options)">
-      <option  *ngFor="let permission of permissions" [value]="permission.idPermission">
-        {{ permission.permissionName }}
-      </option>
-    </select>
+    <label class="form-label" >Permissions:</label>
+    <mat-form-field class="example-full-width">
+      <mat-select formControlName="permissions"  (change)="assignPermissions($event.target.options)" multiple>
+        <ng-container *ngFor="let permission of permissions">
+        <mat-option  [value]="permission.id">
+            {{ permission.permissionName }} : {{ permission.permissionType }}
+        </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
   </div>
 
-  <button  (click)="onNoClick()"  class="btn btn-outline-info mb-2">Cancel</button>
-
-  <button class="btn btn-outline-info mb-2" type="submit">Add Role</button>
+  <button (click)="onNoClick()" class="btn btn-outline-danger mb-2" type="button">Cancel</button>
+  <button class="btn btn-gradient-bg mb-2" type="submit">Add Role</button>
 </form>

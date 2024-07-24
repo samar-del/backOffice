@@ -1,8 +1,8 @@
 import { Role } from './../../../models/role';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Permission } from 'src/app/models/permission';
 import { User } from 'src/app/models/user';
 import { UserRequest } from 'src/app/models/user-request';
@@ -43,6 +43,23 @@ export class UserService {
     );
   }
 
+  getSimpleUserCountWithInscription(): Observable<{ [key: string]: number }> {
+    return this.getAllUSers().pipe(
+      tap(users => console.log('Users:', users)),
+      map(users => {
+        const simpleUserCount: { [key: string]: number } = {};
+        simpleUserCount['SimpleUser'] = users.filter(user => user.role && user.role.some(role => role.roleType === 'USER')).length;
+        console.log('Simple User Count:', simpleUserCount);
+        return simpleUserCount;
+      }),
+      catchError(error => {
+        console.error('Error fetching users:', error);
+        // Return a default value or rethrow the error
+        return of({ SimpleUser: 0 }); // Return an empty object or another default value
+      })
+    );
+  }
+
 
 updateUser(idUser: string, user:User){
     return this.http.put(`http://localhost:8078/auth/updateUser/${idUser}`,user);
@@ -66,7 +83,7 @@ updateUser(idUser: string, user:User){
     return this.http.get<any>(`http://localhost:8078/auth/getbyId/${idUser}`);
   }
 
-  getAccessByRole(roleType: string){
+  getAccessByRole (roleType: string){
     return this.http.get<string>(`http://localhost:8078/auth/roleT/${roleType}`)
   }
 
@@ -76,7 +93,7 @@ updateUser(idUser: string, user:User){
   }
 
 
-  addUserAndAssignRole(userRequest:UserRequest):Observable<User>{
-    return this.http.post<User>(`http://localhost:8078/auth/addUserWithRoles`,userRequest);
+  addUserAndAssignRole(userRequest: UserRequest): Observable<any> {
+    return this.http.post<any>(`http://localhost:8078/auth/addUser`, userRequest);
   }
 }

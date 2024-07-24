@@ -6,4 +6,5 @@ export class Field {
   templateOptions ?: TemplateOptions;
   type ?: string;
   fieldGroup?: any[];
+  fieldGroupId?: any[];
 }

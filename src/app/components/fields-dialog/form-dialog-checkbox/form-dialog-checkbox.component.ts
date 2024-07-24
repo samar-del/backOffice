@@ -123,6 +123,7 @@ export class FormDialogCheckboxComponent implements OnInit {
           custom_css: this.form.get('custom_css').value,
           error_label: this.form.get('error_label').value,
           custom_error_message: this.form.get('custom_error_message').value,
+          type: 'checkbox',
         },
         hide: inputHidden,
         defaultValue: false,

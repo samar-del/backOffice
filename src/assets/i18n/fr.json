@@ -14,6 +14,8 @@
     }
   ],
   "translations": {
+    "title" : "Titre du formulaire",
+    "description" : "Description du formulaire",
     "label": "Label",
     "label_fr": "Label en français",
     "label_ar": "Label en arabe",
@@ -56,8 +58,11 @@
     "table_has_value": "A la valeur",
     "cancel": "Annuler",
     "save": "Enregistrer",
+    "Submit": "Soumettre",
+    "Reset": "Réinitialiser",
     "storageType":"type de stockage",
     "local_storage":"Stockage local",
-    "url":"url"
+    "url":"url",
+    "sidebar_title" : "Glisser les éléments vers la droite"
   }
 }

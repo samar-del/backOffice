@@ -1,8 +1,6 @@
-.row {
+.div {
   border: 2px dotted #ccc; /* Define border properties */
-  padding: 10px; /* Optional: Add padding for better appearance */
+  padding: 8px; /* Optional: Add padding for better appearance */
   border-radius: 10px;
-}
-.element{
-  border: #0c2646 2px dotted;
+  margin-bottom: 10px;
 }

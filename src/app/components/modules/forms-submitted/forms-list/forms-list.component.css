@@ -1,0 +1,45 @@
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+.container{
+  border-radius: 20px;
+}
+mat-paginator{
+  padding-right: 35%;
+  height: auto;
+}
+at-table{
+  border-radius: 20px;
+}
+
+button{
+  border-color: transparent;
+  background-color: transparent;
+}
+i{
+  font-size: 20px;
+  color: #063672;
+}
+
+mat-header-row{
+  border-radius: 20px;
+  margin-top: 1rem;
+}
+mat-table{
+  border-radius: 20px;
+}
+.header {
+  background:linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
+  color: #ffffff;
+  padding: 10px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.btn-gradient-bg{
+  color: #00719D;
+  border-radius: 20px;
+}

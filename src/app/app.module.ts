@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { FormDialogComponent } from './components/fields-dialog/form-dialog/form-dialog.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {AbstractControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -19,7 +19,7 @@ import {
 } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FormlyModule } from '@ngx-formly/core';
+import {FormlyFieldConfig, FormlyModule} from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { FormDialogCheckboxComponent } from './components/fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -88,9 +88,20 @@ import { FormFileDialogComponent } from './components/fields-dialog/form-file-di
 import { JwtModule } from '@auth0/angular-jwt';
 import { SelectMultipleDialogComponent } from './components/fields-dialog/select-multiple-dialog/select-multiple-dialog.component';
 import { DayFormDialogComponent } from './components/fields-dialog/day-form-dialog/day-form-dialog.component';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import { RestrictInputDirective } from './restrict-input.directive';
+import {TranslationService} from "./services/translation.service";
+import {FieldValidatorFn} from "@ngx-formly/core/lib/services/formly.config";
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
-
+const regexValidator: FieldValidatorFn = (control: AbstractControl, field: FormlyFieldConfig): ValidationErrors | null => {
+  const pattern = field.templateOptions?.pattern;
+  if (pattern && !new RegExp(pattern).test(control.value)) {
+    return { regexValidation: true }; // Return an object indicating the validation error
+  }
+  return null; // Return null if the validation passes
+};
 
 @NgModule({
   declarations: [
@@ -148,7 +159,8 @@ import { DayFormDialogComponent } from './components/fields-dialog/day-form-dial
     StepperVerticalWrapperComponent,
     FormFileDialogComponent,
     SelectMultipleDialogComponent,
-    DayFormDialogComponent
+    DayFormDialogComponent,
+    RestrictInputDirective
   ],
     imports: [
         BrowserModule,
@@ -157,7 +169,6 @@ import { DayFormDialogComponent } from './components/fields-dialog/day-form-dial
         BrowserAnimationsModule,
         MatListModule,
         MatIconModule,
-        MatInputModule,
         MatToolbarModule,
         DragDropModule,
         ReactiveFormsModule,
@@ -174,11 +185,16 @@ import { DayFormDialogComponent } from './components/fields-dialog/day-form-dial
                 { name: 'panel', component: PanelFieldWrapperComponent },
               {name: 'hr_stepper', component: StepperWrapperComponent},
               {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
-              { name: 'input', component: MatInputModule },
             ],
             types: [
                 {
                     name: 'column',
+                    extends: 'formly-group',
+                    wrappers: ['form-field'],
+                    defaultOptions: {templateOptions: {column: true}}
+                },
+                {
+                    name: 'columnSize',
                     extends: 'formly-group',
                     wrappers: ['form-field'],
                     defaultOptions: {templateOptions: {column: true}}
@@ -194,6 +210,12 @@ import { DayFormDialogComponent } from './components/fields-dialog/day-form-dial
                 {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
               {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
+          validators: [
+            {
+              name: 'regexValidation',
+              validation: regexValidator
+            }
+          ],
         }),
         FormlyModule.forChild({
             wrappers: [{name: 'row', component: RowWrapperComponent}],
@@ -233,8 +255,9 @@ import { DayFormDialogComponent } from './components/fields-dialog/day-form-dial
         MatStepperModule,
         MatIconModule,
         MatButtonModule,
+        MatCheckboxModule,
     ],
-  providers: [],
+  providers: [TranslationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

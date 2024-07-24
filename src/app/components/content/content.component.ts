@@ -8,7 +8,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {FormDialogCheckboxComponent} from '../fields-dialog/form-dialog-checkbox/form-dialog-checkbox.component';
 import {FormlyFormOptions, FormlyFieldConfig, FormlyField} from '@ngx-formly/core';
 import {FormDialogComponent} from '../fields-dialog/form-dialog/form-dialog.component';
@@ -48,8 +48,6 @@ import {StepperDialogComponent} from '../fields-dialog/stepper-dialog/stepper-di
 import {SelectMultipleDialogComponent} from "../fields-dialog/select-multiple-dialog/select-multiple-dialog.component";
 import {DayFormDialogComponent} from "../fields-dialog/day-form-dialog/day-form-dialog.component";
 
-
-
 @Component({
   selector: 'app-content',
   templateUrl: './content.component.html',
@@ -87,12 +85,17 @@ export class ContentComponent implements OnInit, DoCheck {
   mouseX = 0;
   mouseY = 0;
   isMouseDown = false;
-
+  regexPatterns = {
+    'an': /^[A-Za-z0-9]*$/, // Define the regex pattern for language 'an'
+    'fr': /^[A-Za-z0-9éèàçùâêîôûëïü]*$/, // Define the regex pattern for French
+    'ar': /^[\u0621-\u064A0-9]*$/, // Define the regex pattern for Arabic
+  };
   // Track the dragged field
   draggedField: any;
   dragEvent: any = {};
   tabTag: string ;
   columnFieldIndex: string;
+  translations: any = {};
   labelStepper: string ;
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private formService: FormCreationService, private fieldService: FieldService,
@@ -120,6 +123,12 @@ export class ContentComponent implements OnInit, DoCheck {
       })
     ).subscribe();
 
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.loadTranslations();
+    });
+
+    this.loadTranslations();
+
     this.previousFields = JSON.parse(JSON.stringify(this.fields));
   }
   @HostListener('document:mousemove', ['$event'])
@@ -139,7 +148,7 @@ export class ContentComponent implements OnInit, DoCheck {
       const tabCondition = event1.target?.__ngContext__ === undefined || (event1.target?.__ngContext__[0].className === 'div.mat-tab-labels' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].classList[0] !== 'mat-tab-group') ;
       const columnCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__ !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24] !== 0 && (event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== undefined && event1.target?.__ngContext__[0]?.__ngContext__[0].__ngContext__[24].type !== 'row');
       const tableCondition = event1.target?.__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__ !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30] !== undefined && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field !== undefined && (event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'table' && event1.target?.__ngContext__[20]?.__ngContext__[3][3][0].__ngContext__[30].field.type !== 'panel');
-      const stepperCondition =(event1.target?.firstElementChild !== undefined && event1.target?.firstElementChild !== null) && event1.target?.firstElementChild.__ngContext__ !== undefined &&  event1.target?.firstElementChild.__ngContext__.childNodes !== undefined && event1.target?.firstElementChild.__ngContext__ !== undefined && event1.target?.firstElementChild.__ngContext__[0] !== undefined && event1.target?.firstElementChild.__ngContext__[0].localName !== 'mat-step-header';
+      const stepperCondition = (event1.target?.firstElementChild !== undefined && event1.target?.firstElementChild !== null) && event1.target?.firstElementChild.__ngContext__ !== undefined &&  event1.target?.firstElementChild.__ngContext__.childNodes !== undefined && event1.target?.firstElementChild.__ngContext__ !== undefined && event1.target?.firstElementChild.__ngContext__[0] !== undefined && event1.target?.firstElementChild.__ngContext__[0].localName !== 'mat-step-header';
       if (firstElmCondition || tabCondition || panelCondition || columnCondition || stepperCondition ) {
         // this.addFieldGroupToField('text');  mat-tab-label-content
         this.addField(this.dragEvent.item.element.nativeElement.__ngContext__[22]);
@@ -206,8 +215,15 @@ export class ContentComponent implements OnInit, DoCheck {
 
       // Update previousFields
       this.previousFields = currentFields;
-
     }
+  }
+  loadTranslations() {
+    this.translationService.getCurrentLanguage().subscribe((language: string) => {
+      this.translationService.loadTranslations(language).subscribe((translations: any) => {
+        console.log('Loaded translations:', translations);
+        this.translations = translations;
+      });
+    });
   }
   private haveFieldsChanged(currentFields: FormlyFieldConfig[]): boolean {
     // Implement deep comparison between previousFields and currentFields
@@ -262,6 +278,7 @@ export class ContentComponent implements OnInit, DoCheck {
   //   // Handle mouse leave event
   //   console.log('Mouse left the component.');
   // }
+  // tslint:disable-next-line:typedef
   drop(event: CdkDragDrop<string[]>, droppedItem: any) {
     this.dragEvent = event ;
     this.isMouseDown = true;
@@ -312,6 +329,51 @@ export class ContentComponent implements OnInit, DoCheck {
     return position;
   }
 
+  handleInput(event: Event, language: string): void {
+    const inputElement = event.target as HTMLInputElement;
+    const pattern = this.regexPatterns[language] || /.*/;
+
+    // Filter the input value
+    inputElement.value = inputElement.value.split('').filter(char => pattern.test(char)).join('');
+  }
+
+  regexValidator(language: string) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const pattern = this.regexPatterns[language] || /.*/;
+      if (control.value && !pattern.test(control.value)) {
+        return { regexValidation: true };
+      }
+      return null;
+    };
+  }
+
+  restrictInput(event: KeyboardEvent, language: string) {
+    const arabicCharUnicodeRange = /[\u0600-\u06FF]/;
+    const englishCharUnicodeRange = /[A-Za-z]/;
+    const frenchCharUnicodeRange = /[\u00C0-\u017F]/;
+
+    let regex;
+    switch (language) {
+      case 'ar':
+        regex = arabicCharUnicodeRange;
+        break;
+      case 'fr':
+        regex = frenchCharUnicodeRange;
+        break;
+      case 'en':
+        regex = englishCharUnicodeRange;
+        break;
+      default:
+        regex = /./; // allow everything by default
+    }
+
+    const inputChar = String.fromCharCode(event.charCode);
+    if (!regex.test(inputChar)) {
+      event.preventDefault();
+    }
+  }
+
+
   // tslint:disable-next-line:typedef
   async addField(type: any) {
     const uniqueKey = `newInput_${this.fields.length + 1}`;
@@ -320,8 +382,9 @@ export class ContentComponent implements OnInit, DoCheck {
     this.translationService.getCurrentLanguage().subscribe((currentLang: string) => {
       language = currentLang;
     });
+
     let newField: FormlyFieldConfig[] = [{}];
-    if ((language === 'an' && type === 'Text') ||
+    if ((language === 'en' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
@@ -364,10 +427,16 @@ export class ContentComponent implements OnInit, DoCheck {
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value,
+            attributes: {
+              oninput: `this.restrictInput(event, '${language}')` // make sure to bind the context correctly
+            },
             condition: listeCondition.forEach(el => {
               const conditionValues = {keyCondition: el.keyCondition, valueCondition: el.valueCondition};
               return conditionValues;
             })
+          },
+          validators: {
+            validation: [this.regexValidator(language)]
           },
           // wrappers: ['column'],
           expressionProperties: {
@@ -378,7 +447,7 @@ export class ContentComponent implements OnInit, DoCheck {
               }
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength ;
             },
             'templateOptions.hidden': (model: any, formState: any) => {
               if (!customizationData.condi_whenShouldDisplay) {
@@ -393,7 +462,7 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     }
 
-    if ((language === 'an' && type === 'HTML Element') ||
+    if ((language === 'en' && type === 'HTML Element') ||
       (language === 'fr' && type === 'Element HTML') ||
       (language === 'ar' && type === 'عنصر HTML')) {
       const customizationData = await this.openHTMLDialog();
@@ -474,12 +543,11 @@ export class ContentComponent implements OnInit, DoCheck {
 
       }
     }
-
-    if ((language === 'an' && type === 'Address') ||
+    if ((language === 'en' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
       const customizationData = await this.openAddressDialog();
-      let field: FormlyFieldConfig = {};
+      const field: FormlyFieldConfig = {};
       const listFieldAddress = customizationData.tableRows;
       this.shareService.emitAddressOptions(listFieldAddress);
       if (customizationData) {
@@ -503,7 +571,6 @@ export class ContentComponent implements OnInit, DoCheck {
               label: language === 'ar' ? label_ar : label_fr,
               label_fr,
               label_ar,
-              type: 'address',
               minLength: customizationData.minLength,
               maxLength: customizationData.maxLength,
               required: customizationData.required,
@@ -513,16 +580,23 @@ export class ContentComponent implements OnInit, DoCheck {
               property_name,
               field_tags: customizationData.field_tags,
               error_label: customizationData.error_label,
-              custom_error_message: customizationData.custom_error_message
+              custom_error_message: customizationData.custom_error_message,
+              type: 'address',
+              attributes: {
+                oninput: (event) => this.handleInput(event, language)
+              },
             },
-            wrappers: ['column'],
+            validators: {
+              validation: [this.regexValidator(language)]
+            },
+            //wrappers: ['column'],
             fieldGroup: [],
           };
           listFieldAddress.forEach(el => {
             const Key = this.generateRandomId();
             const fieldGroupElem = {
               type: 'input',
-              wrappers: ['address-wrapper'],
+             wrappers: ['address-wrapper'],
               key: this.generateRandomId(), // Ensure unique key for each input
               templateOptions: {
                 label: el.label_row,
@@ -531,7 +605,14 @@ export class ContentComponent implements OnInit, DoCheck {
                 property_name,
                 field_tags: customizationData.field_tags,
                 error_label: customizationData.error_label,
-                custom_error_message: customizationData.custom_error_message
+                custom_error_message: customizationData.custom_error_message,
+                condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                condi_value: customizationData.condi_value,
+                type: 'address',
+              },
+              validators: {
+                validation: [this.regexValidator(language)]
               },
             };
             field.fieldGroup.push(fieldGroupElem);
@@ -561,8 +642,18 @@ export class ContentComponent implements OnInit, DoCheck {
                   property_name,
                   field_tags: customizationData.field_tags,
                   error_label: customizationData.error_label,
-                  custom_error_message: customizationData.custom_error_message
-                }
+                  custom_error_message: customizationData.custom_error_message,
+                  condi_shouldDisplay: customizationData.condi_shouldDisplay,
+                  condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+                  condi_value: customizationData.condi_value,
+                  type: 'address',
+                  attributes: {
+                    oninput: (event) => this.handleInput(event, language)
+                  },
+                },
+                validators: {
+                  validation: [this.regexValidator(language)]
+                },
               },
             ],
           };
@@ -573,7 +664,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }
       }
     }
-    if ((language === 'an' && type === 'Email') ||
+    if ((language === 'en' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
       const customizationData = await this.openInputDialog();
@@ -610,7 +701,10 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
-
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
           },
           // wrappers: ['column'],
 
@@ -622,9 +716,10 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
@@ -632,7 +727,7 @@ export class ContentComponent implements OnInit, DoCheck {
         this.cdr.detectChanges();
       }
     }
-    if ((language === 'an' && type === 'IFrame') ||
+    if ((language === 'en' && type === 'IFrame') ||
       (language === 'fr' && type === 'IFrame') ||
       (language === 'ar' && type === 'IFrame')) {
       const customizationData = await this.openIFrameDialog();
@@ -666,7 +761,11 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           expressionProperties: {
             'templateOptions.errorState': (model: any, formState: any) => {
@@ -675,15 +774,15 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
-              return value;
+              const isValidIFrame = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
+              return value || !isValidIFrame;
             },
           },
           // Customize other properties as needed
         }];
       }
     }
-
-    if ((language === 'an' && type === 'Url') ||
+    if ((language === 'en' && type === 'Url') ||
       (language === 'fr' && type === 'URL') ||
       (language === 'ar' && type === 'عنوان URL')) {
       const customizationData = await this.openInputDialog();
@@ -721,7 +820,11 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -732,16 +835,17 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed
         }];
       }
     }
-    if ((language === 'an' && type === 'Phone Number') ||
+    if ((language === 'en' && type === 'Phone Number') ||
       (language === 'fr' && type === 'Numéro de téléphone') ||
       (language === 'ar' && type === 'رقم الهاتف')) {
       const customizationData = await this.openPhoneDialog();
@@ -778,6 +882,9 @@ export class ContentComponent implements OnInit, DoCheck {
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
             pattern: customizationData.pattern || '^[2-579]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}$', // Tunisian phone number pattern
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
           },
           // wrappers: ['column'],
 
@@ -798,7 +905,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Date / Time') ||
+    if ((language === 'en' && type === 'Date / Time') ||
       (language === 'fr' && type === 'Date / Heure') ||
       (language === 'ar' && type === 'تاريخ / وقت')) {
       const customizationData = await this.openDateDialog();
@@ -827,7 +934,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -846,7 +956,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Day') ||
+    if ((language === 'en' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
       const customizationData = await this.openDayDialog();
@@ -875,7 +985,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -893,7 +1006,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Number') ||
+    } else if ((language === 'en' && type === 'Number') ||
       (language === 'fr' && type === 'Nombre') ||
       (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
@@ -929,7 +1042,10 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
 
@@ -947,7 +1063,8 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Radio button') ||
+    }
+    else if ((language === 'en' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
@@ -963,7 +1080,6 @@ export class ContentComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            type: 'radio',
             options: customizationData.tableRows,
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
@@ -971,13 +1087,20 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'radio',
           },
           // wrappers: ['column'],
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
 
         }];
       }
-    } else if ((language === 'an' && type === 'Select') ||
+    } else if ((language === 'en' && type === 'Select') ||
       (language === 'fr' && type === 'Sélectionner') ||
       (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
@@ -994,7 +1117,6 @@ export class ContentComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
-            type: 'select',
             options: customizationData.tableRows,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
@@ -1004,14 +1126,19 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
-
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'select',
           },
           // wrappers: ['column'],
-
+          validators: {
+            validation: [this.regexValidator(language)]
+          },
         }];
       }
-    } else if ((language === 'an' && type === 'Select Multiple') ||
+    } else if ((language === 'en' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
       const customizationData = await this.openSelectMultipleDialog();
@@ -1040,13 +1167,16 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
           },
 
         }];
       }
 
-    } else if ((language === 'an' && type === 'Checkbox') ||
+    } else if ((language === 'en' && type === 'Checkbox') ||
       (language === 'fr' && type === 'Case à cocher') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
@@ -1065,7 +1195,6 @@ export class ContentComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
             label_ar,
-            type: 'checkbox',
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -1074,7 +1203,11 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'checkbox',
           },
           // wrappers: ['column'],
 
@@ -1082,7 +1215,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if  ((language === 'an' && type === 'File') ||
+    } else if  ((language === 'en' && type === 'File') ||
     (language === 'fr' && type === 'Fichier') ||
     (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openFileDialog().toPromise();
@@ -1097,12 +1230,10 @@ export class ContentComponent implements OnInit, DoCheck {
         newField = [{
           type: 'file',
           key: customizationData.property_name,
-
           templateOptions: {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr,
             label_ar,
-            type: 'file',
             disabled: customizationData.disabled,
             hidden: customizationData.hidden,
             hide_label: customizationData.hide_label,
@@ -1112,9 +1243,13 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
-            storageType:customizationData.storageType,
-            minFileSize:customizationData.minFileSize,
-            maxFileSize:customizationData.maxFileSize
+            storageType: customizationData.storageType,
+            minFileSize: customizationData.minFileSize,
+            maxFileSize: customizationData.maxFileSize,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value,
+            type: 'file',
           },
         }];
       }
@@ -1154,9 +1289,8 @@ export class ContentComponent implements OnInit, DoCheck {
         for (let j = 0; j < columnSizess.length; j++) {
           columnField = {
             key: 'col-' + columnSizess[j].size + '-' + columnSizess[j].width,
-            type: 'column',
+            type: 'columnSize',
             fieldGroup: [],
-            wrappers: ['column'],
           } ;
           columnFields.push(columnField);
         }
@@ -1165,7 +1299,6 @@ export class ContentComponent implements OnInit, DoCheck {
             key: customizationData.propertyName, // Key of the wrapper component for columns
             type: 'row',
             fieldGroup: columnFields,
-            wrappers: ['columnSize'],
           }
         ];
 
@@ -1230,13 +1363,16 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             hide_label_fr: customizationData.hide_label_fr,
             hide_label_ar: customizationData.hide_label_ar,
+            condi_shouldDisplay: customizationData.condi_shouldDisplay,
+            condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+            condi_value: customizationData.condi_value
           },
           // wrappers: ['column'],
         }];
         console.log(newField);
       }
     } else if (
-      (language === 'an' && type === 'Tabs') ||
+      (language === 'en' && type === 'Tabs') ||
       (language === 'fr' && type === 'Onglets') ||
       (language === 'ar' && type === 'نوافذ التبويب')
     ) {
@@ -1268,16 +1404,19 @@ export class ContentComponent implements OnInit, DoCheck {
               field_tags: customizationData.field_tags,
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
-              tabs: customizationData.tabs,
+              tabs: customizationData.tabLabels,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
             },
-            //wrappers: ['column'],
+            wrappers: ['column'],
           },
         ];
         console.log(newField);
       }
     }
     else if (
-      (language === 'an' && type === 'Stepper') ||
+      (language === 'en' && type === 'Stepper') ||
       (language === 'fr' && type === 'Étapes') ||
       (language === 'ar' && type === 'متدرج')
     ) {
@@ -1288,6 +1427,7 @@ export class ContentComponent implements OnInit, DoCheck {
         this.customizationDataMap.set(customizationData.property_name, customizationData);
           const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
+            key: stepLabel.label,
             templateOptions: {
               label: stepLabel.label,
             },
@@ -1315,7 +1455,10 @@ export class ContentComponent implements OnInit, DoCheck {
               hide_label_fr: customizationData.hide_label_fr,
               hide_label_ar: customizationData.hide_label_ar,
               steps: customizationData.stepperLabels,
-              orientation: customizationData.orientation
+              orientation: customizationData.orientation,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
             },
 
           },
@@ -1348,7 +1491,10 @@ export class ContentComponent implements OnInit, DoCheck {
               custom_css: customizationData.custom_css,
               property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
-            collapsible: customizationData.collapsible
+            collapsible: customizationData.collapsible,
+              condi_shouldDisplay: customizationData.condi_shouldDisplay,
+              condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
+              condi_value: customizationData.condi_value
           },
           fieldGroup: [
           ],
@@ -1808,6 +1954,8 @@ export class ContentComponent implements OnInit, DoCheck {
       console.error('Error in dialog:', error);
     }
   }
+
+
   // tslint:disable-next-line:typedef
   updateFieldConfiguration(fieldKey: string, customizationData: any) {
     const field = this.fields.find(f => f.key === fieldKey);
@@ -1885,6 +2033,9 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
+  resetModel(): void {
+    window.location.reload(); // Recharge la page
+  }
   // tslint:disable-next-line:typedef
     async addFormTemplate() {
 
@@ -1897,22 +2048,45 @@ export class ContentComponent implements OnInit, DoCheck {
 
     if (this.form.valid) {
       const fieldsId: string[] = [];
-      const fieldsGroupId: any[] = [];
+      let fieldsGroupId: any[] = [];
       let fieldOptions;
       let fieldId;
       for (const field of this.fields) {
         if (field.key) {
+          let FieldGroupFieldId = [];
           if (field.fieldGroup != null && field.fieldGroup.length > 0) {
             for (const fieldGroup of field.fieldGroup) {
+              if (fieldGroup.fieldGroup != null && fieldGroup.fieldGroup.length > 0){
+                let compteur = 0 ;
+                if (field.type === 'hr_stepper'){
+                  compteur = 1 ;
+                }else {compteur = 0 ; }
+                for (let  i = compteur ; i < fieldGroup.fieldGroup.length ; i++){
+                  const fieldGroupOfFieldGroup = [];
+                  if (fieldGroup.fieldGroup[i].fieldGroup && fieldGroup.fieldGroup[i].fieldGroup.length > 0){
+                    for (let j = 0 ; j < fieldGroup.fieldGroup[i].fieldGroup.length ; j++){
+                      const fieldGroupOfFieldOptions =  await this.saveFieldOptions(fieldGroup.fieldGroup[i].fieldGroup[j]);
+                      const fieldGroupOfFieldElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i].fieldGroup[j], fieldGroupOfFieldOptions, []);
+                      fieldGroupOfFieldGroup.push(fieldGroupOfFieldElmId.id);
+                    }
+                  }
+                  const fieldGroupOptionsElm = await this.saveFieldOptions(fieldGroup.fieldGroup[i]);
+                  const fieldGroupElmId = await this.saveFieldsGroupElementWithTemplateOptions(fieldGroup.fieldGroup[i], fieldGroupOptionsElm, fieldGroupOfFieldGroup);
+                  // GETfIELDbYiD AFTER SAVe and push it inside fieldGroup
+                  FieldGroupFieldId.push(fieldGroupElmId.id);
+                }
+              }
               fieldOptions = await this.saveFieldOptions(fieldGroup);
-              const fieldGroupId = await this.saveFieldsGroupWithTemplateOptions(fieldGroup, fieldOptions);
+              const fieldGroupId = await this.saveFieldsGroupWithTemplateOptions(fieldGroup, fieldOptions , FieldGroupFieldId );
+              FieldGroupFieldId.splice(0, FieldGroupFieldId.length);
               fieldsGroupId.push(fieldGroupId);
+              FieldGroupFieldId = [];
             }
-            // field.fieldGroup = fieldsGroupId;
           }
           fieldOptions = await this.saveFieldOptions(field);
           fieldId = await this.saveFieldWithTemplateOptions(field, fieldOptions, fieldsGroupId);
           fieldsId.push(fieldId);
+          fieldsGroupId = [];
         }
       }
       const titre = this.formHeader.get('title').value;
@@ -1962,7 +2136,7 @@ export class ContentComponent implements OnInit, DoCheck {
     // Log to check tabs array
     console.log('Tabs:', field.templateOptions.tabs);
     const stepsMap: {[key: string]: any } = {};
-      if (field.templateOptions.steps) {
+    if (field.templateOptions.steps) {
         field.templateOptions.steps.forEach((step, index) => {
           stepsMap[`step${index + 1}`] = step;
         });
@@ -2013,8 +2187,8 @@ export class ContentComponent implements OnInit, DoCheck {
       link_iframe: field.templateOptions.link_iframe,
       stepper_orientation: field.templateOptions.stepper_orientation,
       storageType: field.templateOptions.storageType,
-      maxFileSize:field.templateOptions.maxFileSize,
-      minFileSize:field.templateOptions.minFileSize,
+      maxFileSize: field.templateOptions.maxFileSize,
+      minFileSize: field.templateOptions.minFileSize,
       tabs: tabsMap,
       steps: stepsMap,
       options: optionValues, // Store option IDs instead of values
@@ -2026,11 +2200,11 @@ export class ContentComponent implements OnInit, DoCheck {
     return templateOptions;
   }
 
-  async saveFieldsGroupWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions): Promise<string> {
-    const fieldsGroupId: any [] = [];
+  async saveFieldsGroupWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, fieldGroupsId: string[]): Promise<string> {
     const mappedField: Field = {
       type: field.type,
       key: field.key,
+      fieldGroupId: fieldGroupsId,
       templateOptions, // Store the ID of the templateOptions
       id: this.generateRandomId(),
       //
@@ -2039,7 +2213,60 @@ export class ContentComponent implements OnInit, DoCheck {
     const res = await this.fieldService.addField(mappedField).toPromise();
     return res.id;
   }
+  async saveFieldsGroupElementWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, listFieldGroup: string[]): Promise<Field> {
+    const fieldsGroupId: any [] = [];
+    const mappedField: Field = {
+      type: field.type,
+      key: field.key,
+      templateOptions, // Store the ID of the templateOptions
+      id: this.generateRandomId(),
+      fieldGroupId: [],
+      //
+    };
+    // if (field.type === 'column'){
+    //   mappedField.fieldGroupId = listFieldGroup;
+    // }
+    const res = await this.fieldService.addField(mappedField).toPromise();
+    return res;
+  }
+  returnField(field: FormlyFieldConfig, idField: string) {
+    const newField: Field = {
+    type: field.type,
+      key: field.key,
+      templateOptions: {
+      label: field.templateOptions.label,
+        type: field.templateOptions.type,
+        placeholder: field.templateOptions.placeholder,
+        minlength: field.templateOptions.minLength,
+        maxlength: field.templateOptions.maxLength,
+        disabled: field.templateOptions.disabled,
+        hidden: field.templateOptions.hidden,
+        hide_label_fr: field.templateOptions.hide_label_fr,
+        hide_label_ar: field.templateOptions.hide_label_ar,
+        custom_css: field.templateOptions.custom_css,
+        property_name: field.templateOptions.property_name,
+        field_tags: field.templateOptions.field_tags,
+        error_label: field.templateOptions.error_label,
+        custom_error_message: field.templateOptions.custom_error_message
+    },
+    // wrappers: ['column'],
 
+    // expressionProperties: {
+    //   'templateOptions.errorState': (model: any, formState: any) => {
+    //     // Check the length constraints and set error state accordingly
+    //     const value = model[field.templateOptions.key];
+    //     if (value === undefined || value === null) {
+    //       return false; // Value is not defined or null, so no error state
+    //     }
+    //     const minLength = customizationData.minLength || 0;
+    //     const maxLength = customizationData.maxLength || Infinity;
+    //     return value.length < minLength || value.length > maxLength;
+    //   },
+    // },
+    };
+    newField.fieldGroupId.push(idField);
+    return newField ;
+  }
   async saveFieldWithTemplateOptions(field: FormlyFieldConfig, templateOptions: TemplateOptions, fieldGroupId: any[]): Promise<string> {
     if (field.fieldGroup == null) {
       fieldGroupId = [];
@@ -2101,7 +2328,7 @@ export class ContentComponent implements OnInit, DoCheck {
       language = currentLang;
     });
     let newField: FormlyFieldConfig[] = [{}];
-    if ((language === 'an' && type === 'Text') ||
+    if ((language === 'en' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
@@ -2165,7 +2392,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Address') ||
+    if ((language === 'en' && type === 'Address') ||
       (language === 'fr' && type === 'Adresse') ||
       (language === 'ar' && type === 'العنوان')) {
       const customizationData = await this.openAddressDialog();
@@ -2251,7 +2478,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }
       }
     }
-    if ((language === 'an' && type === 'Email') ||
+    if ((language === 'en' && type === 'Email') ||
       (language === 'fr' && type === 'E-mail') ||
       (language === 'ar' && type === 'البريد الإلكتروني')) {
       const customizationData = await this.openInputDialog();
@@ -2285,6 +2512,7 @@ export class ContentComponent implements OnInit, DoCheck {
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
             custom_error_message: customizationData.custom_error_message,
+            pattern: customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
 
           },
           // wrappers: ['column'],
@@ -2297,16 +2525,17 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidEmail = new RegExp(customizationData.pattern || '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidEmail;
             },
           },
           // Customize other properties as needed
         }];
       }
     }
-    if ((language === 'an' && type === 'Url') ||
+    if ((language === 'en' && type === 'Url') ||
       (language === 'fr' && type === 'URL') ||
       (language === 'ar' && type === 'عنوان URL')) {
       const customizationData = await this.openInputDialog();
@@ -2338,7 +2567,8 @@ export class ContentComponent implements OnInit, DoCheck {
             property_name: customizationData.property_name,
             field_tags: customizationData.field_tags,
             error_label: customizationData.error_label,
-            custom_error_message: customizationData.custom_error_message
+            custom_error_message: customizationData.custom_error_message,
+            pattern : customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$',
           },
           // wrappers: ['column'],
 
@@ -2349,16 +2579,17 @@ export class ContentComponent implements OnInit, DoCheck {
               if (value === undefined || value === null) {
                 return false; // Value is not defined or null, so no error state
               }
+              const isValidUrl = new RegExp(customizationData.pattern || '^(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})$').test(value);
               const minLength = customizationData.minLength || 0;
               const maxLength = customizationData.maxLength || Infinity;
-              return value.length < minLength || value.length > maxLength;
+              return value.length < minLength || value.length > maxLength || !isValidUrl;
             },
           },
           // Customize other properties as needed
         }];
       }
     }
-    if ((language === 'an' && type === 'Phone Number') ||
+    if ((language === 'en' && type === 'Phone Number') ||
       (language === 'fr' && type === 'Numéro de téléphone') ||
       (language === 'ar' && type === 'رقم الهاتف')) {
       const customizationData = await this.openPhoneDialog();
@@ -2411,7 +2642,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Date / Time') ||
+    if ((language === 'en' && type === 'Date / Time') ||
       (language === 'fr' && type === 'Date / Heure') ||
       (language === 'ar' && type === 'تاريخ / وقت')) {
       const customizationData = await this.openDateDialog();
@@ -2455,7 +2686,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
     }
-    if ((language === 'an' && type === 'Day') ||
+    if ((language === 'en' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
       const customizationData = await this.openDateDialog();
@@ -2498,7 +2729,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Number') ||
+    } else if ((language === 'en' && type === 'Number') ||
       (language === 'fr' && type === 'Nombre') ||
       (language === 'ar' && type === 'عدد')) {
       const customizationData = await this.openInputDialog();
@@ -2548,7 +2779,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
         }];
       }
-    } else if ((language === 'an' && type === 'Radio button') ||
+    } else if ((language === 'en' && type === 'Radio button') ||
       (language === 'fr' && type === 'Bouton radio') ||
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
@@ -2573,8 +2804,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
         }];
       }
-    }
-    else if ((language === 'an' && type === 'Select') ||
+    } else if ((language === 'en' && type === 'Select') ||
       (language === 'fr' && type === 'Sélectionner') ||
       (language === 'ar' && type === 'اختيار')) {
       const customizationData = await this.openSelectDialog();
@@ -2603,8 +2833,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
         }];
       }
-    }
-    else if ((language === 'an' && type === 'Select Multiple') ||
+    } else if ((language === 'en' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
       const customizationData = await this.openSelectDialog();
@@ -2634,7 +2863,7 @@ export class ContentComponent implements OnInit, DoCheck {
         }];
       }
 
-    } else if ((language === 'an' && type === 'Checkbox') ||
+    } else if ((language === 'en' && type === 'Checkbox') ||
       (language === 'fr' && type === 'Case à cocher') ||
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();

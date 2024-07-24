@@ -15,16 +15,19 @@ export class PermissionService {
   }
 
 
-  addPermission(permission: Permission): Observable<any> {
-    return this.http.post<Permission>('http://localhost:8078/Permission/addPermission',permission);
+  addPermission(permission: any): Observable<any> {
+    return this.http.post<any>('http://localhost:8078/Permission/addPermission', permission);
   }
 
   deletePermission(id: string){
-    return this.http.delete<any>(`http://localhost:8078/Permission/SupPermission/${id}`);
+    return this.http.delete<any>(`http://localhost:8078/Permission/supPermission/${id}`);
   }
 
   getPermissionById(id:string){
-    return this.http.get<Permission[]>(`http://localhost:8078/Permission/UnePermission/${id}`);
+    return this.http.get<Permission[]>(`http://localhost:8078/Permission/permissionsToRole/${id}`);
+  }
+  getPermissionToRole(id: string): Observable<any>{
+    return this.http.get<any[]>(`http://localhost:8078/Permission/permissionsToRole/${id}`);
   }
 
   updatePermission(permission:Permission): Observable<any>{

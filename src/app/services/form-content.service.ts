@@ -26,8 +26,11 @@ export class FormContentService {
     const url = `http://localhost:8078/options/getOption/${optionId}`;
     return this.httpClient.get<any>(url);
   }
-  public getAnswers(formTemplateId: string): Observable<any> {
+  public getAnswersById(formTemplateId: string): Observable<any> {
     return this.httpClient.get(`http://localhost:8078/answers/getAnswersById/${formTemplateId}`);
+  }
+  public getAllAnswers(): Observable<any>{
+    return this.httpClient.get(`http://localhost:8078/answers/getAll`);
   }
   uploadFile(email: string, file: File): Observable<string> {
     const formData: FormData = new FormData();
@@ -36,9 +39,10 @@ export class FormContentService {
     return this.httpClient.post<string>(`http://localhost:8078/files/upload`, formData);
   }
 
-  getAll():Observable<FormContent[]>{
+  getAll(): Observable<FormContent[]>{
   return this.httpClient.get<FormContent[]>(`http://localhost:8078/formContent/getAll`);
  }
+
  getFormCountsByUser(): Observable<{ [key: string]: number }> {
   return this.getAll().pipe(
     map(forms => {
@@ -49,4 +53,9 @@ export class FormContentService {
     })
   );
 }
+  validateAnswers(notification: any, validationStatus: boolean): Observable<any> {
+    const requestBody = { notificationRequest: notification, validationStatus: validationStatus };
+    return this.httpClient.post('http://localhost:8078/answers/validateAnswer', requestBody);
+  }
+
 }

@@ -27,7 +27,9 @@ export class PermissionDialogAddComponent  {
 
   save() {
     if (this.form.valid) {
-      const newPermission: Permission = this.form.value;
+      const newPermission = new Permission();
+      newPermission.permissionName = this.form.get('permissionName').value;
+      newPermission.permissionType =  this.form.get('permissionType').value;
       this.permissionService.addPermission(newPermission).subscribe(response => {
         this.dialogRef.close(response);
       }, error => {
@@ -42,4 +44,11 @@ export class PermissionDialogAddComponent  {
   }
 
 
+  toUpperCaseInput() {
+    const permissionTypeControl = this.form.get('permissionType');
+    if (permissionTypeControl) {
+      const upperCaseValue = permissionTypeControl.value.toUpperCase().replace(/\s/g, '');
+      permissionTypeControl.setValue(upperCaseValue, { emitEvent: false });
+    }
+  }
 }

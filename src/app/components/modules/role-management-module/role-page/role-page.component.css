@@ -1,20 +1,28 @@
 .full-page {
-  background-color: #f0f0f0;
-  height: 100%;
+  background-color: transparent;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 50px;
 }
 
 .user-list-card {
-  width: 80%;
+  width: 90%;
   min-width: 300px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .header {
   background:linear-gradient(-89deg, #00B8FF 0%, #00719D 100%) !important;
   color: #ffffff;
   padding: 10px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .title {
@@ -80,4 +88,8 @@
 
 .paginator {
   margin-top: 20px;
+}
+.btn-gradient-bg{
+  color: #00719D;
+  border-radius: 20px;
 }

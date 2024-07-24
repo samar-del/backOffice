@@ -19,4 +19,9 @@ export class FormCreationService {
     return this.httpClient.get<any>('http://localhost:8078/getAllFormTemplate');
   }
 
+  public deleteFormTemplateById(id: string): Observable<any>{
+    return this.httpClient.delete<any>(`http://localhost:8078/deleteFormTemplate/${id}`)
+
+  }
+
 }

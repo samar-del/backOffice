@@ -50,7 +50,7 @@ export class GestionPermissionComponent implements OnInit {
   addPermission() {
     const dialogRef = this.dialog.open(PermissionDialogAddComponent, {
       width: '500px',
-      data: {}, // Vous pouvez passer des données au dialogue si nécessaire
+      data: {permissionsInfos: ''}, // Vous pouvez passer des données au dialogue si nécessaire
     });
 
     dialogRef.afterClosed().subscribe((result) => {

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RoleUpdateDialogComponent } from './role-update-dialog.component';
+import { ValidationDialogComponent } from './validation-dialog.component';
 
-describe('RoleUpdateDialogComponent', () => {
-  let component: RoleUpdateDialogComponent;
-  let fixture: ComponentFixture<RoleUpdateDialogComponent>;
+describe('ValidationDialogComponent', () => {
+  let component: ValidationDialogComponent;
+  let fixture: ComponentFixture<ValidationDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RoleUpdateDialogComponent ]
+      declarations: [ ValidationDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RoleUpdateDialogComponent);
+    fixture = TestBed.createComponent(ValidationDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

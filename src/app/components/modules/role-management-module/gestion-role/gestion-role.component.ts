@@ -1,13 +1,15 @@
+import { Options } from './../../../../models/Options';
 import { RolePageComponent } from './../role-page/role-page.component';
 
 import { Component, OnInit } from '@angular/core';
 import { Permission } from 'src/app/models/permission';
 import { Role } from 'src/app/models/role';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { PermissionService } from 'src/app/Modules/user/services/permission.service';
 import { RoleService } from 'src/app/Modules/user/services/role.service';
 import { ToastrService } from 'ngx-toastr';
+import { error } from 'console';
 
 @Component({
   selector: 'app-gestion-role',
@@ -32,9 +34,17 @@ export class GestionRoleComponent implements OnInit {
 
   ) {
     this.form = this.fb.group({
-      roleType: ['', Validators.required],
-      permissions: [[], Validators.required]
+      roleType: new FormControl('', Validators.required),
+      permissions: new FormControl('')
     });
+    this.permissionService.getAllPermissions().subscribe(
+      (data: any)=>{
+        this.permissions = data;
+      },
+      error =>{
+        console.error('error fetching permission', error);
+      }
+    )
    }
 
   ngOnInit(): void {
@@ -45,7 +55,8 @@ export class GestionRoleComponent implements OnInit {
   save(){
     if(this.form.valid){
       const newRole: Role = this.form.value;
-      this.roleService.addRole(newRole).subscribe(res=>{
+      this.roleService.addRole(newRole).subscribe(
+        res=>{
         this.loadRoles();
         this.dialogRef.close(res);
       }, error => {
@@ -75,11 +86,15 @@ export class GestionRoleComponent implements OnInit {
     if (this.form.valid) {
       const formValue = this.form.value;
       const selectedPermissions = formValue.permissions.map((permissionId: string) =>
-        this.permissions.find(permission => permission.idPermission === permissionId)
-      );
+        this.permissions.find(permission => permission.id === permissionId)
+      ).filter(permission => permission.id); // Filter out undefined values
+      const listPermissionsId = [];
+      selectedPermissions.forEach(el => {
+        listPermissionsId.push(el.id);
+      });
       const newRole: Role = {
         roleType: formValue.roleType,
-        permissions: selectedPermissions
+        permissions: listPermissionsId,
       };
 
       this.roleService.addRoleWithPermissions(newRole).subscribe(
@@ -97,9 +112,7 @@ export class GestionRoleComponent implements OnInit {
       );
     }
   }
-
-
- assignPermissions(options: HTMLOptionsCollection): void {
+  assignPermissions(options: HTMLOptionsCollection): void {
     const selectedIds: string[] = [];
     for (let i = 0; i < options.length; i++) {
       if (options[i].selected) {
@@ -108,6 +121,7 @@ export class GestionRoleComponent implements OnInit {
     }
     this.form.get('permissions')?.setValue(selectedIds);
   }
+
 
   getSelectedPermissionIds(options: HTMLOptionsCollection): string[] {
     const selectedIds: string[] = [];
@@ -125,5 +139,11 @@ export class GestionRoleComponent implements OnInit {
     this.dialogRef.close();
 
   }
-
+  toUpperCaseInput() {
+    const roleType = this.form.get('roleType');
+    if (roleType) {
+      const upperCaseValue = roleType.value.toUpperCase().replace(/\s/g, '');
+      roleType.setValue(upperCaseValue, { emitEvent: false });
+    }
+  }
 }

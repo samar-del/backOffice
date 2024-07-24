@@ -27,9 +27,10 @@ export class AdminPageComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       userName: new FormControl('', Validators.required),
-      password: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
-      roleType: new FormControl('')
+      roleType: new FormControl('', Validators.required)  // Ajoutez ceci
+
+   //   role: new FormControl('')
      // permissionType: new FormControl('')
 
         });
@@ -53,13 +54,12 @@ export class AdminPageComponent implements OnInit {
     const selectedRole = this.roles.find(role => role.name === formValue.roleType);
     const userRequest: UserRequest = {
       userName: formValue.userName,
-      password: formValue.password,
       email: formValue.email,
-      role: selectedRole ? [selectedRole] : []
+      role: selectedRole ? [selectedRole.id] : []
     };
 
     this.userService.addUserAndAssignRole(userRequest).subscribe(
-       response => {
+      response => {
         this.toastr.success('User added successfully', 'Success');
         this.dialogRef.close(true);
       },
