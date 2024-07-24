@@ -1,28 +1,29 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {TranslationService} from "../../../services/translation.service";
 
 @Component({
-  selector: 'app-tel-form-dialog',
-  templateUrl: './tel-form-dialog.component.html',
-  styleUrls: ['./tel-form-dialog.component.css']
+  selector: 'app-day-form-dialog',
+  templateUrl: './day-form-dialog.component.html',
+  styleUrls: ['./day-form-dialog.component.css']
 })
-export class TelFormDialogComponent implements OnInit {
+export class DayFormDialogComponent implements OnInit {
 
   form: FormGroup;
   previewForm: FormGroup;
   newField: FormlyFieldConfig;
+  fields: FormlyFieldConfig[] = [];
   @ViewChild('formlyForm') formlyForm: any;
   options: FormlyFormOptions = {};
   model: any = {};
-  selectedTabIndex = 0;
+  selectedTabIndex = 0; // Default tab index
   translations: any = {};
 
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<TelFormDialogComponent>,
+    public dialogRef: MatDialogRef<DayFormDialogComponent>,
     private translationService: TranslationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -31,10 +32,6 @@ export class TelFormDialogComponent implements OnInit {
     this.form = this.fb.group({
       label_fr: [this.data.label_fr, Validators.required],
       label_ar: [this.data.label_ar, Validators.required],
-      placeholder_fr: [this.data.placeholder_fr],
-      placeholder_ar: [this.data.placeholder_ar],
-      minLength: [this.data.minLength, Validators.min(0)],
-      maxLength: [this.data.maxLength, Validators.min(0)],
       label_position: [this.data.label_position],
       custom_css: [this.data.custom_css],
       hidden: [this.data.hidden],
@@ -67,15 +64,17 @@ export class TelFormDialogComponent implements OnInit {
 
     this.updateFields();
   }
-  onTabChange(event: any): void {
-    this.selectedTabIndex = event.index;
-  }
+
   onNoClick(): void {
+    this.data = 0 ;
     this.dialogRef.close();
   }
   getLabelStyles(): any {
     const customCss = this.form.get('custom_css').value;
     return customCss ? { 'cssText': customCss } : {}; // Return inline styles object
+  }
+  onTabChange(event: any): void {
+    this.selectedTabIndex = event.index;
   }
   generatePropertyName(label: string): string {
     const words = label.split(/\s+/); // Split label into words
@@ -113,60 +112,41 @@ export class TelFormDialogComponent implements OnInit {
     const tagsArray = inputValue.split(',').map(tag => tag.trim());
     this.form.get('field_tags').setValue(tagsArray);
   }
-
   updateFields(): void {
     const labelFrHidden = this.form.get('hide_label_fr').value;
     const labelArHidden = this.form.get('hide_label_ar').value;
     const inputHidden = this.form.get('hidden').value;
     const inputDisabled = this.form.get('disabled').value;
+
     this.translationService.getCurrentLanguage().subscribe((currentLanguage: string) => {
       const label_fr = this.form.get('label_fr').value;
       const label_ar = this.form.get('label_ar').value;
       const textLabel = currentLanguage === 'ar' ? label_ar : label_fr;
-      const placeholder_ar = this.form.get('placeholder_ar').value;
-      const placeholder_fr = this.form.get('placeholder_fr').value;
-      const placeholderPhone = currentLanguage === 'ar' ? placeholder_ar : placeholder_fr;
 
-    this.newField = {
-      type: 'input',
-      key: 'key1',
-      templateOptions: {
-        label:textLabel,
-        label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
-        label_ar: labelArHidden ? null : this.form.get('label_ar').value,
-        type: 'text',
-        placeholder:placeholderPhone,
-        placeholder_fr: this.form.get('placeholder_fr').value,
-        placeholder_ar: this.form.get('placeholder_ar').value,
-        disabled: inputDisabled,
-        custom_css: this.form.get('custom_css').value,
-        error_label: this.form.get('error_label').value,
-        custom_error_message: this.form.get('custom_error_message').value,
-      },
-      hide: inputHidden,
-      expressionProperties: {
-        'templateOptions.hideLabel_fr': () => labelFrHidden,
-        'templateOptions.hideLabel_ar': () => labelArHidden
-      },
-      validators: {
-        minLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const minLength = this.form.get('minLength').value || 0;
-            return !value || value.length >= minLength;
-          }
+      this.newField = {
+        type: 'input',
+        key: 'key1',
+        templateOptions: {
+          label:textLabel,
+          label_fr: labelFrHidden ? null : this.form.get('label_fr').value,
+          label_ar: labelArHidden ? null : this.form.get('label_ar').value,
+          type: 'date',
+          disabled: inputDisabled,
+          custom_css: this.form.get('custom_css').value,
+          error_label: this.form.get('error_label').value,
+          custom_error_message: this.form.get('custom_error_message').value,
         },
-        maxLength: {
-          expression: (control: any) => {
-            const value = control.value;
-            const maxLength = this.form.get('maxLength').value || Infinity;
-            return !value || value.length <= maxLength;
-          }
-        }
-      },
-    };
+        hide: inputHidden,
+        expressionProperties: {
+          'templateOptions.hideLabel_fr': () => labelFrHidden,
+          'templateOptions.hideLabel_ar': () => labelArHidden
+        },
+
+      };
     });
+
   }
+
 
 
 }

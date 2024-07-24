@@ -52,6 +52,7 @@ export class FormTableComponent implements OnInit {
       hide_label_ar: [this.data.hide_label_ar],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
+      type: [this.data.type],
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],

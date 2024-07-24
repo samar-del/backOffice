@@ -34,13 +34,14 @@ export class RadioCustomizeDialogComponent implements OnInit {
       label_ar: [this.data.label_ar, Validators.required],
       placeholder: [this.data.placeholder],
       disabled : [this.data.disabled],
-      tableRows: this.fb.array([]),
+      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
       custom_css: this.data.custom_css,
       hidden: [this.data.hidden],
       error_label: [this.data.error_label],
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
-      field_tags: [this.data.field_tags]
+      field_tags: [this.data.field_tags],
+      type: [this.data.type],
     });
     // Subscribe to label changes to update property name
     this.form.get('label_fr').valueChanges.subscribe((label: string) => {
@@ -73,13 +74,13 @@ export class RadioCustomizeDialogComponent implements OnInit {
     return this.form.get('tableRows') as FormArray;
   }
 
-  createRow(): FormGroup {
-    const row = this.fb.group({
-      label: [''],
-      value: [''],
+  createRow(rowData: any = {}): FormGroup {
+    return this.fb.group({
+      label: [rowData.label || ''],
+      value: [rowData.value || '']
     });
-    return row;
   }
+
   addRow(): void {
     const tableRowsArray = this.form.get('tableRows') as FormArray;
     tableRowsArray.push(this.createRow());

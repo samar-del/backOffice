@@ -38,7 +38,6 @@ export class TabDialogComponent implements OnInit {
   }
 
 
-  // tslint:disable-next-line:typedef
   ngOnInit() {
     console.log(this.fieldsList);
     this.form = this.fb.group({
@@ -50,7 +49,7 @@ export class TabDialogComponent implements OnInit {
       hide_label_ar: [this.data.hide_label_ar],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tabLabels: this.fb.array([]),
+      tabLabels: this.fb.array(this.data.tabLabels.map(row => this.createRow(row))),
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
       condi_value: [this.data.condi_value],
@@ -140,11 +139,10 @@ export class TabDialogComponent implements OnInit {
     }));
   }
 
-  createRow(): FormGroup {
-    const row = this.fb.group({
-      label: [''],
+  createRow(rowData: any = {}): FormGroup {
+    return this.fb.group({
+      label: [rowData.label || '']
     });
-    return row;
   }
   addRow(): void {
     const tabLabels = this.form.get('tabLabels') as FormArray;

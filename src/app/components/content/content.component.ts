@@ -1,5 +1,6 @@
 
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component, DoCheck, HostListener, NgZone,
   OnInit,
@@ -44,14 +45,15 @@ import { switchMap } from 'rxjs/operators';
 import {TabDialogComponent} from '../fields-dialog/tab-dialog/tab-dialog.component';
 import {AlertDialogComponent} from '../fields-dialog/alert-dialog/alert-dialog.component';
 import {StepperDialogComponent} from '../fields-dialog/stepper-dialog/stepper-dialog.component';
-
-
+import {SelectMultipleDialogComponent} from "../fields-dialog/select-multiple-dialog/select-multiple-dialog.component";
+import {DayFormDialogComponent} from "../fields-dialog/day-form-dialog/day-form-dialog.component";
 
 @Component({
   selector: 'app-content',
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Default // Ensure this is Default
 })
 export class ContentComponent implements OnInit, DoCheck {
 
@@ -74,7 +76,8 @@ export class ContentComponent implements OnInit, DoCheck {
   ];
   roles = '';
   isLoggedIn = false;
-
+  customizationDataMap: Map<string, any> = new Map();
+  private previousFields: FormlyFieldConfig[] = [];
   private previousPreviewFields: FormlyFieldConfig[] = [];
   formHeader: FormGroup;
   layoutField: FormlyFieldConfig = {};
@@ -97,7 +100,7 @@ export class ContentComponent implements OnInit, DoCheck {
   // tslint:disable-next-line:max-line-length
   constructor(private fb: FormBuilder, private newfb: FormBuilder, private dialog: MatDialog, private formService: FormCreationService, private fieldService: FieldService,
               private optionService: OptionsService, private templateOptionsService: TemplateOptionsService,
-              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private router: Router, private loginService: LoginService, private authService: AuthService
+              private shareService: ShareService, private translationService: TranslationService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private router:Router, private loginService:LoginService,private authService:AuthService
     ,         private fbh: FormBuilder, private location: Location) {
     this.form = this.fb.group({});
     this.formHeader = this.fbh.group({});
@@ -125,6 +128,8 @@ export class ContentComponent implements OnInit, DoCheck {
     });
 
     this.loadTranslations();
+
+    this.previousFields = JSON.parse(JSON.stringify(this.fields));
   }
   @HostListener('document:mousemove', ['$event'])
   // tslint:disable-next-line:typedef
@@ -203,8 +208,15 @@ export class ContentComponent implements OnInit, DoCheck {
     //   this.updatePreviewFields();
     // }
     this.shareService.emitPreviewFieldList(this.previewfields);
-  }
+    const currentFields = JSON.parse(JSON.stringify(this.fields));
 
+    if (this.haveFieldsChanged(currentFields)) {
+      console.log('Fields have changed');
+
+      // Update previousFields
+      this.previousFields = currentFields;
+    }
+  }
   loadTranslations() {
     this.translationService.getCurrentLanguage().subscribe((language: string) => {
       this.translationService.loadTranslations(language).subscribe((translations: any) => {
@@ -213,7 +225,10 @@ export class ContentComponent implements OnInit, DoCheck {
       });
     });
   }
-
+  private haveFieldsChanged(currentFields: FormlyFieldConfig[]): boolean {
+    // Implement deep comparison between previousFields and currentFields
+    return JSON.stringify(this.previousFields) !== JSON.stringify(currentFields);
+  }
   chacklogedInUser() {
     this.isLoggedIn = this.authService.isLoggedIn();
     this.isLoggedIn = true; // Exemple de mise à jour pour isLoggedIn
@@ -369,18 +384,22 @@ export class ContentComponent implements OnInit, DoCheck {
     });
 
     let newField: FormlyFieldConfig[] = [{}];
-
     if ((language === 'en' && type === 'Text') ||
       (language === 'fr' && type === 'Texte') ||
       (language === 'ar' && type === 'نص')) {
       const customizationData = await this.openInputDialog();
       const listeCondition = customizationData.tableRows;
+      // Assuming you have a map to store customization data by field key
+
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+        console.log('type :' , customizationData.type);
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
         const placeholder_ar = customizationData.placeholder_ar;
-
         newField = [{
 
           type: 'input',
@@ -439,6 +458,7 @@ export class ContentComponent implements OnInit, DoCheck {
             }
           },
         }];
+        this.cdr.detectChanges();
       }
     }
 
@@ -448,6 +468,10 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openHTMLDialog();
       console.log(customizationData);
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const htmlElement = customizationData.htmlElement;
@@ -456,6 +480,8 @@ export class ContentComponent implements OnInit, DoCheck {
           type: 'html',
           key: customizationData.property_name,
           templateOptions: {
+            label_fr,
+            label_ar,
             html_tag: customizationData.html_tag,
             html_content: customizationData.html_content,
             htmlElement,
@@ -525,6 +551,9 @@ export class ContentComponent implements OnInit, DoCheck {
       const listFieldAddress = customizationData.tableRows;
       this.shareService.emitAddressOptions(listFieldAddress);
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
 
         const listFieldAddress = customizationData.tableRows || [];
         this.shareService.emitAddressOptions(listFieldAddress);
@@ -593,7 +622,7 @@ export class ContentComponent implements OnInit, DoCheck {
 
           // Update the fields in Formly form
           this.fields = [...this.fields, ...newField];
-          // this.cdr.detectChanges(); // Trigger change detection
+          //this.cdr.detectChanges(); // Trigger change detection
         }
         else {
           const field: FormlyFieldConfig = {
@@ -631,7 +660,7 @@ export class ContentComponent implements OnInit, DoCheck {
           newField.push(field);
           console.log('New Field:', newField);
 
-          // this.fields = [...this.fields, ...newField];
+          //this.fields = [...this.fields, ...newField];
         }
       }
     }
@@ -641,6 +670,9 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -692,6 +724,7 @@ export class ContentComponent implements OnInit, DoCheck {
           },
           // Customize other properties as needed
         }];
+        this.cdr.detectChanges();
       }
     }
     if ((language === 'en' && type === 'IFrame') ||
@@ -703,6 +736,10 @@ export class ContentComponent implements OnInit, DoCheck {
 
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
 
@@ -715,7 +752,7 @@ export class ContentComponent implements OnInit, DoCheck {
             label_fr,
             label_ar,
             type: 'iframe',
-            link_iframe: customizationData.link_iframe,
+            link_iframe: link_iframe,
             custom_css: customizationData.custom_css,
             required: customizationData.required,
             hidden: customizationData.hidden,
@@ -751,6 +788,12 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -808,6 +851,10 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openPhoneDialog();
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -864,6 +911,10 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openDateDialog();
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
         newField = [{
@@ -908,9 +959,13 @@ export class ContentComponent implements OnInit, DoCheck {
     if ((language === 'en' && type === 'Day') ||
       (language === 'fr' && type === 'Jour') ||
       (language === 'ar' && type === 'اليوم')) {
-      const customizationData = await this.openDateDialog();
+      const customizationData = await this.openDayDialog();
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.hide_label_fr ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label_ar ? null : customizationData.label_ar;
         newField = [{
@@ -957,6 +1012,10 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openInputDialog();
       // @ts-ignore
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.hide_label ? null : customizationData.label_fr;
         const label_ar = customizationData.hide_label ? null : customizationData.label_ar;
         const placeholder_fr = customizationData.placeholder_fr;
@@ -1010,6 +1069,10 @@ export class ContentComponent implements OnInit, DoCheck {
       (language === 'ar' && type === 'راديو')) {
       const customizationData = await this.openRadioDialog();
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         newField = [{
           type: 'radio',
           key: customizationData.property_name,
@@ -1043,6 +1106,10 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openSelectDialog();
       console.log(customizationData);
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         newField = [{
           key: customizationData.property_name,
           type: 'select',
@@ -1074,9 +1141,13 @@ export class ContentComponent implements OnInit, DoCheck {
     } else if ((language === 'en' && type === 'Select Multiple') ||
       (language === 'fr' && type === 'Sélection multiple') ||
       (language === 'ar' && type === 'اختيار متعدد')) {
-      const customizationData = await this.openSelectDialog();
+      const customizationData = await this.openSelectMultipleDialog();
       console.log(customizationData);
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         newField = [{
 
           key: customizationData.property_name,
@@ -1085,6 +1156,7 @@ export class ContentComponent implements OnInit, DoCheck {
             label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
             label_fr: customizationData.label_fr,
             label_ar: customizationData.label_ar,
+            type: customizationData.type,
             custom_css: customizationData.custom_css,
             multiple: true,
             options: customizationData.tableRows,
@@ -1099,7 +1171,6 @@ export class ContentComponent implements OnInit, DoCheck {
             condi_shouldDisplay: customizationData.condi_shouldDisplay,
             condi_whenShouldDisplay: customizationData.condi_whenShouldDisplay,
             condi_value: customizationData.condi_value,
-            type: 'select-multiple',
           },
 
         }];
@@ -1110,6 +1181,10 @@ export class ContentComponent implements OnInit, DoCheck {
       (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openCheckboxDialog().toPromise();
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.label_fr;
         const label_ar = customizationData.label_ar;
 
@@ -1145,6 +1220,10 @@ export class ContentComponent implements OnInit, DoCheck {
     (language === 'ar' && type === 'خانة اختيار')) {
       const customizationData = await this.openFileDialog().toPromise();
       if (customizationData){
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const label_fr = customizationData.label_fr;
         const label_ar = customizationData.label_ar;
 
@@ -1234,6 +1313,10 @@ export class ContentComponent implements OnInit, DoCheck {
       (language === 'ar' && type === 'جدول')) {
       const customizationData = await this.openTableDialog();
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
         const tableRows: FormlyFieldConfig[] = [];
         // let tableRows: FormlyFieldConfig[] = [
         //   {
@@ -1295,9 +1378,12 @@ export class ContentComponent implements OnInit, DoCheck {
     ) {
       const customizationData = await this.openTabDialog();
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
+        console.log(this.customizationDataMap.get(customizationData.property_name));
         const tabs: FormlyFieldConfig[] = customizationData.tabLabels.map((tabLabel: any, index: number) => {
           return {
-            templateOptions: { label: tabLabel.label },
+            templateOptions: { label: tabLabel.label,type: 'tab' },
             fieldGroup : [],
           };
         });
@@ -1337,6 +1423,8 @@ export class ContentComponent implements OnInit, DoCheck {
       const customizationData = await this.openStepperDialog(); // Updated to use the stepper dialog
       const newFieldType = customizationData.stepper_orientation === 'horizontal' ? 'hr_stepper' : 'vr_stepper';
       if (customizationData) {
+        this.customizationDataMap = new Map();
+        this.customizationDataMap.set(customizationData.property_name, customizationData);
           const steps: FormlyFieldConfig[] = customizationData.stepperLabels.map((stepLabel: any, index: number) => {
           return {
             key: stepLabel.label,
@@ -1379,14 +1467,23 @@ export class ContentComponent implements OnInit, DoCheck {
       }
     }
 
-    else if (type === 'Panel') {
+    else if ((language === 'an' && type === 'Panel') ||
+      (language === 'fr' && type === 'Panneau') ||
+      (language === 'ar' && type === 'لوحة')) {
         const customizationData = await this.openPanelDialog();
         if (customizationData) {
+          this.customizationDataMap = new Map();
+          this.customizationDataMap.set(customizationData.property_name, customizationData);
+          console.log(this.customizationDataMap.set(customizationData.property_name, customizationData));
+
           newField = [{
             type: 'panel',
             key: customizationData.property_name,
             templateOptions: {
-              label: customizationData.label,
+              type: 'panel',
+              label: language === 'ar' ? customizationData.label_ar : customizationData.label_fr,
+              label_fr: customizationData.label_fr,
+              label_ar: customizationData.label_ar,
               theme: customizationData.theme,
               disabled: customizationData.disabled,
               hidden: customizationData.hidden,
@@ -1581,7 +1678,22 @@ export class ContentComponent implements OnInit, DoCheck {
     async openDateDialog() {
     const dialogRef = this.dialog.open(DateFormDialogComponent, {
       width: '1400px',
-      data: {label_fr: '', label_ar: '', placeholder: ''},
+      data: {label_fr: '', label_ar: '',type: 'datetime-local',},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
+
+  async openDayDialog() {
+    const dialogRef = this.dialog.open(DayFormDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '',type: 'date',},
     });
     try {
       const customizationData = await dialogRef.afterClosed().toPromise();
@@ -1649,11 +1761,25 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
+  async openSelectMultipleDialog() {
+    const dialogRef = this.dialog.open(SelectMultipleDialogComponent, {
+      width: '1400px',
+      data: {label_fr: '', label_ar: '', multiple:true, placeholder: '', tableRows: [{label: '', value: ''}]},
+    });
+    try {
+      const customizationData = await dialogRef.afterClosed().toPromise();
+      return customizationData;
+    } catch (error) {
+      console.error('Error in dialog:', error);
+      return null;
+    }
+  }
+
     async openTabDialog() {
     const dialogRef = this.dialog.open(TabDialogComponent, {
       width: '1400px',
       data: {
-        label_fr: '', label_ar: ''
+        label_fr: '', label_ar: '',tabLabels: [{label: ''}]
       },
     });
     try {
@@ -1669,7 +1795,7 @@ export class ContentComponent implements OnInit, DoCheck {
     const dialogRef = this.dialog.open(StepperDialogComponent, {
       width: '1400px',
       data: {
-        label_fr: '', label_ar: ''
+        label_fr: '', label_ar: '', stepperLabels : [{label: ''}]
       },
     });
     try {
@@ -1700,42 +1826,197 @@ export class ContentComponent implements OnInit, DoCheck {
     }
   }
 
-    openCustomizationDialog(uniqueKey: string) {
-    const field = this.fields.find(f => f.key === uniqueKey);
+  async openCustomizationDialog(fieldKey: string, fieldType: string) {
+    const existingData = this.customizationDataMap.get(fieldKey);
+    console.log('this is the old data :', existingData);
+    if (!existingData) {
+      console.error(`No customization data found for field with key ${fieldKey}`);
+      return;
+    }
 
-    if (field) {
-      const dialogRef = this.dialog.open(FormDialogComponent, {
-        width: '1400px',
-        data: {
-          label: field.templateOptions.label,
-          placeholder: field.templateOptions.placeholder,
-          minLength: field.templateOptions.minLength,
-          maxLength: field.templateOptions.maxLength,
-        },
-      });
+    let dialogRef;
+    const dataToPass = { ...existingData, type: existingData.type || fieldType }; // Ensure type is passed
+    console.log('Data passed to dialog:', dataToPass);
+    switch(fieldType) {
+      case 'text':
+      case 'email':
+      case 'number':
+      case 'url':
+        dialogRef = this.dialog.open(FormDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'vr_stepper':
+      case 'hr_stepper':
+        dialogRef = this.dialog.open(StepperDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'address':
+        dialogRef = this.dialog.open(AddressCustomizeDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'datetime-local':
+        dialogRef = this.dialog.open(DateFormDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'date':
+        dialogRef = this.dialog.open(DayFormDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'checkbox':
+        dialogRef = this.dialog.open(FormDialogCheckboxComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'select':
+        dialogRef = this.dialog.open(SelectCustomizeDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'select-multiple':
+        dialogRef = this.dialog.open(SelectMultipleDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'html':
+        dialogRef = this.dialog.open(HtmlDialogComponent, {
+          width: '1400px',
+          data: { ...dataToPass }  // Ensure all relevant data is passed
+        });
+        break;
+      case 'table':
+        dialogRef = this.dialog.open(FormTableComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'iframe':
+        dialogRef = this.dialog.open(IFrameDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'panel':
+        dialogRef = this.dialog.open(PanelDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'file':
+        dialogRef = this.dialog.open(FormFileDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'tel':
+        dialogRef = this.dialog.open(TelFormDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'radio':
+        dialogRef = this.dialog.open(RadioCustomizeDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      case 'tab':
+        dialogRef = this.dialog.open(TabDialogComponent, {
+          width: '1400px',
+          data: dataToPass,
+        });
+        break;
+      default:
+        console.error(`Unsupported field type: ${fieldType}`);
+        return;
+    }
 
-      dialogRef.afterClosed().subscribe((newCustomizationData) => {
-        if (newCustomizationData !== undefined) {
-          this.updateCustomizationData(uniqueKey, newCustomizationData);
-        }
-      });
+    try {
+      const updatedCustomizationData = await dialogRef.afterClosed().toPromise();
+      if (updatedCustomizationData) {
+        this.customizationDataMap.set(fieldKey, updatedCustomizationData);
+        this.updateFieldConfiguration(fieldKey, updatedCustomizationData);
+        console.log('this is the updated data', updatedCustomizationData)
+      }
+    } catch (error) {
+      console.error('Error in dialog:', error);
     }
   }
 
 
   // tslint:disable-next-line:typedef
-    updateCustomizationData(uniqueKey: string, newCustomizationData: any) {
-    const field = this.fields.find(f => f.key === uniqueKey);
+  updateFieldConfiguration(fieldKey: string, customizationData: any) {
+    const field = this.fields.find(f => f.key === fieldKey);
 
-    if (field) {
-      field.templateOptions = {
-        ...field.templateOptions,
-        ...newCustomizationData,
-      };
-
-      this.form = this.fb.group({});
-      this.formlyForm.resetForm({model: this.model, fields: this.fields});
+    if (!field) {
+      console.error(`No field found with key ${fieldKey}`);
+      return;
     }
+
+    // Update the field's properties with the new customization data
+    field.type = customizationData.type;
+    field.templateOptions.type = customizationData.type;
+    field.templateOptions.label = customizationData.label_fr;
+    field.templateOptions.label_fr = customizationData.label_fr;
+    field.templateOptions.label_ar = customizationData.label_ar;
+    field.templateOptions.placeholder = customizationData.placeholder_fr;
+    field.templateOptions.pattern = customizationData.pattern;
+    field.templateOptions.multiple = customizationData.multiple;
+    field.templateOptions.options = customizationData.tableRows ? customizationData.tableRows.map(row => ({ label: row.label, value: row.value })) : []; // Update options
+    field.templateOptions.placeholder_fr = customizationData.placeholder_fr;
+    field.templateOptions.placeholder_ar = customizationData.placeholder_ar;
+    field.templateOptions.property_name = customizationData.property_name;
+    field.templateOptions.minLength = customizationData.minLength;
+    field.templateOptions.maxLength = customizationData.maxLength;
+    field.templateOptions.required = customizationData.required;
+    field.templateOptions.disabled = customizationData.disabled;
+    field.templateOptions.hidden = customizationData.hidden;
+    field.templateOptions.custom_css = customizationData.custom_css;
+    field.templateOptions.hide_label_fr = customizationData.hide_label_fr;
+    field.templateOptions.hide_label_ar = customizationData.hide_label_ar;
+    field.templateOptions.field_tags = customizationData.field_tags;
+    field.templateOptions.error_label = customizationData.error_label;
+    field.templateOptions.custom_error_message = customizationData.custom_error_message;
+    field.templateOptions.condi_shouldDisplay = customizationData.condi_shouldDisplay;
+    field.templateOptions.condi_whenShouldDisplay = customizationData.condi_whenShouldDisplay;
+    field.templateOptions.condi_value = customizationData.condi_value;
+    field.templateOptions.number_rows = customizationData.number_rows;
+    field.templateOptions.number_columns = customizationData.number_columns;
+    field.templateOptions.theme = customizationData.theme;
+    field.templateOptions.stepper_orientation = customizationData.stepper_orientation;
+    field.templateOptions.number_steps = customizationData.number_steps;
+    field.templateOptions.link_iframe = this.shareService.changeUrl(customizationData.link_iframe);
+    field.templateOptions.collapsible = customizationData.collapsible;
+    field.templateOptions.storageType = customizationData.storageType;
+    field.templateOptions.minFileSize = customizationData.minFileSize;
+    field.templateOptions.maxFileSize = customizationData.maxFileSize;
+    field.templateOptions.html_tag = customizationData.html_tag;
+    field.templateOptions.html_content = customizationData.html_content;
+    field.templateOptions.htmlElement = `<${customizationData.html_tag}>${customizationData.html_content}</${customizationData.html_tag}>`;
+// Update tabs if defined
+    if (customizationData.tabLabels && Array.isArray(customizationData.tabLabels)) {
+      field.templateOptions.tabs = customizationData.tabLabels.map(tab => tab.label);
+      console.log(field.templateOptions.tabs);
+    } else {
+      console.log('this is the tab :', customizationData.tabLabels);
+      console.error('Tab labels are not defined or not an array');
+    }
+
+    // Trigger a change detection cycle to ensure the form is updated
+    this.fields = [...this.fields];
+
   }
 
     async openAlertDialog() {
