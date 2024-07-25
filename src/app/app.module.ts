@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { FormDialogComponent } from './components/fields-dialog/form-dialog/form-dialog.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import {AbstractControl, FormControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
+import {AbstractControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -86,6 +86,8 @@ import { StepperDialogComponent } from './components/fields-dialog/stepper-dialo
 import { StepperVerticalWrapperComponent } from './components/stepper-vertical-wrapper/stepper-vertical-wrapper.component';
 import { FormFileDialogComponent } from './components/fields-dialog/form-file-dialog/form-file-dialog.component';
 import { JwtModule } from '@auth0/angular-jwt';
+import { SelectMultipleDialogComponent } from './components/fields-dialog/select-multiple-dialog/select-multiple-dialog.component';
+import { DayFormDialogComponent } from './components/fields-dialog/day-form-dialog/day-form-dialog.component';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import { RestrictInputDirective } from './restrict-input.directive';
 import {TranslationService} from "./services/translation.service";
@@ -156,6 +158,8 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
     StepperDialogComponent,
     StepperVerticalWrapperComponent,
     FormFileDialogComponent,
+    SelectMultipleDialogComponent,
+    DayFormDialogComponent,
     RestrictInputDirective
   ],
     imports: [
@@ -178,9 +182,9 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
                 {name: 'address-wrapper', component: AddressWrapperComponent},
                 {name: 'table', component: TableWrapperComponent},
                 {name: 'tab', component: TabFieldWrapperComponent},
-                {name: 'panel', component: PanelFieldWrapperComponent},
-                {name: 'hr_stepper', component: StepperWrapperComponent},
-                {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
+                { name: 'panel', component: PanelFieldWrapperComponent },
+              {name: 'hr_stepper', component: StepperWrapperComponent},
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent},
             ],
             types: [
                 {
@@ -202,9 +206,9 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
                 {name: 'html', component: FormlyFieldHtmlComponent, wrappers: ['form-field']},
                 {name: 'iframe', component: FormlyFieldIframeComponent, wrappers: ['form-field']},
                 {name: 'tab', component: TabFieldWrapperComponent, wrappers: ['form-field']},
-                {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
+              {name: 'address-wrapper', component: AddressWrapperComponent, wrappers: ['form-field']},
                 {name: 'hr_stepper', component: StepperWrapperComponent, wrappers: ['form-field']},
-                {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
+              {name: 'vr_stepper', component: StepperVerticalWrapperComponent, wrappers: ['form-field']}
             ],
           validators: [
             {
@@ -238,11 +242,11 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
         CommonModule,
         ToastrModule.forRoot(),
         JwtModule.forRoot({
-            config: {
-                tokenGetter: () => {
-                    return localStorage.getItem('accessToken');
-                },
-            }
+          config: {
+            tokenGetter: () => {
+              return localStorage.getItem('accessToken');
+            },
+          }
         }),
         MatDialogModule,
         MatTableModule,
@@ -256,5 +260,4 @@ const regexValidator: FieldValidatorFn = (control: AbstractControl, field: Forml
   providers: [TranslationService],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

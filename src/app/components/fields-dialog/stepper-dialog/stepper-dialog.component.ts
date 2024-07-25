@@ -51,7 +51,7 @@ export class StepperDialogComponent implements OnInit {
       stepper_orientation: [this.data.stepper_orientation || 'horizontal'], // default to horizontal
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      stepperLabels: this.fb.array([]),
+      stepperLabels: this.fb.array(this.data.stepperLabels.map(step => this.createRow(step))), // Initialize steps array
       tableRows: this.fb.array([]),
       condi_whenShouldDisplay: [this.data.condi_whenShouldDisplay],
       condi_shouldDisplay: [this.data.condi_shouldDisplay],
@@ -168,9 +168,10 @@ export class StepperDialogComponent implements OnInit {
     }));
   }
 
-  createRow(): FormGroup {
+  createRow(stepData: any = {}): FormGroup {
     return this.fb.group({
-      label: [''],
+      label: [stepData.label || ''],
+      // Add more step-specific properties here
     });
   }
 

@@ -40,7 +40,8 @@ export class SelectCustomizeDialogComponent implements OnInit {
       custom_error_message: [this.data.custom_error_message],
       property_name: [this.generatePropertyName(this.data.label_fr)],
       field_tags: [this.data.field_tags],
-      tableRows: this.fb.array([])
+      tableRows: this.fb.array(this.data.tableRows.map(row => this.createRow(row))),
+      type: [this.data.type],
     });
 
     // Subscribe to label changes to update property name
@@ -71,12 +72,11 @@ export class SelectCustomizeDialogComponent implements OnInit {
     return this.form.get('tableRows') as FormArray;
   }
 
-  createRow(): FormGroup {
-    const row = this.fb.group({
-      label: [''],
-      value: [''],
+  createRow(rowData: any = {}): FormGroup {
+    return this.fb.group({
+      label: [rowData.label || ''],
+      value: [rowData.value || '']
     });
-    return row;
   }
   addRow(): void {
     const tableRowsArray = this.form.get('tableRows') as FormArray;
