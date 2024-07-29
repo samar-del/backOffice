@@ -45,8 +45,14 @@ export class FormsListComponent implements OnInit {
             formSubmitted.answerId = el.id;
             return this.formContent.getFormTemplateById(el.formTemplateId).pipe(
               map(template => {
-                formSubmitted.title = template.title;
-                formSubmitted.description = template.description;
+                if (template) {
+                  formSubmitted.title = template.title;
+                  formSubmitted.description = template.description;
+                } else {
+                  console.error(`Template not found for id: ${el.formTemplateId}`);
+                  formSubmitted.title = 'Unknown Title';
+                  formSubmitted.description = 'No Description Available';
+                }
                 return formSubmitted;
               })
             );
