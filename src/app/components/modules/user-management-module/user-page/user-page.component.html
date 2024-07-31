@@ -40,7 +40,7 @@
           <ng-container matColumnDef="Action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <mat-icon (click)="updateUser(element.idUser)">update</mat-icon>
+              <mat-icon class="btn-gradient-bg" (click)="updateUser(element.idUser)">update</mat-icon>
             </td>
           </ng-container>
 
@@ -48,7 +48,7 @@
           <ng-container matColumnDef="Delete">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <mat-icon (click)="deleteUser(element.idUser)" >delete</mat-icon>
+              <mat-icon class="btn-gradient-bg" (click)="deleteUser(element.idUser)" >delete</mat-icon>
             </td>
           </ng-container>
 
