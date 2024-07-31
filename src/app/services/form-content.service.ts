@@ -22,6 +22,10 @@ export class FormContentService {
     const url = `http://localhost:8078/field/getField/${fielId}`;
     return this.httpClient.get<any>(url);
   }
+
+  deleteForm(id: string): Observable<any> {
+    return this.httpClient.delete<any>(`http://localhost:8078/formContent/deleteById/${id}`);
+  }
   public getOptionsById(optionId: string): Observable<any> {
     const url = `http://localhost:8078/options/getOption/${optionId}`;
     return this.httpClient.get<any>(url);

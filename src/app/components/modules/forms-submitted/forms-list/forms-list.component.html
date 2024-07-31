@@ -29,9 +29,10 @@
         <button mat-icon-button class="btn-gradient-bg" (click)="viewContent(form.answerId, form.formTemplateId)">
           <mat-icon>visibility</mat-icon>
         </button>
-        <button mat-icon-button class="btn-gradient-bg" (click)="deleteForm(form)">
+        <button mat-icon-button class="btn-gradient-bg" (click)="deleteForm(form.idAnswer)">
           <mat-icon>delete</mat-icon>
         </button>
+
         <button mat-icon-button class="btn-gradient-bg" (click)="validateForm(form, 'validate')">
          <mat-icon>done</mat-icon>
         </button>
