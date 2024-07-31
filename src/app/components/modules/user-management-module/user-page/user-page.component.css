@@ -23,7 +23,15 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
 }
+
+
+.search-form {
+  margin-left: auto; /* Pushes the search form to the right */
+}
+
 
 .title {
   margin: 0;

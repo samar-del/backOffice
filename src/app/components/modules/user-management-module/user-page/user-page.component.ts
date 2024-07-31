@@ -36,6 +36,11 @@ export class UserPageComponent implements OnInit {
   ngOnInit(): void {
     this.loadUser();
     this.loadRoles();
+   
+  }
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
   }
 
   loadUser(): void {
