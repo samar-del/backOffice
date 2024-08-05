@@ -40,6 +40,6 @@ export class RoleService {
   }
 
   getRoleById(roleId: string): Observable<any> {
-    return this.http.get<boolean>(`http://localhost:8078/Role/unrole/${roleId}`);
+    return this.http.get<any[]>(`http://localhost:8078/Role/unrole/${roleId}`);
   }
 }

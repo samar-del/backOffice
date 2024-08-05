@@ -1,51 +1,66 @@
 <!-- user-page.component.html -->
+
+
 <div class="full-page">
   <mat-card class="user-list-card">
     <mat-card-header class="header">
-      <h2 class="title">User Listing</h2>
-      <br><br>
+      <h2 class="title">User Listing &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
       <mat-icon (click)="AddAdminDialog()">add_box</mat-icon>
+      <form class="d-flex align-items-center search-form">
+        <div class="form-group mb-0">
+          <div class="input-group input-group-alternative">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input class="form-control" placeholder="Search" type="text" (input)="applyFilter($event)">
+          </div>
+        </div>
+      </form>
     </mat-card-header>
+
     <mat-card-content class="content">
       <div class="mat-elevation-z8">
         <table mat-table class="table" matSort [dataSource]="dataSource">
           <!-- Username Column -->
-          <ng-container matColumnDef="username">
+          <ng-container matColumnDef="Username">
             <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Username </th>
-            <td mat-cell class="cell" *matCellDef="let element"> {{element.userName}} </td>
+            <td mat-cell class="cell" *matCellDef="let element">
+               {{element.userName}} </td>
           </ng-container>
 
           <!-- Email Column -->
-          <ng-container matColumnDef="email">
+          <ng-container matColumnDef="Email">
             <th mat-header-cell class="header-cell" mat-sort-header *matHeaderCellDef> Email </th>
             <td mat-cell class="cell" *matCellDef="let element"> {{element.email}} </td>
           </ng-container>
 
           <!-- Role Column -->
-          <ng-container matColumnDef="role">
-            <th mat-header-cell class="header-cell" *matHeaderCellDef> Role </th>
-            <td mat-cell class="cell" *matCellDef="let element">
-              <select>
-                <option *ngFor="let role of element.role" [value]="role.id">
-                  {{ role.roleType }}
-                </option>
-              </select>
-            </td>
-          </ng-container>
+         <!-- user-page.component.html -->
+<ng-container matColumnDef="Roles">
+  <th mat-header-cell class="header-cell" *matHeaderCellDef> Role </th>
+  <td mat-cell class="cell" *matCellDef="let element">
+    <select>
+      <option *ngFor="let role of element?.role || []" [value]="role?.id">
+        {{ role?.roleType || 'Unknown Role' }}
+      </option>
+    </select>
+  </td>
+</ng-container>
+
 
           <!-- Action Column -->
-          <ng-container matColumnDef="action">
+          <ng-container matColumnDef="Action">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <mat-icon (click)="updateUser(element.idUser)">update</mat-icon>
+              <mat-icon class="btn-gradient-bg" (click)="updateUser(element.idUser)">update</mat-icon>
             </td>
           </ng-container>
 
           <!-- Delete Column -->
-          <ng-container matColumnDef="delete">
+          <ng-container matColumnDef="Delete">
             <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
             <td mat-cell class="cell" *matCellDef="let element">
-              <mat-icon (click)="deleteUser(element.idUser)" >delete</mat-icon>
+              <mat-icon class="btn-gradient-bg" (click)="deleteUser(element.idUser)" >delete</mat-icon>
             </td>
           </ng-container>
 

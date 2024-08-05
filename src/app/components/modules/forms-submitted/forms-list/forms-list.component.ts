@@ -45,9 +45,14 @@ export class FormsListComponent implements OnInit {
             formSubmitted.answerId = el.id;
             return this.formContent.getFormTemplateById(el.formTemplateId).pipe(
               map(template => {
+               if (template) {
                 formSubmitted.title = template.title;
                 formSubmitted.description = template.description;
-                return formSubmitted;
+              } else {
+                formSubmitted.title = 'Unknown Title';
+                formSubmitted.description = 'No Description Available';
+              }
+              return formSubmitted;
               })
             );
           });
@@ -119,5 +124,13 @@ export class FormsListComponent implements OnInit {
   catch (error){
       console.log('error');
   }
+  }
+
+  deleteForm(answerId: string ){
+    this.formContent.deleteForm(answerId).subscribe(()=>{
+      this.toastr.success('Form deleted successfully');
+
+    })
+
   }
 }

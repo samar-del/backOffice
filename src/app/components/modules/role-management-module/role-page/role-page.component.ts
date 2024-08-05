@@ -48,7 +48,10 @@ export class RolePageComponent implements OnInit {
     this.loadRoles();
     this.loadPermissions();
   }
-
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+  }
   loadRoles(): void {
     this.roleService.getAllRoles().subscribe(
       (data: Role[]) => {

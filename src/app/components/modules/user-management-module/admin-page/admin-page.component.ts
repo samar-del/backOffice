@@ -26,14 +26,10 @@ export class AdminPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      userName: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      roleType: new FormControl('', Validators.required)  // Ajoutez ceci
-
-   //   role: new FormControl('')
-     // permissionType: new FormControl('')
-
-        });
+      userName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      roleType: ['', Validators.required]
+    });
 
     this.userService.getAllRoles().subscribe(
       (data: any) => {
@@ -51,7 +47,8 @@ export class AdminPageComponent implements OnInit {
     }
 
     const formValue = this.form.value;
-    const selectedRole = this.roles.find(role => role.name === formValue.roleType);
+    const selectedRole = this.roles.find(role => role.id === formValue.roleType);
+
     const userRequest: UserRequest = {
       userName: formValue.userName,
       email: formValue.email,
@@ -70,12 +67,8 @@ export class AdminPageComponent implements OnInit {
     );
   }
 
-
-
-
   onNoClick(): void {
     this.dialogRef.close();
-
   }
 
 }

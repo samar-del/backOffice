@@ -47,6 +47,10 @@ export class GestionPermissionComponent implements OnInit {
       this.LoadPermission();
     });
   }
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.datasource.filter = filterValue;
+  }
   addPermission() {
     const dialogRef = this.dialog.open(PermissionDialogAddComponent, {
       width: '500px',

@@ -5,6 +5,16 @@
       <br>
       <br>
       <mat-icon (click)="addRole()" >add_box</mat-icon>
+      <form class="d-flex align-items-center search-form">
+        <div class="form-group mb-0">
+          <div class="input-group input-group-alternative">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input class="form-control" placeholder="Search" type="text" (input)="applyFilter($event)">
+          </div>
+        </div>
+      </form>
     </mat-card-header>
     <mat-card-content class="content">
       <div class="mat-elevation-z8">
@@ -41,7 +51,7 @@
 
           <!-- Delete Column -->
           <ng-container matColumnDef="delete">
-            <th mat-header-cell class="header-cell" *matHeaderCellDef> Action </th>
+            <th mat-header-cell class="header-cell" *matHeaderCellDef> Delete </th>
             <td mat-cell class="cell" *matCellDef="let element">
               <mat-icon class="btn-gradient-bg" (click)="deleteRole(element.id)">delete</mat-icon>
             </td>

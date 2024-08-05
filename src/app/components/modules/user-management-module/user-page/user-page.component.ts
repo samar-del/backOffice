@@ -1,3 +1,4 @@
+import { RoleService } from 'src/app/Modules/user/services/role.service';
 // user-page.component.ts
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
@@ -17,25 +18,48 @@ import { UpdateUserComponent } from '../update-user/update-user.component';
 })
 export class UserPageComponent implements OnInit {
   users: User[] = [];
+  user: User[];
+  roles: any;
   dataSource = new MatTableDataSource<User>(this.users);
-  displayedColumns: string[] = ['username', 'email', 'role', 'action', 'delete'];
+  displayedColumns: string[] = ['Username', 'Email', 'Roles', 'Action', 'Delete'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private service: UserService,
+    private roleservice:RoleService,
     private dialog: MatDialog,
     private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
     this.loadUser();
+    this.loadRoles();
+   
+  }
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
   }
 
   loadUser(): void {
     this.service.getAllUSers().subscribe(
       (userList: User[]) => {
+        userList.forEach(user => {
+          if (!user.role) {
+            user.role = [];
+          }else {
+            const roleByuser = [];
+            user.role.forEach(role => {
+               this.roleservice.getRoleById(role).subscribe(res => {
+                roleByuser.push(res) ;
+              });
+            });
+            user.role = roleByuser;
+          }
+        });
+
         this.users = userList;
         this.dataSource = new MatTableDataSource<User>(this.users);
         this.dataSource.paginator = this.paginator;
@@ -47,6 +71,17 @@ export class UserPageComponent implements OnInit {
     );
   }
 
+  loadRoles(): void{
+    this.service.getAllRoles().subscribe(
+      roles=>{
+        this.roles=roles;
+      },
+      error => {
+        console.error('Error loading roles:', error);
+      }
+    )
+
+  }
   updateUser(idUser: string): void {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '350px',
