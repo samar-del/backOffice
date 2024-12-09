@@ -1,0 +1,40 @@
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+.container{
+  border-radius: 20px;
+  position: relative;
+
+}
+
+
+
+mat-paginator{
+  padding-right: 35%;
+  height: auto;
+}
+at-table{
+  border-radius: 20px;
+}
+
+button{
+  border-color: transparent;
+  background-color: transparent;
+}
+i{
+  font-size: 20px;
+  color: #063672;
+}
+
+mat-header-row{
+  border-radius: 20px;
+  margin-top: 1rem;
+}
+mat-table{
+  border-radius: 20px;
+}
+.btn-gradient-bg{
+  color: #00719D;
+  border-radius: 20px;
+}

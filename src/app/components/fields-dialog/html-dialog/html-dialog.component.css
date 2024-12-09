@@ -1,0 +1,36 @@
+.dialog-field {
+  display: flex; /* Use Flexbox */
+}
+
+.form-tab {
+  flex: 1; /* Take up remaining space */
+}
+
+.preview-tab {
+  margin-left: 20px; /* Adjust margin as needed */
+}
+.formly-form-container{
+  margin-top: 4rem;
+}
+.preview-tab h4{
+  margin-top: 0.5rem;
+}
+.mat-tab-label {
+  background-color: transparent; /* Set default background color */
+}
+
+.active-tab .mat-tab-label {
+  color: white;
+  background-color: #309ec2; /* Set background color for active tab */
+  font-weight: bold;
+}
+.btn-gradient-bg{
+  background: linear-gradient(124deg, #00B8FF 0%, #00719D 100%) !important;
+  color: #FFFFFF;
+  border-radius: 20px;
+}
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+  border-radius: 20px !important;
+}

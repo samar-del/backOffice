@@ -1,0 +1,46 @@
+<!--<mat-toolbar style="background: #1d8cf8">-->
+<!--  <button mat-list-icon aria-label="Menu icon" >-->
+<!--    <mat-icon>menu</mat-icon>-->
+<!--  </button>-->
+<!--  <h1>Responsive Material Sidenavigation</h1>-->
+<!--  <div class="d-flex align-items-center">-->
+<!--  <img src="./../../../assets/img/Logo%20Numeryx.png" style="width:8%">-->
+<!--    <button (click)="changeLanguage('fr')">French (FR)</button>-->
+<!--    <button (click)="changeLanguage('ar')">Arabic (AR)</button>-->
+<!--    <button (click)="changeLanguage('an')">English (EN)</button>-->
+<!--    <button type="button" class="btn btn-link px-3 me-2">-->
+<!--    <a  routerLink="">Logout</a>-->
+<!--  </button>-->
+<!--  </div>-->
+<!--</mat-toolbar>-->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<mat-toolbar *ngIf="ismenurequired">
+  <nav class="navbar navbar-top navbar-expand-md navbar-dark nav-header" id="navbar-main">
+    <div class="container-fluid">
+      <div class="flex-header">
+        <div class="d-flex align-items-center logo">
+          <img src="./../../../assets/img/Logo%20Numeryx.png" width="50%" style="width:8%">
+        </div>
+      </div>
+
+      <div class="flexright-header">
+        <div class="flex-boxlangue">
+          <i class="bi bi-globe"></i>
+          <select [value]="currentLanguage" (change)="changeLanguage($event.target.value)">
+            <option value="en">En</option>
+            <option value="fr">Fr</option>
+            <option value="ar">Ar</option>
+          </select>
+        </div>
+       
+        <button type="button" class="btn btn-link px-3 me-2">
+          <a (click)="handleLogout()" style="cursor:pointer"><i class="bi bi-box-arrow-right"></i></a>
+        </button>
+      </div>
+    </div>
+
+
+  </nav>
+</mat-toolbar>
+

@@ -1,0 +1,6 @@
+.div {
+  border: 2px dotted #ccc; /* Define border properties */
+  padding: 8px; /* Optional: Add padding for better appearance */
+  border-radius: 10px;
+  margin-bottom: 10px;
+}

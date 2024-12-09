@@ -1,0 +1,29 @@
+
+<h2 mat-dialog-title>Update Role</h2>
+<form [formGroup]="form">
+
+  <div mat-dialog-content>
+    <label class="form-label">Role:</label>
+    <span>{{this.data.role.roleType }}</span>
+
+    <br><br>
+    <div>
+      <label class="form-label">Permissions:</label>
+      <mat-form-field class="example-full-width">
+        <mat-select formControlName="permissions" multiple>
+          <ng-container *ngFor="let permission of allPermissions">
+            <mat-option [value]="permission.id" [selected]="isPermissionSelected(permission.id)">
+              {{ permission.permissionName }} : {{ permission.permissionType }}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onCancelClick()">Cancel</button>
+    <button mat-button color="primary" (click)="onConfirmClick()">Confirm</button>
+  </div>
+
+</form>

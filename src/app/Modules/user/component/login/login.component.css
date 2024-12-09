@@ -1,0 +1,35 @@
+button{
+  background-color: #00B8FF ;
+}
+button:hover{
+  background-color: #01326b;
+  color: white;
+}
+section{
+  border-radius:3%;
+  background-color: #00B8FF ;
+ /* background-color: white;
+*/
+}
+
+a{
+  color:#00719D ;
+}
+.background{
+  background-color: #cfecf8;
+  padding-bottom: 3rem;
+  padding-top: 3rem;
+  padding-left: 9rem;
+  padding-right: 9rem;
+
+}
+.formCard{
+  margin-left: 11rem;
+}
+.card-body{
+ /* background-color: #00B8FF;*/
+}
+img{
+  margin-top: 12rem;
+  margin-left: 2rem;
+}
